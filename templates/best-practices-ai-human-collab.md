@@ -9,12 +9,10 @@
 ## Table of Contents
 
 1. [The Collaboration Stack](#the-collaboration-stack)
-2. [Phase 1: Idea to Spec](#phase-1-idea-to-spec)
-3. [Phase 2: Implementation](#phase-2-implementation)
-4. [Phase 3: Context Management](#phase-3-context-management)
-5. [Phase 4: Iteration & Growth](#phase-4-iteration--growth)
-6. [Common Pitfalls](#common-pitfalls)
-7. [Success Metrics](#success-metrics)
+2. [Phase 2: Implementation](#phase-2-implementation)
+3. [Phase 4: Iteration & Growth](#phase-4-iteration--growth)
+4. [Common Pitfalls](#common-pitfalls)
+5. [Success Metrics](#success-metrics)
 
 ---
 
@@ -52,81 +50,6 @@ The foundation of successful AI-human collaboration:
 │    - Refinements                         │
 └─────────────────────────────────────────┘
 ```
-
----
-
-## Phase 1: Idea to Spec
-
-### Step 1.1: Refine the Idea
-
-**Human's job:**
-- Start with "Wouldn't it be cool if..."
-- Discuss with AI (ChatGPT/Claude) to refine
-- Ask questions:
-  - What problem does this solve?
-  - Who will use it?
-  - What's the minimum viable version?
-  - What are the must-haves vs nice-to-haves?
-
-**AI's job:**
-- Ask clarifying questions
-- Propose similar existing solutions
-- Identify technical requirements
-- Surface potential challenges early
-
-**Output**: Clear problem statement and high-level requirements
-
----
-
-### Step 1.2: Choose Tech Stack
-
-**Consider:**
-- **User's familiarity**: What do they already know?
-- **End goal**: Web app? Desktop? Mobile? CLI?
-- **AI strengths**: AI is good with common stacks
-- **Industry standards**: Use standard tools for better AI support
-
-**Recommended stacks by goal:**
-
-| Goal | Recommended Stack |
-|------|------------------|
-| Web app (modern) | React + TypeScript + Vite + Node/Express |
-| Web app (simple) | HTML/CSS/JS + Python/Flask |
-| Desktop app | Electron (package web app) |
-| CLI tool | Node.js or Python |
-| Mobile app | React Native or Flutter |
-
-**Decision points:**
-- TypeScript? (Yes for larger projects, optional for scripts)
-- Testing from start? (Yes - define framework upfront)
-- Database? (Start with files if possible, add DB later)
-
----
-
-### Step 1.3: Write the Spec
-
-**Use the spec template**: `.claude/templates/project-spec-template.md`
-
-**Critical sections:**
-1. **Architecture** - High-level components and their roles
-2. **Directory Layout** - Show the actual file tree
-3. **Data Schemas** - JSON examples, not just descriptions
-4. **Module Boundaries** - Prevent spaghetti code
-5. **Testing Requirements** - Framework and strategy defined upfront
-6. **Sprint Plan** - Break into discrete, testable increments
-7. **AI Constraints** - Rules for implementation
-
-**Spec quality checklist:**
-- [ ] Clear enough that someone else could implement it
-- [ ] Concrete examples (JSON schemas, file paths)
-- [ ] Sprint plan defines ALL work, not just first sprint
-- [ ] Testing strategy included
-- [ ] Module boundaries explicitly defined
-- [ ] "Do not" rules listed (prevent known pitfalls)
-
-**Time investment**: 1-3 hours for small project, 1-2 days for large
-
-**Key insight**: Time spent on spec saves 10x time during implementation!
 
 ---
 
@@ -259,46 +182,6 @@ The foundation of successful AI-human collaboration:
 - ❌ Wait until end to document
 - ❌ Keep decisions in your head
 - ❌ Assume you'll remember why
-
----
-
-## Phase 3: Context Management
-
-### Step 3.1: Create Handover Document
-
-**Update `.claude/current-handover.md` with:**
-- What was accomplished this session
-- Current state (which sprint, what's done)
-- All decisions made (with rationale)
-- Open questions and blockers
-- Technical context (architecture, patterns)
-- Exact next steps
-
-**Template**: `.claude/handover-template.md`
-
-**Quality test**: Could a brand new AI agent continue from this document alone?
-
----
-
-### Step 3.3: Context Reset
-
-**Process:**
-1. Human starts new chat/session
-2. New AI reads:
-   - `.claude/project-context.md` (project overview)
-   - `.claude/onboarding.md` (how to work with user)
-   - `.claude/current-handover.md` (detailed state)
-   - `DEVLOG.md` (all sprint notes)
-3. AI confirms understanding
-4. Work continues seamlessly
-
-**Time cost**: ~10 minutes for AI to read and catch up
-
-**Benefits:**
-- Fresh context window
-- No lost information
-- Consistent quality
-- Can switch AI models if needed
 
 ---
 
