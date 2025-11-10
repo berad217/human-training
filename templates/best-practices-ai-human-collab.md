@@ -251,9 +251,9 @@ The foundation of successful AI-human collaboration:
 - Update when user-facing changes
 
 **3. .claude/current-handover.md** (Session state)
-- Update at 70-75% context window
-- Or before long break
-- Or after major milestone
+- Update before context reset
+- Before long break
+- After major milestone
 
 **Don't:**
 - ❌ Wait until end to document
@@ -264,34 +264,7 @@ The foundation of successful AI-human collaboration:
 
 ## Phase 3: Context Management
 
-### The Context Window Problem
-
-**AI agents have limited "memory" (context window):**
-- Claude Code: ~200k tokens
-- Conversation uses tokens
-- Code uses tokens
-- At limit: Information gets compressed/lost
-
-**Strategy: Proactive handovers**
-
----
-
-### Step 3.1: Monitor Token Usage
-
-**When to prepare handover:**
-- 70-75% token usage (Claude Code shows this)
-- Before long break (overnight, weekend)
-- After completing major milestone
-- When feeling context getting "fuzzy"
-
-**Don't:**
-- ❌ Wait for autocompaction (loses nuance)
-- ❌ Let AI hit 100% tokens
-- ❌ Assume AI will remember everything
-
----
-
-### Step 3.2: Create Handover Document
+### Step 3.1: Create Handover Document
 
 **Update `.claude/current-handover.md` with:**
 - What was accomplished this session
@@ -456,20 +429,6 @@ The foundation of successful AI-human collaboration:
 
 ---
 
-### Pitfall 6: Autocompaction Reliance
-
-**Problem**: Let context window auto-compress
-
-**Impact**: Nuance lost, quality degrades
-
-**Better**:
-- Proactive handover at 70-75%
-- Manual control over what's preserved
-- Fresh start with full context
-
-**Key**: YOU control context, not auto-compression
-
----
 
 ## Success Metrics
 
@@ -545,10 +504,9 @@ The foundation of successful AI-human collaboration:
 
 ### Context Management
 
-1. Monitor token usage
-2. Prepare handover at 70-75%
-3. Update current-handover.md
-4. New session reads .claude/ docs
+1. Prepare handover when ready for context reset
+2. Update current-handover.md
+3. New session reads .claude/ docs
 
 ### When Stuck
 
