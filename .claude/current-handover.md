@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-New AI: Start by reading `.claude/global-preferences.md` (communication style), then `.claude/onboarding.md` (if it exists - it may not for this meta-project), then come back here.
+New AI: Start by reading `.claude/global-preferences.md` (communication style), then come back here.
 
 ## Project Context
 
@@ -10,68 +10,50 @@ New AI: Start by reading `.claude/global-preferences.md` (communication style), 
 
 **Purpose**: Create reusable templates and guidance docs that optimize the workflow from idea → spec → implementation for projects where a non-professional developer works with AI coding agents.
 
-**Phase**: Documentation creation - establishing foundational workflow documents
+**Phase**: Documentation refinement - NEW foundational docs complete, now cleaning up old docs and preparing for remaining phases
 
 **No spec for this project** - This is a meta-project about creating the workflow itself. We're building the templates that future projects will use.
 
 ## Where We Are
 
-**What exists in `.claude/` folder:**
+**NEW foundational docs in `.claude/` folder (COMPLETE):**
 - ✅ `global-preferences.md` - User's cognitive and communication preferences
 - ✅ `ideation-protocol.md` - How to conduct brainstorming conversations
 - ✅ `spec-writing-guide.md` - How to write specs from ideation conversations
-- ✅ `handover-guide.md` - How to write/use handover documents (just completed)
+- ✅ `handover-guide.md` - How to write/use handover documents
 - ✅ `current-handover.md` - This document
 
-**What exists in root and `templates/` folder:**
-- Various template files from previous session (user hasn't read them yet)
-- `onboarding.md`, `handover-template.md`, `patterns-extracted.md`, etc.
-- Templates folder with more detailed templates
+**Old docs in root and `templates/` folder (PARTIALLY CLEANED):**
+- ✅ `templates/best-practices-ai-human-collab.md` - Cleaned up (removed Phase 1 & 3)
+- ⏳ `templates/testing-standards.md` - Not yet reviewed
+- ⏳ `templates/sprint-checklist.md` - Not yet reviewed
+- ⏳ `templates/devlog-entry-template.md` - Not yet reviewed
+- ⏳ `templates/project-spec-template.md` - Complements NEW spec-writing-guide
+- ⏳ Various other old templates - Not yet reviewed
 
-**Git status**: All `.claude/` files committed and pushed to branch `claude/sce-workflow-docs-011CUxpgYUKeQe5LNzd6Qt2C`
+**Git status**: All work committed and pushed to branch `claude/read-handover-notes-011CUzhvRDartRA4AZt6hf39`
 
-## Conversation Context
+## This Session's Accomplishments
 
-**What we accomplished this session:**
+**Context reset tested successfully** - User pasted beginning of previous conversation that I didn't have access to (context glitch).
 
-1. **Established the pipeline phases:**
-   - Ideation → Spec Creation → Implementation → DEVLOG Management → Handovers
+**Cleaned up best-practices document:**
+1. Reviewed which sections overlapped with NEW docs
+2. Removed Phase 1 (Idea to Spec) - covered by NEW ideation-protocol.md and spec-writing-guide.md
+3. Removed Phase 3 (Context Management) - covered by NEW handover-guide.md
+4. Updated Table of Contents
+5. What remains in best-practices: Phase 2 (Implementation), Phase 4 (Iteration), Common Pitfalls, Success Metrics
 
-2. **Created foundational guidance documents:**
-   - Started with global preferences (user pasted theirs)
-   - Built ideation protocol (how to brainstorm, challenge assumptions)
-   - Built spec-writing guide (how to translate ideation → spec for LLM consumption)
-   - Built handover guide (how to capture conversation context)
+**Key decisions made:**
+- Token-based context management guidance REJECTED - User manages context resets based on "open loops" not token counts
+- Tech stack tables and checklists REJECTED - Already covered or not needed
+- Lean/adaptive handover philosophy CONFIRMED over comprehensive/rigid approach
+- global-preferences.md stays SEPARATE from onboarding.md (different purposes, different scopes)
 
-3. **Key design decisions:**
-   - **Lean over comprehensive** - Keep docs digestible and adaptable
-   - **LLM-targeted** - Primary audience is AI agents, not the human
-   - **Continuous improvement** - Feedback loops built into each phase
-   - **Living documents** - Nothing is frozen, everything evolves
-   - **Show, don't tell** - Concrete examples over abstract descriptions
-
-**Philosophy that emerged:**
-- User is non-professional coder building hobby projects with AI agents
-- Values: intellectual honesty, modularity, discovery through building
-- Struggles with: mission creep, testing discipline
-- Learns by: building, not reading documentation
-- This is a partnership between human (systems design) and AI (implementation)
-
-**Key tensions we're navigating:**
-- Mission creep vs discovery through exploration
-- Prescriptive guidance vs flexible adaptation
-- Comprehensive docs vs lean/digestible
-- Testing discipline vs not wanting to test manually
-
-**What we haven't tackled yet:**
-- Implementation phase guidance (how coding agents should work during sprints)
-- DEVLOG management (lean maintenance, archiving old sprints)
-- Review of existing templates in `templates/` folder (decide what to keep/refine/discard)
-
-**User said:**
-- Wants to dogfood the handover process (test context reset)
-- Hasn't read the old template docs yet - started fresh from first principles
-- After context reset, tackle remaining workflow phases
+**Philosophy reinforced:**
+- Context management is HUMAN's responsibility
+- Reset timing based on local minimum of "balls in the air"
+- NEW docs are guide-level (how to think), templates provide structure (what to fill in)
 
 ## Design Patterns Established
 
@@ -83,10 +65,17 @@ New AI: Start by reading `.claude/global-preferences.md` (communication style), 
 - Meta-feedback mechanism for continuous improvement
 
 **Handover philosophy:**
+- Lean and adaptive (not comprehensive and rigid)
 - Captures conversation context, not just state
 - Adapts to what docs exist in project
 - Focus on decisions in flight, what was tried, active discussions
 - Incoming AI provides feedback if handover inadequate
+
+**Context management philosophy:**
+- Human controls timing based on "open loops"
+- NOT based on token percentages or automatic triggers
+- AI doesn't suggest when to reset
+- Opportunistic resets at natural pause points
 
 **Communication style:**
 - Direct, no hedging
@@ -95,35 +84,64 @@ New AI: Start by reading `.claude/global-preferences.md` (communication style), 
 - Humor when it reveals insight
 - Precise when it matters, casual when it doesn't
 
+## What's Left to Build
+
+**Still need NEW documents for:**
+1. **`.claude/onboarding.md`** - How to onboard new AI agents to work with this user (distinct from global-preferences which is personality/style)
+2. **Implementation guidance** - How coding agents should work during sprints
+3. **Testing guidance** - Strategy and standards for testing
+
+**BEFORE creating NEW docs, should review existing:**
+- `templates/testing-standards.md` (12K file - substantial)
+- `templates/best-practices-ai-human-collab.md` Phase 2 content (Implementation)
+- `templates/sprint-checklist.md`
+- `templates/devlog-entry-template.md`
+
+**Process:** Review existing → Extract useful bits → Create NEW if needed OR keep/refine existing
+
+## Important Context About This Session
+
+**Mid-conversation context glitch:**
+- I lost access to the beginning of the conversation
+- User had to paste it back to me
+- The lost content included the "rounds 1, 2, 3" review of best-practices sections
+- This worked - showed handover can handle disruptions
+
+**What the rounds covered:**
+- Round 1: Ideation sections (Phase 1.1-1.2) - REJECTED
+- Round 2: Spec writing section (Phase 1.3) - REJECTED
+- Round 3: Context management (Phase 3) - REJECTED, especially token guidance
+
+## Next Steps
+
+**Immediate (in next session):**
+1. New AI: Read `.claude/global-preferences.md` and this handover
+2. User will direct: Review existing implementation/testing docs before creating NEW versions
+3. After review, create `.claude/onboarding.md`
+
+**Then:**
+4. Create or refine implementation guidance
+5. Create or refine testing guidance
+6. Clean up any remaining old docs
+7. Eventually: Create README or quick-start guide as entry point
+
 ## Red Flags / Warnings
 
 None for this project. It's documentation, low technical risk.
 
-**Process concern:** User hasn't reviewed the old templates yet. When we tackle implementation/DEVLOG phases next, we should check if `templates/` folder has useful material or if we're reinventing wheels.
-
-## Next Steps (After Context Reset)
-
-**Immediate:**
-1. New AI: Read `.claude/global-preferences.md` and this handover
-2. Confirm understanding of where we are
-3. User will decide: Continue with remaining workflow phases OR review existing templates first
-
-**Remaining work:**
-- Implementation phase guidance (sprint workflow for coding agents)
-- DEVLOG management guide (archiving, keeping it lean)
-- Review/refine existing templates in `templates/` folder
-- Eventually: Create README or quick-start guide as entry point
-
-**Files to be aware of:**
-- `templates/` folder has old template docs (not yet reviewed)
-- Root has `onboarding.md`, `handover-template.md`, `patterns-extracted.md`, `sidequest-collaboration-stack.md`
+**Process note:** User wants to consult existing docs but NOT dive deep into them in this session - wants fresh context for that work.
 
 ## Meta Notes
 
-**This is the first handover using the guide we just created.**
+**This is the second handover using the guide we created.**
 
-Incoming AI: If this handover is inadequate, say so. We're dogfooding the process to see if the guide actually works. Feedback welcome.
+First handover worked well enough to enable context reset. This session demonstrated:
+- Handover can survive mid-session context glitches
+- Pasting conversation history back in works
+- User comfortable with opportunistic resets
+
+Incoming AI: Continue the pattern of direct communication, challenge assumptions, keep it lean.
 
 ---
 
-**Resume point:** User will start fresh session, read this handover, and we'll continue building out the workflow pipeline.
+**Resume point:** User will start fresh session to tackle the remaining workflow areas (onboarding, implementation, testing).
