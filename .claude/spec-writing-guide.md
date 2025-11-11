@@ -375,15 +375,75 @@ After writing the spec, reflect:
 - Ask clarifying questions if needed
 - "Does this capture what we discussed?"
 
-### Step 4: Finalize
+### Step 4: Finalize and Create Supporting Documents
 - Make any adjustments based on feedback
 - Save spec to project root (e.g., `SPEC.md` or `[project-name]-spec.md`)
+- **Create onboarding.md** - Universal entry point for any AI agent (see `.claude/onboarding-guide.md` for how)
+- **Create DEVLOG.md skeleton** - Initial structure for sprint documentation
 - Confirm user is ready to start implementation
 
 ### Step 5: Provide Meta-Feedback
 - Tell user what worked/what was tricky in writing this spec
 - Document process notes in spec itself
 - This helps improve templates for future projects
+
+---
+
+## Supporting Documents Created During Spec Writing
+
+When you write the spec, you're also creating the foundation for the entire project workflow. These documents work together:
+
+### onboarding.md - Universal Entry Point
+
+**Purpose**: Single entry point for ANY AI agent in ANY environment (Claude Code, Cursor, GPT in VS Code, etc.)
+
+**Location**: Project root or `./docs/onboarding.md`
+
+**What it contains**:
+- Welcome / project purpose (one sentence)
+- Document locations (with "planned fuzziness" - spec could be in multiple locations)
+- About this human (brief or pointer to `.claude/global-preferences.md`)
+- Workflow explanation (sprints, testing, DEVLOG updates)
+- How to write handovers (embedded instructions since every agent needs to know)
+- Project-specific quirks and gotchas
+
+**Why separate from spec**:
+- Spec = WHAT to build (technical details)
+- Onboarding = HOW to get started (navigation + process)
+- Onboarding helps agents FIND the spec in chaotic real-world scenarios
+
+**How to write it**: See `.claude/onboarding-guide.md` for detailed instructions. The guide includes a template and explains the "office tour" conversational style.
+
+**When to refine it**: After Sprint 1-2, update with actual document locations and workflow patterns that emerged.
+
+---
+
+### DEVLOG.md - Sprint Journal
+
+**Purpose**: Record what was built, why, and concerns for future
+
+**Location**: Project root or `./docs/DEVLOG.md`
+
+**Initial skeleton**:
+```markdown
+# Development Log - [Project Name]
+
+## Sprint 1 - [Title from Spec]
+
+[This will be filled in during implementation]
+```
+
+**What gets added each sprint**:
+- Summary of what was built
+- Decisions made (choice, rationale, tradeoffs)
+- Testing details (coverage, test count)
+- Concerns/risks identified
+- Questions for user
+- Preview of next sprint
+
+**Why create skeleton now**: Signals to implementation agent that DEVLOG updates are part of "done", not optional.
+
+**Format**: See sprint deliverables in spec Section 10 for what each DEVLOG entry should contain.
 
 ---
 
