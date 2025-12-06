@@ -1,6 +1,6 @@
 # Onboarding Guide
 
-**Purpose**: How to write an onboarding document that works as a universal entry point for any AI agent in any environment
+**Purpose**: How to write an onboarding document that works as a universal entry point for any AI agent in any environment (Claude, GPT, Gemini, etc.)
 
 ---
 
@@ -85,13 +85,13 @@ Welcome! You're here to help build [project description in one sentence].
 - If it doesn't exist yet: You may need to create it (see DEVLOG section below)
 
 **Handover:**
-- Common locations: `.claude/current-handover.md`, `handover.md`, `./docs/handover.md`
+- Common locations: `HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, `.claude/current-handover.md` (legacy), `./docs/handover.md`
 - What it contains: Current conversation context, where we are NOW
 - Note: User might have given you the handover directly in their message
 - If none exists: That's OK, start from spec and DEVLOG
 
 **Global Preferences (optional):**
-- Location: `.claude/global-preferences.md`
+- Common locations: `./docs/.agents/global-preferences.md`, `.agents/global-preferences.md`, `.claude/global-preferences.md` (legacy)
 - What it contains: How this human communicates and works
 - If it exists: Read it first before continuing here
 - If it doesn't exist: See "About This Human" section below
@@ -107,12 +107,12 @@ Welcome! You're here to help build [project description in one sentence].
 
 ### Section 3: About This Human
 
-**If `.claude/global-preferences.md` exists:**
+**If `./docs/.agents/global-preferences.md` exists (legacy aliases: `.agents/global-preferences.md`, `.claude/global-preferences.md`):**
 
 ```markdown
 ## About This Human
 
-See `.claude/global-preferences.md` for detailed communication style and preferences.
+See `./docs/.agents/global-preferences.md` for detailed communication style and preferences.
 
 **Quick summary for this project:**
 - [Any project-specific working style notes]
@@ -226,7 +226,7 @@ If documents don't exist yet, you may need to create them:
 
 **This is where you embed the handover instructions.** Every agent needs to know how to hand off, so include it here.
 
-**Pull the core content from `.claude/handover-guide.md` but adapt it to be more direct/instructional:**
+**Pull the core content from `./docs/.agents/handover-guide.md` (legacy: `.agents/handover-guide.md`, `.claude/handover-guide.md`) but adapt it to be more direct/instructional:**
 
 ```markdown
 ## Writing Handovers
@@ -237,8 +237,8 @@ If documents don't exist yet, you may need to create them:
 - Major milestone completed and natural breaking point
 
 **Where to write it:**
-- If `.claude/` folder exists: `.claude/current-handover.md`
-- Otherwise: `handover.md` in project root or docs folder
+- Preferred: `./docs/.agents/current-handover.md` or `HANDOVER.md` in project root
+- Legacy accepted: `.agents/current-handover.md` or `.claude/current-handover.md`
 - Or provide it to the user directly if they request it
 
 **What to include:**
@@ -366,6 +366,13 @@ npm run dev       # Start development server
 
 ---
 
+## Agent Ops (for onboarding authors)
+- Store agent-facing docs under `docs/.agents/`; project docs live in `docs/`.
+- If guides are copied locally, archive/delete them after use to save context: remove `docs/.agents/spec-writing-guide.md` once spec is written; remove `docs/.agents/onboarding-guide.md` once onboarding.md exists; remove `docs/.agents/ideation-protocol.md` after ideation. Keep `docs/.agents/handover-guide.md` and `docs/.agents/global-preferences.md`.
+- If handover exists (`HANDOVER.md` or `docs/.agents/current-handover.md`), edit in place rather than delete+recreate.
+
+---
+
 ## Template Skeleton
 
 Here's a starting template:
@@ -387,8 +394,8 @@ Welcome! You're here to help build [one sentence description].
 
 **Spec:** `spec.md`, `./docs/spec.md` - What we're building
 **DEVLOG:** `DEVLOG.md`, `./docs/devlog.md` - What's been built and why
-**Handover:** `.claude/current-handover.md`, `handover.md` - Current state (might be in user's message)
-**Global Preferences:** `.claude/global-preferences.md` - How this human works (if exists)
+**Handover:** `HANDOVER.md`, `./docs/.agents/current-handover.md` (legacy: `.agents/current-handover.md`, `.claude/current-handover.md`) - Current state (might be in user's message)
+**Global Preferences:** `./docs/.agents/global-preferences.md` (legacy: `.agents/global-preferences.md`, `.claude/global-preferences.md`) - How this human works (if exists)
 
 ---
 
@@ -422,7 +429,7 @@ Welcome! You're here to help build [one sentence description].
 ## Writing Handovers
 
 **When:** User requests it, when stuck, at milestones
-**Where:** `.claude/current-handover.md` or `handover.md`
+**Where:** `./docs/.agents/current-handover.md` or `HANDOVER.md` (legacy: `.agents/current-handover.md`, `.claude/current-handover.md`)
 
 **Include:**
 - Quick start (what to read)

@@ -1,6 +1,6 @@
 # Handover Guide
 
-**Purpose**: Enable smooth context resets by capturing what's not documented elsewhere
+**Purpose**: Enable smooth context resets by capturing what's not documented elsewhere. Works with any AI agent (Claude, GPT, Gemini, etc.).
 
 ---
 
@@ -16,11 +16,18 @@ You're about to hand off to a fresh AI session. Your job: **Capture the conversa
 
 ```bash
 # What docs are present?
-- [ ] .claude/onboarding.md (how to work with this human)
-- [ ] .claude/global-preferences.md (communication style)
+- [ ] onboarding.md (how to work with this human)
+- [ ] docs/.agents/global-preferences.md (communication style) — legacy aliases: `.agents/global-preferences.md`, `.claude/global-preferences.md`
 - [ ] SPEC.md or similar (what to build)
 - [ ] DEVLOG.md (what was built and why)
 - [ ] Code (actual implementation)
+
+**If paths are unclear, search these common locations:**
+- onboarding: `onboarding.md`, `./docs/onboarding.md`, `./docs/.agents/onboarding.md`, `.agents/onboarding.md`, `.claude/onboarding.md`
+- global preferences: `./docs/.agents/global-preferences.md`, `.agents/global-preferences.md`, `.claude/global-preferences.md`
+- handover: `HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, `.claude/current-handover.md`, `./docs/handover.md`
+- spec: `spec.md`, `SPEC.md`, `./docs/spec.md`, `./documentation/spec.md`
+- devlog: `DEVLOG.md`, `./docs/DEVLOG.md`, `./docs/devlog.md`
 ```
 
 **Adapt your handover based on what's missing.**
@@ -48,10 +55,10 @@ Use this template, adapting sections based on what exists:
 
 ### Quick Start
 
-**If `.claude/onboarding.md` exists:**
+**If onboarding exists:**
 ```
-New AI: Start by reading .claude/onboarding.md (how to work with this human)
-Then read .claude/global-preferences.md (communication style)
+New AI: Start by reading onboarding.md (how to work with this human)
+Then read docs/.agents/global-preferences.md (communication style) — legacy aliases: .agents/global-preferences.md or .claude/global-preferences.md
 Then come back here.
 ```
 
@@ -161,7 +168,7 @@ Tell the user:
 2. Briefly summarize what's captured
 3. Confirm it captures what they needed
 
-Save as: `.claude/current-handover.md` or `HANDOVER.md`
+Save as: `HANDOVER.md` (project root) or `./docs/.agents/current-handover.md`. Legacy aliases `.agents/current-handover.md` or `.claude/current-handover.md` are acceptable if already in use. **Edit in place** rather than deleting/recreating the file name (some IDEs have issues with delete+create in one turn).
 
 ---
 
@@ -169,9 +176,9 @@ Save as: `.claude/current-handover.md` or `HANDOVER.md`
 
 ### Step 1: Read in Order
 
-1. `.claude/global-preferences.md` (if exists) - Communication style
-2. `.claude/onboarding.md` (if exists) - How to work with this human
-3. **Handover document** - Current state and conversation context
+1. `./docs/.agents/global-preferences.md` (if exists) - Communication style (legacy: `.agents/global-preferences.md`, `.claude/global-preferences.md`)
+2. `onboarding.md` (if exists) - How to work with this human (look in root, `./docs`, `./docs/.agents`, `.agents/`, `.claude/`)
+3. **Handover document** - Current state and conversation context (`HANDOVER.md` or `./docs/.agents/current-handover.md`)
 4. `SPEC.md` (if exists) - What we're building
 5. `DEVLOG.md` (if exists) - What's been built
 
@@ -230,7 +237,7 @@ Once oriented, continue where the last session left off. The goal: user shouldn'
 # Handover - Quiz App
 
 ## Quick Start
-New AI: Read .claude/onboarding.md first, then come back here.
+New AI: Read onboarding.md first (look in root, docs/, or docs/.agents/; legacy alias .agents/ or .claude/), then come back here.
 
 ## Project Context
 Project: Quazy Quizzer (quiz app for kids)
@@ -290,6 +297,23 @@ Quiz engine currently assumes file paths work. Won't work in Electron packaging 
 Capture what a new AI needs to pick up the discussion where you left off, not just know what's been done.
 
 If incoming AI has to ask "why did we choose X?" or "what have we tried?", the handover failed.
+
+---
+
+## First-Agent Bootstrap (no docs exist yet)
+
+- Create `onboarding.md` with doc locations, workflow, and how to write handovers.
+- Create `DEVLOG.md` skeleton and note initial sprint.
+- If global preferences are provided, save to `./docs/.agents/global-preferences.md` (or `.agents/...` / `.claude/...` if already used).
+- If no spec is needed (meta project), say so explicitly; otherwise create `spec.md`.
+- Write a minimal `HANDOVER.md` capturing what you set up and any open decisions.
+
+## Fresh-Context Pickup (later agents)
+
+- Read in order: global preferences → onboarding → handover → spec → DEVLOG.
+- Verify the claimed paths exist; if not, search common locations and note fixes in the new handover.
+- Echo back understanding and planned next step; flag missing decisions or gaps.
+- Update `HANDOVER.md` when you pause, capturing conversation state and what was tried.
 
 ---
 

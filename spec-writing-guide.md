@@ -378,7 +378,7 @@ After writing the spec, reflect:
 ### Step 4: Finalize and Create Supporting Documents
 - Make any adjustments based on feedback
 - Save spec to project root (e.g., `SPEC.md` or `[project-name]-spec.md`)
-- **Create onboarding.md** - Universal entry point for any AI agent (see `.claude/onboarding-guide.md` for how)
+- **Create onboarding.md** - Universal entry point for any AI agent (see `./docs/.agents/onboarding-guide.md` for how; legacy aliases `.agents/onboarding-guide.md`, `.claude/onboarding-guide.md`)
 - **Create DEVLOG.md skeleton** - Initial structure for sprint documentation
 - Confirm user is ready to start implementation
 
@@ -402,7 +402,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 **What it contains**:
 - Welcome / project purpose (one sentence)
 - Document locations (with "planned fuzziness" - spec could be in multiple locations)
-- About this human (brief or pointer to `.claude/global-preferences.md`)
+- About this human (brief or pointer to `./docs/.agents/global-preferences.md` — legacy aliases `.agents/global-preferences.md`, `.claude/global-preferences.md`)
 - Workflow explanation (sprints, testing, DEVLOG updates)
 - How to write handovers (embedded instructions since every agent needs to know)
 - Project-specific quirks and gotchas
@@ -412,7 +412,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 - Onboarding = HOW to get started (navigation + process)
 - Onboarding helps agents FIND the spec in chaotic real-world scenarios
 
-**How to write it**: See `.claude/onboarding-guide.md` for detailed instructions. The guide includes a template and explains the "office tour" conversational style.
+**How to write it**: See `./docs/.agents/onboarding-guide.md` (legacy: `.agents/onboarding-guide.md`, `.claude/onboarding-guide.md`) for detailed instructions. The guide includes a template and explains the "office tour" conversational style.
 
 **When to refine it**: After Sprint 1-2, update with actual document locations and workflow patterns that emerged.
 
