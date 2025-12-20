@@ -26,22 +26,23 @@ This project emerged from a practical need during the development of the Quazy Q
 
 ## What's Inside
 
-### Foundational Guides
+### Foundational Modules
 
-These guides define how to work effectively with AI coding agents:
+Standardized guides for human-AI collaboration:
 
-- **`global-preferences.md`** - Communication style and cognitive preferences (customize for yourself)
-- **`ideation-protocol.md`** - How to conduct brainstorming conversations with AI
-- **`spec-writing-guide.md`** - How to write technical specifications (4-round process, examples over descriptions)
-- **`onboarding-guide.md`** - Universal entry point for AI agents joining a project (handles chaos, planned fuzziness)
-- **`handover-guide.md`** - How to write and use handover documents for context resets
+- **`genesis.md`** - Origins. How to ideate and write a spec. (Sprint 0 only).
+- **`lifecycle.md`** - Daily Ops. Orientation, testing, and context management for implementation.
+- **`global-preferences.md`** - Your personal communication style.
 
 ### Templates
 
-Structural templates for your projects:
+Skeletal structures for your project docs:
 
-- **`templates/project-spec-template.md`** - Standard sections for technical specifications
-- **`templates/testing-standards.md`** - Testing framework guide for AI-codes-and-tests scenario
+- **`templates/spec.md`** - Project specification.
+- **`templates/onboarding.md`** - Project entry point.
+- **`templates/devlog.md`** - Sprint journal.
+- **`templates/handover.md`** - In-flight context bridge.
+- **`templates/testing-recipes.md`** - Code snippets for tests.
 
 ---
 
@@ -56,6 +57,7 @@ Structural templates for your projects:
 **AI helps:** Ask questions, suggest approaches, challenge assumptions
 
 **Output:**
+
 - `spec.md` - What to build
 - `onboarding.md` - How to work on this project
 - `DEVLOG.md` - Empty skeleton for sprint notes
@@ -67,6 +69,7 @@ Structural templates for your projects:
 **You do:** Review DEVLOG entries to verify assumptions, test happy path
 
 **Guidance:**
+
 - AI follows `testing-standards.md` for testing approach
 - Each sprint: implement → test immediately → document in DEVLOG → commit
 - Tests prove AI got it right (integration tests prevent over-mocking)
@@ -83,6 +86,7 @@ Structural templates for your projects:
 **You do:** Start fresh session when ready
 
 **New AI reads:**
+
 1. `onboarding.md` - How to work on this project
 2. `global-preferences.md` - How to communicate with this human
 3. Current handover - Where things stand
@@ -130,41 +134,39 @@ No sugarcoating. "User can handle the truth." DEVLOG concerns are action items, 
 
 ## Getting Started with Your Project
 
-### 1. Copy the guides you need:
+### 1. Copy the modules you need
 
 ```bash
 # In your project root:
 mkdir docs/.agents
 
-# Copy core guides (customize global-preferences for yourself):
+# Copy core modules (customize global-preferences for yourself):
 cp human-training/docs/.agents/global-preferences.md docs/.agents/
-cp human-training/onboarding-guide.md docs/.agents/
-cp human-training/handover-guide.md docs/.agents/
-cp human-training/spec-writing-guide.md docs/.agents/
+cp human-training/docs/.agents/lifecycle.md docs/.agents/
 
-# Optional: ideation protocol if starting from scratch
-cp human-training/ideation-protocol.md docs/.agents/
+# If starting from scratch (Sprint 0):
+cp human-training/docs/.agents/genesis.md docs/.agents/
 ```
 
-### 2. Write your spec:
+### 2. Follow Genesis to write your spec
 
 ```bash
-# Copy template
-cp human-training/templates/project-spec-template.md ./spec.md
+# Read genesis.md and use the templates:
+cp human-training/docs/.agents/templates/spec.md docs/.agents/
 
-# Fill in all sections following spec-writing-guide.md
-# Include: architecture, data schemas (with JSON examples!), sprint plan
+# Fill in all sections following genesis.md
+# DELETE genesis.md once the spec is approved.
 ```
 
-### 3. Create onboarding:
+### 3. Create onboarding
 
-Follow `spec-writing-guide.md` Step 4 to create `onboarding.md` for your project. This becomes the universal entry point for any AI agent.
+Follow `genesis.md` to create `onboarding.md` using the template at `human-training/docs/.agents/templates/onboarding.md`.
 
-### 4. Start implementing:
+### 4. Start implementing
 
 Tell your AI agent: "Read onboarding.md and let's start Sprint 1"
 
-AI will follow testing-standards.md for testing, update DEVLOG.md after each sprint, and maintain handovers when needed.
+AI will follow lifecycle.md for testing and documentation.
 
 ---
 
@@ -181,28 +183,34 @@ This meta-project (human-training) follows its own workflow:
 This is how a human should use these docs for a new project.
 
 1) Ideation → “ready to spec”
+
 - Brainstorm the idea (Connect-5). If useful, follow `ideation-protocol.md`.
 - Outcome: clear goal, constraints, and agreement to write a spec.
 
 2) Write the spec (what to build)
+
 - Start from `templates/project-spec-template.md`.
 - Follow `spec-writing-guide.md` to fill in: overview, success criteria, tech stack, architecture/modules, data models with examples, sprint plan, testing requirements, constraints/out-of-scope.
 - Save as `spec.md` (root or `./docs/`). Keep it living.
 
 3) Write onboarding (how to start)
+
 - Create `onboarding.md` (root or `./docs/`) using `onboarding-guide.md`.
 - Include doc locations (with planned fuzziness), about this human (or point to `docs/.agents/global-preferences.md`), workflow (sprints, testing, DEVLOG), handover instructions, and project-specific notes.
 
 4) Create DEVLOG skeleton
+
 - Add `DEVLOG.md` with Sprint 1 heading from the spec. Fill entries each sprint (summary, decisions/tradeoffs, testing, risks, next sprint).
 
 5) Implementation cycles (per sprint)
+
 - Agent read order (recommended): onboarding → global preferences → handover (if present) → spec → DEVLOG.
 - Implement sprint scope; write tests as part of “done.”
 - Update `DEVLOG.md` for the sprint.
 - If pausing/resetting, update `HANDOVER.md` (or `docs/.agents/current-handover.md`) with conversation context, decisions in flight, what was tried, and next steps.
 
 6) Iterate and finish
+
 - Complete sprints, keep spec updated when plans change, and keep onboarding current if doc locations/workflow change.
 - When done: finalize DEVLOG, ensure spec reflects as-built, optionally add a user-facing README for the app, and leave a final HANDOVER if handing off for maintenance.
 
@@ -227,16 +235,19 @@ connect-5/
 ```
 
 Notes on cleanup:
+
 - Agent-facing guides (ideation, spec-writing, onboarding guides) can be archived or deleted after they’re used to reduce context clutter. Keep handover-guide for repeated use.
 - If your IDE dislikes delete+create in one turn, edit files in place rather than replacing them.
 
 ### Agent Ops (quick reference)
+
 - If `docs/.agents/` is missing, create it and move global-preferences there.
 - Prefer editing handover in place (`HANDOVER.md` or `docs/.agents/current-handover.md`), not delete+recreate.
 - After you’ve produced the real project docs, archive/delete helper guides (ideation, spec-writing, onboarding guides); keep handover-guide.
 - Store agent-facing docs under `docs/.agents/`; project-facing docs live in `docs/`.
 
 ### Archiving helper guides
+
 - When spec is written: remove or archive `docs/.agents/spec-writing-guide.md`.
 - When onboarding.md is written: remove or archive `docs/.agents/onboarding-guide.md`.
 - When ideation is done: remove or archive `docs/.agents/ideation-protocol.md` (if copied).

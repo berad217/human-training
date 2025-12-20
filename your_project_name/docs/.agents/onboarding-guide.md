@@ -16,11 +16,24 @@
 
 ---
 
+## Environment Detection
+
+**Know where you are.** Different tools have different strengths. Before you start, try to identify your "home":
+
+- **Cursor/Windsurf**: High IDE integration. You can see many files, run terminal commands, and have a long-lived session.
+- **Claude Code (CLI)**: Fast, terminal-centric. Very good at search and bulk edits.
+- **Web App (Claude.ai/Gemini/GPT)**: Might have MCP access to files. Less terminal control, but often "smarter" about high-level design.
+
+**Tip:** If you're in a specialized environment (like Cursor), use its features (like codebase search) instead of just `grep`.
+
+---
+
 ## When to Write Onboarding
 
 **During spec writing** - Create the initial version when writing the spec. The spec-writing-guide includes creating an onboarding document as one of its deliverables.
 
 **Refine during Sprint 1-2** - After working together for a bit, update with:
+
 - Actual document locations (not guesses)
 - Workflow patterns that emerged
 - Any quirks or preferences specific to this project
@@ -76,19 +89,23 @@ Welcome! You're here to help build [project description in one sentence].
 
 **Spec/Specification:**
 - Common locations: `spec.md`, `SPEC.md`, `./docs/spec.md`, `./documentation/spec.md`
-- What it contains: Technical specification, what we're building, architecture
-- If you can't find it: Ask the user
+- What it contains: Technical specification, architecture, **Visual Identity**, and the **Sprint Plan**.
+- If you can't find it: Ask the user.
 
 **DEVLOG:**
 - Common locations: `DEVLOG.md`, `./docs/devlog.md`, `./docs/DEVLOG.md`
-- What it contains: Sprint-by-sprint record of what was built and why
-- If it doesn't exist yet: You may need to create it (see DEVLOG section below)
+- What it contains: Sprint-by-sprint record of what was built and why.
+- If it doesn't exist yet: You may need to create it (see DEVLOG section below).
 
 **Handover:**
 - Common locations: `HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, `.claude/current-handover.md` (legacy), `./docs/handover.md`
-- What it contains: Current conversation context, where we are NOW
-- Note: User might have given you the handover directly in their message
-- If none exists: That's OK, start from spec and DEVLOG
+- What it contains: Current conversation context, where we are NOW, and the **Parking Lot** for deferred ideas.
+- Note: User might have given you the handover directly in their message.
+- If none exists: That's OK, start from spec and DEVLOG.
+
+**Ideation Protocol (meta):**
+- Common locations: `./docs/.agents/ideation-protocol.md`
+- What it contains: How we brainstorm. Check for **Red Teaming** notes if we're pivot-testing.
 
 **Global Preferences (optional):**
 - Common locations: `./docs/.agents/global-preferences.md`, `.agents/global-preferences.md`, `.claude/global-preferences.md` (legacy)
@@ -98,6 +115,7 @@ Welcome! You're here to help build [project description in one sentence].
 ```
 
 **Key principles:**
+
 - List common locations, not just one
 - Explain what each doc contains
 - Handle the "not found" case gracefully
@@ -138,6 +156,26 @@ See `./docs/.agents/global-preferences.md` for detailed communication style and 
 
 ---
 
+## Context Hygiene
+
+**Don't drown in data.** Even with large context windows, focus is key:
+
+1. **Be lazy**: Don't read a 1000-line file until you need to edit it.
+2. **Summaries first**: Prefer `view_file_outline` or `list_dir` to understand structure before deep-diving.
+3. **Reference, don't copy**: If you mention a doc, just name it. Don't dump its entire content back into the conversation unless requested.
+
+---
+
+## Joining a "Moving Train"
+
+If you're joining mid-project (not Sprint 1):
+
+1. **Read the latest DEVLOG entry**: This tells you the most recent technical baggage.
+2. **Read the current Handover**: This tells you what's currently "breaking" or being debated.
+3. **Verify the build**: Run the tests. Don't trust that the project is in a working state until the terminal proves it.
+
+---
+
 ### Section 4: The Workflow
 
 **Explain how work actually happens on this project:**
@@ -151,6 +189,11 @@ See `./docs/.agents/global-preferences.md` for detailed communication style and 
 3. **Update DEVLOG** with decisions, rationale, and concerns
 4. **Commit together** (code + tests + docs in one commit)
 5. **One sprint at a time** - complete current work before starting next
+
+**The Confidence Bar (When to stop):**
+- **HIGH CONFIDENCE**: Routine task, follows spec exactly. -> *Just do it.*
+- **MODERATE CONFIDENCE**: Spec is ambiguous, but there's a clear "best" path. -> *Do it, but highlight in DEVLOG.*
+- **LOW CONFIDENCE**: Multiple valid paths with significant tradeoffs, or spec is silent. -> **STOP. Propose 2-3 options to the human and wait.**
 
 **Testing approach:**
 - Framework: [Vitest/Jest/pytest/etc.]
@@ -170,6 +213,7 @@ See `./docs/.agents/global-preferences.md` for detailed communication style and 
 ```
 
 **Customize this section** based on:
+
 - Tech stack
 - Testing philosophy
 - How hands-on the human is
@@ -181,7 +225,7 @@ See `./docs/.agents/global-preferences.md` for detailed communication style and 
 
 **Handle the case where the agent is setting up the project:**
 
-```markdown
+````markdown
 ## If You're the First Agent (Sprint 1)
 
 If documents don't exist yet, you may need to create them:
@@ -193,32 +237,35 @@ If documents don't exist yet, you may need to create them:
 ## Sprint 1 - [Title]
 
 **Summary:**
-- [What you built]
+-   [What you built]
 
 **Decisions:**
-- **[Topic]**: Chose [X] because [rationale]. Tradeoffs: [what was sacrificed]
+-   **[Topic]**: Chose [X] because [rationale]. Tradeoffs: [what was sacrificed]
 
 **Testing:**
-- [Test coverage details]
+-   [Test coverage details]
 
 **Concerns/Risks:**
-- [Honest assessment of potential issues]
+-   [Honest assessment of potential issues]
 
 **Next Sprint:**
-- [Preview of upcoming work]
+-   [Preview of upcoming work]
 ```
 
 **README.md:**
-- How to install dependencies
-- How to run the project
-- How to run tests
-- Basic project description
+
+-   How to install dependencies
+-   How to run the project
+-   How to run tests
+-   Basic project description
 
 **Test infrastructure:**
-- Set up testing framework per spec requirements
-- Create initial test file(s)
-- Ensure `npm test` or equivalent works
-```
+
+-   Set up testing framework per spec requirements
+-   Create initial test file(s)
+-   Ensure `npm test` or equivalent works
+
+````
 
 ---
 
@@ -232,14 +279,14 @@ If documents don't exist yet, you may need to create them:
 ## Writing Handovers
 
 **When to write a handover:**
-- User asks you to prepare a handover
-- You're stuck and need to hand off to a fresh agent
-- Major milestone completed and natural breaking point
+-   User asks you to prepare a handover
+-   You're stuck and need to hand off to a fresh agent
+-   Major milestone completed and natural breaking point
 
 **Where to write it:**
-- Preferred: `./docs/.agents/current-handover.md` or `HANDOVER.md` in project root
-- Legacy accepted: `.agents/current-handover.md` or `.claude/current-handover.md`
-- Or provide it to the user directly if they request it
+-   Preferred: `./docs/.agents/current-handover.md` or `HANDOVER.md` in project root
+-   Legacy accepted: `.agents/current-handover.md` or `.claude/current-handover.md`
+-   Or provide it to the user directly if they request it
 
 **What to include:**
 
@@ -256,6 +303,7 @@ New agent:
 ```
 
 ### 2. Project Context (Brief)
+
 ```markdown
 ## Project Context
 Project: [name]
@@ -264,6 +312,7 @@ Current branch: [git branch name if relevant]
 ```
 
 ### 3. What Was Accomplished
+
 ```markdown
 ## This Session's Accomplishments
 - [Concrete completed work]
@@ -272,7 +321,9 @@ Current branch: [git branch name if relevant]
 ```
 
 ### 4. Conversation Context (MOST IMPORTANT)
+
 **This is what's NOT in other docs:**
+
 ```markdown
 ## Conversation Context
 
@@ -293,6 +344,7 @@ Current branch: [git branch name if relevant]
 ```
 
 ### 5. Next Steps
+
 ```markdown
 ## Next Steps
 
@@ -304,7 +356,10 @@ Current branch: [git branch name if relevant]
 - Sprint N+1: [Brief description]
 ```
 
+````markdown
 ### 6. What NOT to Include
+
+```markdown
 ❌ Don't duplicate what's in spec, DEVLOG, or code
 ❌ Don't copy/paste large code snippets
 ❌ Don't write a novel - be concise
@@ -312,6 +367,7 @@ Current branch: [git branch name if relevant]
 ✅ DO reference other docs: "See DEVLOG Sprint 4 for details"
 ✅ DO be honest about problems and unknowns
 ```
+````
 
 **Tone for handover instructions:** More direct than the handover-guide itself, since this is embedded in the working doc, not a meta-guide.
 
@@ -338,8 +394,10 @@ npm run dev       # Start development server
 ```
 
 **Gotchas:**
+
 - [Thing that might trip up a new agent]
 - [Weird configuration detail to be aware of]
+
 ```
 
 ---
@@ -392,16 +450,10 @@ Welcome! You're here to help build [one sentence description].
 
 **Look for these documents (locations may vary):**
 
-**Spec:** `spec.md`, `./docs/spec.md` - What we're building
-**DEVLOG:** `DEVLOG.md`, `./docs/devlog.md` - What's been built and why
-**Handover:** `HANDOVER.md`, `./docs/.agents/current-handover.md` (legacy: `.agents/current-handover.md`, `.claude/current-handover.md`) - Current state (might be in user's message)
-**Global Preferences:** `./docs/.agents/global-preferences.md` (legacy: `.agents/global-preferences.md`, `.claude/global-preferences.md`) - How this human works (if exists)
-
----
-
-## About This Human
-
-[Brief description or pointer to global-preferences.md]
+- **Spec:** `spec.md`, `./docs/spec.md` - Technical specification & **Visual Identity**.
+- **DEVLOG:** `DEVLOG.md`, `./docs/devlog.md` - What's been built and why.
+- **Handover:** `HANDOVER.md`, `./docs/.agents/current-handover.md` - Current state & **Parking Lot**.
+- **Global Preferences:** `./docs/.agents/global-preferences.md` - How this human works (if exists).
 
 ---
 
@@ -412,35 +464,27 @@ Welcome! You're here to help build [one sentence description].
 2. Write tests immediately
 3. Update DEVLOG with decisions
 4. Commit together
-5. One sprint at a time
+
+**The Confidence Bar:**
+- **HIGH**: Routine task -> Just do it.
+- **MODERATE**: Ambiguous but clear best path -> Highlight in DEVLOG.
+- **LOW**: Significant tradeoffs -> STOP and ask human.
 
 **Testing:** [Framework, expectations]
-**Documentation:** [What to update, when]
-**Communication:** [How to handle questions, tone]
-
----
-
-## If You're the First Agent
-
-[Instructions for creating DEVLOG, README, test infrastructure if they don't exist]
+**Context Management:** [e.g., "Don't read large files until needed"]
 
 ---
 
 ## Writing Handovers
 
 **When:** User requests it, when stuck, at milestones
-**Where:** `./docs/.agents/current-handover.md` or `HANDOVER.md` (legacy: `.agents/current-handover.md`, `.claude/current-handover.md`)
+**Where:** `./docs/.agents/current-handover.md` or `HANDOVER.md`
 
 **Include:**
 - Quick start (what to read)
 - This session's accomplishments
-- Conversation context (discussions, decisions in flight, what was tried)
+- **Conversation context** (discussions, decisions in flight, what was tried)
 - Next steps
-
-**Don't include:**
-- Duplicating spec/DEVLOG/code
-- Long code snippets
-- Unnecessary detail
 
 ---
 
@@ -470,6 +514,7 @@ Welcome! You're here to help build [one sentence description].
 ## Refinement During Project
 
 **After Sprint 1-2, update with:**
+
 - Actual document locations (remove guesses that were wrong)
 - Workflow patterns that emerged
 - Any surprises or gotchas discovered
@@ -484,6 +529,7 @@ Welcome! You're here to help build [one sentence description].
 **This guide is for the meta-project.** When you create an onboarding.md for an actual project, you're adapting this guidance into a concrete document for that specific project.
 
 **Onboarding vs other docs:**
+
 - **Global preferences** - Who the human is (reusable across projects)
 - **Onboarding** - How to work on THIS project (project-specific entry point)
 - **Spec Section 11** - Technical implementation constraints (engineering rules)

@@ -23,6 +23,7 @@ After ideation conversation reaches "ready to build" decision:
 **Primary audience**: AI coding agent (possibly different session, zero shared context)
 
 **Requirements:**
+
 - Coding agent should be able to implement without asking clarifying questions
 - Must be concrete enough to prevent assumption drift
 - Must be flexible enough to allow discovery during implementation
@@ -37,6 +38,7 @@ After ideation conversation reaches "ready to build" decision:
 ### 1. Project Overview
 
 **What to include:**
+
 - **Name** - Actual project name
 - **Purpose** - One sentence: what it does OR why it's cool
 - **Context** - Why this exists (problem it solves, learning goal, just for fun)
@@ -46,7 +48,22 @@ After ideation conversation reaches "ready to build" decision:
 
 ---
 
-### 2. Success Criteria (Definition of Done)
+### 2. Visual Identity & UX Vibes
+
+**Don't ignore aesthetics** - A project that looks premium is more fun to build and use.
+
+**What to include:**
+
+- **The "Vibe"** - One or two words (e.g., "Glassmorphism", "Brutalist", "Neon Minimalist").
+- **Core Palette** - Primary/Secondary colors with hex codes or a link to a palette.
+- **Typography** - Suggested font family (e.g., "Outfit", "Inter").
+- **Key Visual Cues** - Subtle shadows, specific border radii, or micro-animations.
+
+**Why?** Prevents the agent from building a generic, bland UI. Forces design intent early.
+
+---
+
+### 3. Success Criteria (Definition of Done)
 
 **Critical section** - This human struggles with mission creep. Define success clearly:
 
@@ -55,7 +72,8 @@ After ideation conversation reaches "ready to build" decision:
 - **How do you know it's working?**
 
 **Format as checklist:**
-```
+
+```markdown
 Project is complete when:
 - [ ] User can [specific action]
 - [ ] System handles [specific scenario]
@@ -63,7 +81,8 @@ Project is complete when:
 ```
 
 **Example:**
-```
+
+```markdown
 Quiz app is complete when:
 - [ ] User can load quiz from JSON file
 - [ ] User can answer all question types
@@ -73,7 +92,7 @@ Quiz app is complete when:
 
 ---
 
-### 3. Technical Foundation
+### 4. Technical Foundation
 
 **Be prescriptive** - Decided during ideation, don't make coding agent guess:
 
@@ -87,7 +106,7 @@ Quiz app is complete when:
 
 ---
 
-### 4. Architecture & Modules
+### 5. Architecture & Modules
 
 **Show the mental model:**
 
@@ -97,7 +116,8 @@ Quiz app is complete when:
 - **Module boundaries** - What's separate from what
 
 **Example:**
-```
+
+```markdown
 Core components:
 1. Config Loader - Loads/validates configuration (no UI dependencies)
 2. Quiz Engine - Manages quiz state (no file I/O, uses loaded data)
@@ -108,7 +128,8 @@ Philosophy: Each component is testable in isolation. No "epoxy" coupling.
 ```
 
 **Visual structure** - Show actual file tree:
-```
+
+```text
 /project-root
   /src
     /config
@@ -126,16 +147,18 @@ This prevents file structure mismatch.
 
 ---
 
-### 5. Data Models (Show, Don't Tell)
+### 6. Data Models (Show, Don't Tell)
 
 **CRITICAL**: Use concrete examples, not descriptions.
 
 **Bad:**
-```
+
+```text
 Config file with app settings and theme options
 ```
 
 **Good:**
+
 ```json
 // config/app.config.json
 {
@@ -151,6 +174,7 @@ Config file with app settings and theme options
 ```
 
 **Show:**
+
 - Actual JSON structure
 - Example values
 - All fields (required and optional)
@@ -158,6 +182,7 @@ Config file with app settings and theme options
 - Nested structures
 
 **For each data model:**
+
 - What file/location
 - What it represents
 - Validation rules (if any)
@@ -165,9 +190,9 @@ Config file with app settings and theme options
 
 ---
 
-### 6. Sprint Breakdown
+### 7. Sprint Breakdown
 
-**Philosophy**: Flexible granularity. Sprints should be completable in one focused session but allow for context resets between sprints.
+**Philosophy**: Flexible granularity. Sprints should be completable in one focused session (~2-3 hours of work) but allow for context resets between sprints. If a goal seems too large, split it into Sprint A and Sprint B.
 
 **For each sprint:**
 
@@ -176,17 +201,20 @@ Config file with app settings and theme options
 **Goal**: [One sentence - what should work after this sprint]
 
 **Success Criteria** (testable outcomes):
+
 - ✓ [Specific behavior works]
 - ✓ [Specific scenario handled]
 - ✓ [Specific validation works]
 - ✓ [Error cases covered]
 
 **Deliverables**:
+
 - [Concrete artifact - file, component, module]
 - [Tests proving success criteria]
 - [DEVLOG entry documenting decisions]
 
 **Testing Guidance**:
+
 - Test count target: ~X-Y tests
 - Types: Unit / Integration / Component
 - Coverage: All success criteria must be validated
@@ -229,24 +257,27 @@ Quiz loader is independent of UI. Takes file path, returns validated Quiz object
 
 ---
 
-### 7. Testing Strategy
+### 8. Testing Strategy
 
 **Testing is non-negotiable.** Make this explicit:
 
 **Framework**: [Specified in Technical Foundation]
 
 **Requirements**:
+
 - Tests written **during** sprint, not after
 - Sprint not complete until tests passing
 - Tests committed with implementation code
 - Tests must validate actual behavior, not just exist
 
 **Test Types**:
+
 - **Unit tests**: Business logic, utilities, data transformations
 - **Integration tests**: APIs, module interactions
 - **Component tests**: UI rendering, user interactions
 
 **Coverage expectations**:
+
 - Business logic: High coverage (most functions tested)
 - UI components: Reasonable coverage (main paths tested)
 - Integration points: All critical flows tested
@@ -255,11 +286,12 @@ Quiz loader is independent of UI. Takes file path, returns validated Quiz object
 
 ---
 
-### 8. Constraints & Boundaries
+### 9. Constraints & Boundaries
 
 **Explicit rules for coding agent:**
 
 **Do:**
+
 - ✅ Follow this spec
 - ✅ Write tests for each sprint
 - ✅ Document decisions in DEVLOG
@@ -267,6 +299,7 @@ Quiz loader is independent of UI. Takes file path, returns validated Quiz object
 - ✅ Propose better approaches if spec has issues
 
 **Do NOT:**
+
 - ❌ Add features not in spec (no "helpful" additions)
 - ❌ Skip tests or defer them
 - ❌ Make speculative features
@@ -274,6 +307,7 @@ Quiz loader is independent of UI. Takes file path, returns validated Quiz object
 - ❌ Make major technical decisions without documenting
 
 **Module coupling guidelines** (when applicable):
+
 - Prefer loose coupling when feasible
 - Each module should be testable in isolation
 - Avoid "epoxy" coupling that makes changes hard
@@ -281,35 +315,42 @@ Quiz loader is independent of UI. Takes file path, returns validated Quiz object
 
 ---
 
-### 9. Out of Scope
+### 10. Out of Scope
 
 **Explicitly list what we're NOT building:**
 
 This prevents scope creep and helps coding agent know boundaries.
 
-**Future Possibilities** (Parking Lot):
-- Ideas that came up but deferred
-- Potential extensions
-- Nice-to-haves that aren't V1
+**Future Possibilities** (Parking Lot): Use the 🅿️ Parking Lot format to capture deferred ideas so they aren't lost:
+
+#### 🅿️ Parking Lot: [Idea Name]
+
+- **The Core Idea**: [One sentence summary]
+- **The Potential Value**: [Why it's cool/useful]
+- **The Blocker/Reason to Wait**: [Why we aren't building it now]
+- **Required Context**: [Key technology or insight needed to resurrect]
 
 **Known Limitations We're Accepting**:
+
 - Things we know won't work perfectly but are OK with
 - Tradeoffs we consciously made
 
 ---
 
-### 10. Spec Maintenance
+### 11. Spec Maintenance
 
 **Living Document Philosophy:**
 
 This spec is **not frozen**. Implementation is a discovery process.
 
 **When implementation reveals better approach:**
+
 1. Update spec to reflect new approach
 2. Document change in DEVLOG with rationale
 3. Spec should reflect as-built, not just as-planned
 
 **Process:**
+
 - Coding agent notices spec issue during implementation
 - Proposes change with rationale
 - Gets approval
@@ -320,23 +361,26 @@ This spec is **not frozen**. Implementation is a discovery process.
 
 ---
 
-### 11. Meta-Feedback (Continuous Improvement)
+### 12. Meta-Feedback (Continuous Improvement)
 
 **This section is for YOU (the AI writing the spec) to provide feedback on this spec-writing process.**
 
 After writing the spec, reflect:
 
 **What worked well:**
+
 - Which sections of this guide were helpful?
 - What made the spec clear and actionable?
 - What from ideation conversation translated smoothly?
 
 **What was difficult:**
+
 - Which sections were unclear or hard to write?
 - What guidance was missing from this template?
 - Where did you have to guess or make assumptions?
 
 **Suggestions for improvement:**
+
 - How could this guide be better?
 - What sections should be added/removed/changed?
 - What examples would help future AIs write better specs?
@@ -360,10 +404,12 @@ After writing the spec, reflect:
 ## Writing Process
 
 ### Step 1: Confirm Readiness
+
 - "Based on our ideation conversation, I'm ready to write the spec. Should I proceed?"
 - Wait for explicit approval
 
 ### Step 2: Draft the Spec
+
 - Use structure above
 - Pull details from ideation conversation
 - Add concrete examples (JSON, file trees, etc.)
@@ -371,11 +417,13 @@ After writing the spec, reflect:
 - Break into sprints with good handover context
 
 ### Step 3: Review with User
+
 - Present the spec (or key sections)
 - Ask clarifying questions if needed
 - "Does this capture what we discussed?"
 
 ### Step 4: Finalize and Create Supporting Documents
+
 - Make any adjustments based on feedback
 - Save spec to project root (e.g., `SPEC.md` or `[project-name]-spec.md`)
 - **Create onboarding.md** - Universal entry point for any AI agent (see `./docs/.agents/onboarding-guide.md` for how; legacy aliases `.agents/onboarding-guide.md`, `.claude/onboarding-guide.md`)
@@ -383,6 +431,7 @@ After writing the spec, reflect:
 - Confirm user is ready to start implementation
 
 ### Step 5: Provide Meta-Feedback
+
 - Tell user what worked/what was tricky in writing this spec
 - Document process notes in spec itself
 - This helps improve templates for future projects
@@ -400,6 +449,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 **Location**: Project root or `./docs/onboarding.md`
 
 **What it contains**:
+
 - Welcome / project purpose (one sentence)
 - Document locations (with "planned fuzziness" - spec could be in multiple locations)
 - About this human (brief or pointer to `./docs/.agents/global-preferences.md` — legacy aliases `.agents/global-preferences.md`, `.claude/global-preferences.md`)
@@ -408,6 +458,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 - Project-specific quirks and gotchas
 
 **Why separate from spec**:
+
 - Spec = WHAT to build (technical details)
 - Onboarding = HOW to get started (navigation + process)
 - Onboarding helps agents FIND the spec in chaotic real-world scenarios
@@ -425,6 +476,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 **Location**: Project root or `./docs/DEVLOG.md`
 
 **Initial skeleton**:
+
 ```markdown
 # Development Log - [Project Name]
 
@@ -434,6 +486,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 ```
 
 **What gets added each sprint**:
+
 - Summary of what was built
 - Decisions made (choice, rationale, tradeoffs)
 - Testing details (coverage, test count)
@@ -462,14 +515,16 @@ When you write the spec, you're also creating the foundation for the entire proj
 ## Example: Good vs Bad Sprint
 
 **Bad Sprint:**
-```
+
+```markdown
 Sprint 2: Build the quiz system
 - Implement quiz functionality
 - Add tests
 ```
 
 **Good Sprint:**
-```
+
+```markdown
 Sprint 2: Quiz Loader & Validator
 
 Goal: Load quiz files and validate structure
@@ -497,6 +552,7 @@ Context: Quiz loader is independent of UI. Next sprint will use loaded quiz data
 ## Remember
 
 You're writing this spec for **another AI with zero context**. Make it:
+
 - **Concrete** - Examples, not descriptions
 - **Clear** - Unambiguous success criteria
 - **Complete** - Enough detail to implement without guessing

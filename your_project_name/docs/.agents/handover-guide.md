@@ -8,7 +8,19 @@
 
 ### When User Requests Handover
 
-You're about to hand off to a fresh AI session. Your job: **Capture the conversation context that doesn't live anywhere else.**
+You're about to hand off to a fresh AI session. Your job: **Capture the "Ephemeral Delta"—the conversation context that doesn't live in the files yet.**
+
+### The Handover Philosophy: Ephemeral Delta
+
+A handover is NOT a status report. It is a bridge.
+
+- **Record**: Files, Spec, DEVLOG, Tests (Permanent).
+- **Bridge**: Handover (Temporary).
+
+**Rule**: If it is in a file, it does NOT belong in the handover.
+**Rule**: Once a decision is committed to a file, DELETE it from the handover.
+
+---
 
 ### Step 1: Inventory What Exists
 
@@ -47,172 +59,78 @@ Different docs serve different purposes:
 
 ### Step 3: Write the Handover
 
-Use this template, adapting sections based on what exists:
+Use this lean template. If a section is already covered by a file, **delete the section.**
 
 ---
 
 ## Handover Template
 
-### Quick Start
+### 1. Orientation (2 Sentences Max)
 
-**If onboarding exists:**
-```
-New AI: Start by reading onboarding.md (how to work with this human)
-Then read docs/.agents/global-preferences.md (communication style) — legacy aliases: .agents/global-preferences.md or .claude/global-preferences.md
-Then come back here.
+```markdown
+New AI: Oriented via onboarding.md. We are in Implementation Phase, Sprint 4.
 ```
 
-**If onboarding doesn't exist:**
-```
-New AI: This human [brief description - direct communication, non-professional coder, values intellectual honesty, etc.]
-```
+### 2. The Delta (Conversation Context)
 
-### Project Context
+**Strictly what is NOT in the files:**
 
-**If SPEC.md exists:**
-```
-Project: [name]
-Spec: SPEC.md (read sections [X-Y] for current work)
-Phase: [Ideation / Spec writing / Implementation]
-```
+- **Active Debates**: "We are choosing between X and Y. User leans Z but is worried about [Tradeoff]."
+- **Failed Paths**: "Approach A failed because [Reason]. Don't try it again."
+- **In-Flight Issues**: "Extracting the engine logic but stopped at the event handler. Code is currently broken in `engine.ts`."
 
-**If no spec:**
-```
-Project: [name and purpose]
-Current goal: [what we're trying to build]
-Decisions made: [key technical choices]
-```
+### 3. Next Steps (Specific)
 
-### Where We Are
-
-**If DEVLOG.md exists:**
-```
-Implementation progress: See DEVLOG.md
-Last completed: Sprint [N] - [brief summary]
-Current work: Sprint [N+1] - [what we're working on]
-```
-
-**If no DEVLOG:**
-```
-What's been built:
-- [Component/feature]
-- [Component/feature]
-
-What's working: [current state]
-What's not done: [remaining work]
-```
-
-### Conversation Context (CRITICAL SECTION)
-
-**This is the heart of the handover.** Capture what's NOT in other docs:
-
-**Active discussion:**
-- What problem/question were we working through?
-- What approaches have we considered?
-- What have we tried that didn't work?
-- What are we stuck on?
-
-**Decisions in flight:**
-- What are we trying to decide?
-- What are the options on the table?
-- What tradeoffs are we weighing?
-
-**Example:**
-```
-We were refactoring the quiz engine to separate state management from rendering.
-Discussed 3 approaches:
-1. Lift state to parent component (simple but couples everything)
-2. Use React Context (cleaner but might be overkill)
-3. Custom state manager (flexible but more code)
-
-Concern: Current approach tightly couples quiz logic to UI components, making testing hard.
-We haven't decided yet - need to discuss tradeoffs.
-
-Also discovered: File path resolution won't work when we package as Electron app.
-Parked for now but will need to address in Sprint 6.
-```
-
-### Red Flags / Warnings
-
-**Things that might bite us:**
-- Technical debt we're aware of
-- Known issues we're accepting for now
-- Decisions we made that we're not 100% confident about
-- Dependencies that might be problematic
-
-### Next Steps
-
-**Immediate actions for next session:**
-1. [First thing to do]
-2. [Second thing to do]
-3. [Third thing to do]
-
-Be specific. Not "continue working on quiz engine" but "Finish state management refactor, then write tests for quiz progression logic."
+1. [Next immediate task]
+2. [Task following that]
 
 ---
 
-### Step 4: Keep It Lean
+### Step 4: The Overwrite Rule
 
-**Don't duplicate what's already documented.**
+**CRITICAL**: NEVER delete and recreate the handover file in the same turn. Many IDEs will fail to process the new file.
 
-- If it's in the spec → reference the spec
-- If it's in DEVLOG → reference the DEVLOG
-- If it's in code comments → reference the file
+1. **Always overwrite** the existing `HANDOVER.md` or `current-handover.md`.
+2. Do not change the filename unless the user explicitly requests it.
+3. If no file exists, create it. If it exists, edit it.
 
-**Only elaborate on ephemeral conversation context.**
+### Step 5: Context Hygiene & Pruning
 
-### Step 5: Deliver the Handover
+As soon as a task is done and the DEVLOG is updated:
 
-Tell the user:
-1. "I've prepared a handover document"
-2. Briefly summarize what's captured
-3. Confirm it captures what they needed
-
-Save as: `HANDOVER.md` (project root) or `./docs/.agents/current-handover.md`. Legacy aliases `.agents/current-handover.md` or `.claude/current-handover.md` are acceptable if already in use. **Edit in place** rather than deleting/recreating the file name (some IDEs have issues with delete+create in one turn).
+1. **Wipe the handover clean** or reduce it to the next immediate "in-flight" thought.
+2. The goal is to keep the handover under 200 tokens whenever possible.
+3. **Draft the Handover**: Tell the user you've prepared it, summarize the "Delta", and save/overwrite the file.
 
 ---
 
 ## For Incoming AI: How to Use a Handover
 
-### Step 1: Read in Order
+### Step 1: Trust the Files, then the Handover
 
-1. `./docs/.agents/global-preferences.md` (if exists) - Communication style (legacy: `.agents/global-preferences.md`, `.claude/global-preferences.md`)
-2. `onboarding.md` (if exists) - How to work with this human (look in root, `./docs`, `./docs/.agents`, `.agents/`, `.claude/`)
-3. **Handover document** - Current state and conversation context (`HANDOVER.md` or `./docs/.agents/current-handover.md`)
-4. `SPEC.md` (if exists) - What we're building
-5. `DEVLOG.md` (if exists) - What's been built
+1. `onboarding.md` - Your map.
+2. `SPEC.md` / `DEVLOG.md` - Your history and destination.
+3. **Handover** - Your "live" radio feed of what's happening *right now*.
 
-### Step 2: Confirm Understanding
+### Step 2: Context Reset Hygiene
 
-Tell the user:
-- "I've read the handover and [other docs]"
-- "I understand we're [current state/discussion]"
-- "Ready to [next action from handover]"
+If the handover mentions an "In-Flight" issue that you have now fixed:
+**DELETE the mention from the handover at the end of your session.**
+Do not let old "Delta" context linger once it has become "Record" (code/docs).
 
-Give them a chance to correct or add context.
+### Step 3: Immediate Feedback on Bloat
 
-### Step 3: Continuous Improvement Feedback
-
-**If the handover was inadequate, say so directly:**
-
-"The handover was missing [X]. To pick up effectively, I also needed to know [Y]. For future handovers, it would help if the guide emphasized [Z]."
-
-**Examples of inadequate handovers:**
-- Missing context on what was being discussed
-- No mention of decisions in flight
-- Didn't capture what approaches were already tried
-- No warning about known issues
-- Next steps too vague
-
-**Don't suffer silently.** If you had to ask the user to explain things that should have been in the handover, tell them so the guide can be improved.
-
-### Step 4: Get to Work
-
-Once oriented, continue where the last session left off. The goal: user shouldn't feel like they reset the conversation.
+If an outgoing agent left you a "novel" instead of a "delta", tell the user. "The handover was too long and duplicated the spec. I've pruned it to keep the session lean."
 
 ---
 
 ## Anti-Patterns
+
+❌ **Duplicating the Spec/DEVLOG** - If it's in a permanent doc, keep it out of the handover.
+❌ **Keeping "Zombie" Context** - Leaving a "Decision in Flight" in the handover after the decision was made.
+❌ **Delete-then-Create** - Deleting the handover file instead of overwriting it (breaks IDE toolchains).
+❌ **The Novel** - Writing more than 3-4 paragraphs. Keep it a bridge, not a book.
+❌ **Missing Failed Paths** - Not warning the next agent about what *didn't* work.
 
 **For Outgoing AI:**
 
@@ -236,51 +154,21 @@ Once oriented, continue where the last session left off. The goal: user shouldn'
 ```markdown
 # Handover - Quiz App
 
-## Quick Start
-New AI: Read onboarding.md first (look in root, docs/, or docs/.agents/; legacy alias .agents/ or .claude/), then come back here.
+## 1. Orientation
+New AI: Oriented via onboarding.md. We are in Implementation, midway through Sprint 3.
 
-## Project Context
-Project: Quazy Quizzer (quiz app for kids)
-Spec: SPEC.md (living document, last updated today)
-Phase: Implementation - Sprint 3 of 6
+## 2. The Delta
+- **Active Debate**: Extracted the `QuizEngine` (src/quiz/engine.ts). User is unsure if a pure class is too disconnected from React state. We are weighing a `Zustand` store as an alternative but haven't started.
+- **Failed Path**: Tried lifting state to the `App` component; it caused a render loop. Do not revert to that.
+- **In-Flight**: Engine logic is extracted but tests are currently failing on the transition from Q1 to Q2.
 
-## Where We Are
-Progress: See DEVLOG.md
-Completed: Sprints 1-2 (config system, quiz loader)
-Current: Sprint 3 (quiz engine state management) - 60% done
-
-## Conversation Context
-
-**Active discussion:**
-We're refactoring quiz engine to decouple state from UI. Current implementation has quiz logic scattered across React components, making it untestable.
-
-**What we tried:**
-1. Lifting state to App component - works but creates prop drilling hell
-2. Started extracting to separate QuizEngine class - in progress
-
-**Decision in flight:**
-Should QuizEngine be:
-- Pure JS class (testable, but manual wiring to React)
-- Custom hook (React-native, but harder to test)
-- Zustand store (overkill for this project?)
-
-User prefers modularity. Leaning toward pure class but need to discuss ergonomics.
-
-**Red flag:**
-Quiz engine currently assumes file paths work. Won't work in Electron packaging (Sprint 6 problem, noted in DEVLOG Sprint 1).
-
-## Next Steps
-1. Finish QuizEngine class extraction (src/quiz/engine.ts)
-2. Write unit tests proving state transitions work
-3. Wire to React components
-4. Update DEVLOG Sprint 3 with refactor rationale
-
-## Files Changed Today
-- src/quiz/engine.ts (new, partial)
-- src/components/QuizView.tsx (refactoring in progress)
+## 3. Next Steps
+1. Debug `engine.test.ts` question transition failure.
+2. Discuss if `Zustand` is preferred over the current class approach.
 ```
 
 **Why this is good:**
+
 - Points to other docs without duplicating them
 - Captures the refactoring discussion (not in docs yet)
 - Shows what was tried (ephemeral context)
@@ -310,10 +198,10 @@ If incoming AI has to ask "why did we choose X?" or "what have we tried?", the h
 
 ## Fresh-Context Pickup (later agents)
 
-- Read in order: global preferences → onboarding → handover → spec → DEVLOG.
-- Verify the claimed paths exist; if not, search common locations and note fixes in the new handover.
-- Echo back understanding and planned next step; flag missing decisions or gaps.
-- Update `HANDOVER.md` when you pause, capturing conversation state and what was tried.
+- Read `onboarding` → `handover` → `spec` → `DEVLOG`.
+- Verify the build immediately.
+- **Prune the handover**: If the handover context is now obsolete because of your first tool call, update it.
+- **Reset Context**: If the conversation gets too long, ask the user: "Should I write a fresh handover and reset our context to keep things fast?"
 
 ---
 

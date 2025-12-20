@@ -19,11 +19,52 @@
 
 ---
 
+## Agent-Optimized Testing (Token-Sparing)
+
+Testing in an AI-human loop requires efficiency. High-volume test output consumes context room and wastes tokens.
+
+### 1. Concise Output by Default
+
+Use "dot" or "brief" reporters to see pass/fail status without full stack traces for every pass.
+
+**Vitest/Jest:**
+
+```bash
+npm test -- --reporter=dot --bail
+```
+
+**Pytest:**
+
+```bash
+pytest --tb=short -x
+```
+
+- `--bail` / `-x`: Stops at the very first failure. Prevents "scrolling fatigue" for the agent.
+- `--tb=short`: Minimal traceback for failures.
+
+### 2. Log Redirection
+
+Pipe full test details to a file. The agent should only read this file if the summary shows a failure.
+
+```bash
+# Run tests and save output to a log
+npm test > test_results.log 2>&1
+```
+
+### 3. Failure Analysis Workflow
+
+1. **Run Concise**: `npm test -- --reporter=dot --bail`
+2. **Detect Failure**: If it fails, only *then* read the log or run the specific failing test in verbose mode.
+3. **Targeted Run**: `npm test -- path/to/failing.test.ts`
+
+---
+
 ## Testing Framework by Tech Stack
 
 ### JavaScript/TypeScript + React/Vue
 
 **Recommended Stack:**
+
 - **Vitest** (if using Vite) - Fast, modern, great DX
 - **Jest** (if using webpack or older setup) - Mature, huge ecosystem
 - **@testing-library/react** or **@testing-library/vue** - Component testing
@@ -31,18 +72,20 @@
 - **supertest** - API endpoint testing (if backend exists)
 
 **Commands to add to `package.json`:**
+
 ```json
 {
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --reporter=dot --bail",
+    "test:verbose": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
   }
 }
 ```
 
 **Install:**
+
 ```bash
 npm install --save-dev vitest @testing-library/react @testing-library/jest-dom happy-dom
 ```
@@ -52,16 +95,19 @@ npm install --save-dev vitest @testing-library/react @testing-library/jest-dom h
 ### JavaScript/TypeScript + Node/Express (Backend)
 
 **Recommended Stack:**
+
 - **Vitest** or **Jest** - Test runner
 - **supertest** - HTTP integration testing
 - **@types/supertest** - TypeScript support
 
 **Install:**
+
 ```bash
 npm install --save-dev vitest supertest @types/supertest
 ```
 
 **Pattern:** Separate app creation from server startup
+
 ```typescript
 // server/app.ts - Testable
 export function createApp(config) {
@@ -85,16 +131,19 @@ request(app).get('/api/health')...
 ### Python + Flask/Django
 
 **Recommended Stack:**
+
 - **pytest** - Test framework
 - **pytest-flask** or **pytest-django** - Framework integration
 - **requests-mock** or **responses** - HTTP mocking
 
 **Install:**
+
 ```bash
 pip install pytest pytest-flask pytest-cov
 ```
 
 **Commands:**
+
 ```bash
 pytest                    # Run all tests
 pytest --cov=src         # With coverage
@@ -107,10 +156,12 @@ pytest --watch           # Watch mode
 ### Python CLI/Scripts
 
 **Recommended Stack:**
+
 - **pytest** - Test framework
 - **unittest.mock** - Mocking (built-in)
 
 **Pattern:** Separate logic from CLI interface
+
 ```python
 # logic.py - Testable business logic
 def process_data(input):
@@ -137,6 +188,7 @@ def test_process_data():
 **What:** Test individual functions/classes in isolation
 
 **When:**
+
 - Business logic functions
 - Utility functions
 - Data transformations
@@ -144,6 +196,7 @@ def test_process_data():
 - Calculation functions
 
 **Example:**
+
 ```typescript
 // configLoader.test.ts
 describe('mergeConfigWithDefaults', () => {
@@ -164,12 +217,14 @@ describe('mergeConfigWithDefaults', () => {
 **What:** Test multiple components working together
 
 **When:**
+
 - API endpoints
 - Database operations
 - File I/O operations
 - Module interactions
 
 **Example:**
+
 ```typescript
 // server/app.test.ts
 describe('GET /api/config', () => {
@@ -190,12 +245,14 @@ describe('GET /api/config', () => {
 **What:** Test React/Vue components render correctly
 
 **When:**
+
 - All user-facing components
 - User interactions
 - State changes
 - Conditional rendering
 
 **Example:**
+
 ```typescript
 // App.test.tsx
 describe('App Component', () => {
@@ -209,7 +266,9 @@ describe('App Component', () => {
 });
 ```
 
-**Coverage Target:** All components have basic rendering test, critical paths tested
+#### Component Coverage Target
+
+All components have basic rendering test, critical paths tested
 
 ---
 
@@ -218,15 +277,18 @@ describe('App Component', () => {
 **What:** Test complete user flows in real browser
 
 **When:**
+
 - Final polish sprint
 - Critical user journeys
 - Cross-browser compatibility needed
 
 **Tools:**
+
 - **Playwright** (recommended, modern)
 - **Cypress** (popular, good DX)
 
 **Example:**
+
 ```typescript
 test('user can complete quiz', async ({ page }) => {
   await page.goto('http://localhost:3000');
@@ -236,7 +298,9 @@ test('user can complete quiz', async ({ page }) => {
 });
 ```
 
-**Coverage Target:** Main user flows only (E2E is slow/expensive)
+#### E2E Coverage Target
+
+Main user flows only (E2E is slow/expensive)
 
 ---
 
@@ -254,9 +318,27 @@ test('user can complete quiz', async ({ page }) => {
 
 ---
 
+## Testing in DEVLOG
+
+**NEVER paste full test logs into DEVLOG.** It is a waste of space.
+
+### What to include
+
+- Total number of tests passing.
+- High-level coverage percentages.
+- **Summary** of any tricky failures encountered and how they were fixed.
+
+### What to skip
+
+- Individual passing test names.
+- Full stack traces.
+- Raw coverage tables.
+
+---
+
 ## Sprint Testing Requirements
 
-### Each Sprint Must Include:
+### Each Sprint Must Include
 
 - [ ] Tests for all new business logic (unit tests)
 - [ ] Tests for all new API endpoints (integration tests)
@@ -264,9 +346,10 @@ test('user can complete quiz', async ({ page }) => {
 - [ ] All tests passing before sprint marked complete
 - [ ] Test coverage documented in DEVLOG
 
-### Test File Organization:
+### Test File Organization
 
 **Option A: Co-located (Recommended)**
+
 ```
 src/
   config/
@@ -278,6 +361,7 @@ src/
 ```
 
 **Option B: Separate `/tests` directory**
+
 ```
 src/
   config/
@@ -293,13 +377,15 @@ Choose one approach and stick with it.
 
 ## Test Naming Conventions
 
-### File Names:
+### File Names
+
 - `*.test.ts` or `*.spec.ts` (pick one convention)
 - Match the file being tested: `configLoader.test.ts` tests `configLoader.ts`
 
-### Test Descriptions:
+### Test Descriptions
 
 **Use "should" statements:**
+
 ```typescript
 it('should merge partial config with defaults', () => { ... })
 it('should return 404 for unknown routes', () => { ... })
@@ -307,6 +393,7 @@ it('should display error when fetch fails', () => { ... })
 ```
 
 **Be specific:**
+
 ```typescript
 // ❌ Vague
 it('works correctly', () => { ... })
@@ -316,6 +403,7 @@ it('should validate email format and reject invalid emails', () => { ... })
 ```
 
 **Group related tests:**
+
 ```typescript
 describe('configLoader', () => {
   describe('mergeConfigWithDefaults', () => {
@@ -335,15 +423,17 @@ describe('configLoader', () => {
 
 ## Mocking Best Practices
 
-### When to Mock:
+### When to Mock
 
 ✅ **Mock external dependencies:**
+
 - API calls (`fetch`, `axios`)
 - File system operations
 - Database calls
 - External services
 
 ❌ **Don't mock internal logic:**
+
 - Your own business logic functions
 - Simple utilities
 - Config objects
@@ -446,18 +536,22 @@ Added comprehensive tests for [sprint name]:
 AI agents should flag these situations:
 
 🚩 **No tests for new business logic**
+
 - "I implemented X but didn't write tests for it"
 - Should pause and add tests before continuing
 
 🚩 **Tests skipped or commented out**
+
 - Using `.skip()` or `// TODO: test this`
 - Indicates incomplete work
 
 🚩 **Tests not running in CI/CD**
+
 - Tests exist but aren't automated
 - Should be part of build process
 
 🚩 **Hardcoded test data in production code**
+
 - Test data leaking into actual code
 - Separate test fixtures properly
 
@@ -505,7 +599,8 @@ afterEach(() => cleanup());
 ```json
 {
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --reporter=dot --bail",
+    "test:verbose": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
   }
