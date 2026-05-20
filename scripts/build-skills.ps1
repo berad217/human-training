@@ -95,16 +95,14 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
         # Read source content
         $sourceContent = Get-Content $sourcePath -Raw -Encoding UTF8
 
-        # Build frontmatter
+        # Build frontmatter with explicit LF. Ends with a blank line before
+        # the body to match build-skills.sh's heredoc (which emits ---\n\n).
         $toolsList = ($def.allowedTools | ForEach-Object { $_ }) -join ", "
-        $frontmatter = @"
----
-name: $skillName
-description: $($def.description)
-allowed-tools: [$toolsList]
----
-
-"@
+        $frontmatter = "---`n" +
+            "name: $skillName`n" +
+            "description: $($def.description)`n" +
+            "allowed-tools: [$toolsList]`n" +
+            "---`n`n"
 
         # Write SKILL.md with frontmatter + source content.
         # Normalize to LF, write UTF-8 without BOM, and end with exactly one
