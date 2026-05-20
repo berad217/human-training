@@ -58,12 +58,10 @@ human-training/
 │   ├── ideation-helper.skill
 │   └── spec-writer.skill
 │
-├── scripts/
-│   ├── build-skills.ps1         # Generate skills from workflow docs
-│   ├── build-skills.sh          # Same, for Linux/Mac
-│   └── setup-machine.ps1        # Install skills globally
-│
-└── your_project_name/           # Legacy template (being phased out)
+└── scripts/
+    ├── build-skills.ps1         # Generate skills from workflow docs
+    ├── build-skills.sh          # Same, for Linux/Mac
+    └── setup-machine.ps1        # Install skills globally
 ```
 
 ---
