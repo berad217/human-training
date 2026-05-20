@@ -87,16 +87,16 @@ SKILL_EOF
 
 # Build each skill
 build_skill "lifecycle.md" "lifecycle-manager" \
-    "Active development workflow for Sprint 1-N. Handles orientation, the confidence bar for decision-making, testing approach, documentation, and context resets." \
+    "Use when actively implementing features in Sprint 1-N: writing code, writing tests right after, updating the DEVLOG with decisions and rationale, checking the confidence bar before acting, orienting at the start of a session, or handling a mid-sprint context reset. The core test-code-document development loop." \
     "Read, Write, Edit, Grep, Glob, Bash, TodoWrite"
 
 build_skill "handover-guide.md" "handover-manager" \
-    "Create handovers for smooth context resets between AI sessions. Captures ephemeral conversation context (the delta) not documented elsewhere. Works with any AI agent." \
+    "Use when the user requests a handover, the context window is getting full or laggy, at a natural pause point (end of sprint or milestone), or when stuck and a fresh perspective is needed. Creates a handover capturing the ephemeral conversation delta not already in the project files. Works with any AI agent." \
     "Read, Write, Edit, Grep, Glob" \
     "handover.md"
 
 build_skill "onboarding-guide.md" "onboarding-creator" \
-    "Create onboarding.md - the universal entry point for AI agents in any environment (Cursor, VSCode, Claude Code, web). The office tour, not the employee handbook." \
+    "Use when setting up a new project, after the Sprint 0 spec is complete, or when an AI agent entry point is missing. Creates onboarding.md, the universal orientation doc that works across any environment (Cursor, VSCode, Claude Code, web) - the office tour, not the employee handbook." \
     "Read, Write, Edit, Grep, Glob" \
     "onboarding.md"
 

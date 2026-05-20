@@ -35,19 +35,19 @@ $TemplatesDir = Join-Path $WorkflowDir "templates"
 $skillDefinitions = @{
     "lifecycle.md" = @{
         name = "lifecycle-manager"
-        description = "Active development workflow for Sprint 1-N. Handles orientation, the confidence bar for decision-making, testing approach, documentation, and context resets."
+        description = "Use when actively implementing features in Sprint 1-N: writing code, writing tests right after, updating the DEVLOG with decisions and rationale, checking the confidence bar before acting, orienting at the start of a session, or handling a mid-sprint context reset. The core test-code-document development loop."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob", "Bash", "TodoWrite")
         assets = @()  # No specific template needed
     }
     "handover-guide.md" = @{
         name = "handover-manager"
-        description = "Create handovers for smooth context resets between AI sessions. Captures ephemeral conversation context (the delta) not documented elsewhere. Works with any AI agent."
+        description = "Use when the user requests a handover, the context window is getting full or laggy, at a natural pause point (end of sprint or milestone), or when stuck and a fresh perspective is needed. Creates a handover capturing the ephemeral conversation delta not already in the project files. Works with any AI agent."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob")
         assets = @("handover.md")
     }
     "onboarding-guide.md" = @{
         name = "onboarding-creator"
-        description = "Create onboarding.md - the universal entry point for AI agents in any environment (Cursor, VSCode, Claude Code, web). The office tour, not the employee handbook."
+        description = "Use when setting up a new project, after the Sprint 0 spec is complete, or when an AI agent entry point is missing. Creates onboarding.md, the universal orientation doc that works across any environment (Cursor, VSCode, Claude Code, web) - the office tour, not the employee handbook."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob")
         assets = @("onboarding.md")
     }
