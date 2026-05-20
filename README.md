@@ -45,7 +45,7 @@ human-training/
 │   │   ├── devlog.md
 │   │   ├── handover.md
 │   │   ├── onboarding.md
-│   │   ├── project-spec-template.md
+│   │   ├── spec.md
 │   │   └── testing-standards.md
 │   ├── global-preferences.md    # Communication style (customize this!)
 │   └── claude-code.md           # Global CLAUDE.md for Claude Code

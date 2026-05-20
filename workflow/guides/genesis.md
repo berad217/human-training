@@ -97,9 +97,8 @@ Principles: show, don't tell (examples over descriptions); the spec is a living
 document, not a contract; define "done" clearly.
 
 > For the complete spec structure with examples, the writing process, and
-> common pitfalls, read `assets/spec-writing-guide.md`. Spec templates:
-> `assets/project-spec-template.md` (comprehensive) and `assets/spec.md`
-> (brief). Testing conventions: `assets/testing-standards.md`.
+> common pitfalls, read `assets/spec-writing-guide.md`. Spec template:
+> `assets/spec.md`. Testing conventions: `assets/testing-standards.md`.
 
 ---
 

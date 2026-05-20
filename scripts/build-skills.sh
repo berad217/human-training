@@ -103,7 +103,7 @@ build_skill "onboarding-guide.md" "onboarding-creator" \
 build_skill "genesis.md" "project-genesis" \
     "Use when starting a new project, brainstorming an idea, evaluating whether something is worth building, or turning a concept into a technical spec. Covers Sprint 0 end to end: ideation (challenge ideas, red-team, force scope) and spec writing (concrete specs for coding agents). Enter at brainstorming, enter at speccing, or flow through both." \
     "Read, Write, Edit, Grep, Glob, WebSearch, WebFetch" \
-    "ideation-protocol.md" "spec-writing-guide.md" "project-spec-template.md" "spec.md" "testing-standards.md"
+    "ideation-protocol.md" "spec-writing-guide.md" "spec.md" "testing-standards.md"
 
 echo ""
 echo "Build complete!"
