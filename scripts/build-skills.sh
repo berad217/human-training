@@ -47,7 +47,7 @@ build_skill() {
     mkdir -p "$skill_dir"
 
     # Build SKILL.md with frontmatter
-    cat > "$skill_dir/SKILL.md" << EOF
+    cat > "$skill_dir/SKILL.md" << SKILL_EOF
 ---
 name: $skill_name
 description: $description
@@ -55,7 +55,7 @@ allowed-tools: [$allowed_tools]
 ---
 
 $(cat "$source_path")
-EOF
+SKILL_EOF
 
     # Copy assets if any
     if [[ ${#assets[@]} -gt 0 ]]; then
@@ -67,7 +67,7 @@ EOF
         done
     fi
 
-    # Create .skill zip
+    # Create .skill zip (POSIX forward-slash paths)
     local skill_file="$OUTPUT_DIR/$skill_name.skill"
     rm -f "$skill_file"
     (cd "$temp_dir" && zip -rq "$skill_file" "$skill_name")
@@ -113,4 +113,4 @@ echo "Build complete!"
 echo ""
 echo "To install globally:"
 echo "  Extract each .skill to ~/.claude/skills/"
-echo "  Or run: ./scripts/setup-machine.sh"
+echo "  Or (Windows): ./scripts/setup-machine.ps1"

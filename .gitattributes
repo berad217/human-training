@@ -1,0 +1,17 @@
+# Default: let git auto-handle line endings on checkout/checkin
+* text=auto
+
+# Shell scripts MUST be LF — they fail on Linux/macOS with CRLF
+*.sh    text eol=lf
+
+# PowerShell scripts: keep CRLF (Windows-only)
+*.ps1   text eol=crlf
+
+# YAML, JSON, markdown — keep consistent LF across platforms
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# Treat .skill (zip) as binary
+*.skill binary

@@ -143,17 +143,25 @@ allowed-tools: [$toolsList]
             }
         }
 
-        # Create .skill zip (PowerShell requires .zip extension, so we create then rename)
-        $zipFile = Join-Path $OutputDir "$skillName.zip"
+        # Create .skill zip with POSIX-style (forward-slash) entry names.
+        # We do NOT use Compress-Archive — it writes Windows backslashes into
+        # zip entry names, which break extraction on Linux/macOS.
         $skillFile = Join-Path $OutputDir "$skillName.skill"
-        Remove-Item $zipFile -ErrorAction SilentlyContinue
         Remove-Item $skillFile -ErrorAction SilentlyContinue
 
-        # Zip the skill directory (from parent so folder name is preserved in archive)
-        Compress-Archive -Path $skillDir -DestinationPath $zipFile -Force
+        Add-Type -AssemblyName System.IO.Compression -ErrorAction SilentlyContinue
+        Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
 
-        # Rename to .skill
-        Rename-Item -Path $zipFile -NewName "$skillName.skill"
+        $zip = [System.IO.Compression.ZipFile]::Open($skillFile, [System.IO.Compression.ZipArchiveMode]::Create)
+        try {
+            $tempRoot = (Resolve-Path $tempDir).Path.TrimEnd('\','/') + [System.IO.Path]::DirectorySeparatorChar
+            Get-ChildItem -Path $skillDir -Recurse -File | ForEach-Object {
+                $entryName = $_.FullName.Substring($tempRoot.Length).Replace('\','/')
+                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entryName) | Out-Null
+            }
+        } finally {
+            $zip.Dispose()
+        }
 
         $fileSize = [math]::Round((Get-Item $skillFile).Length / 1024, 1)
         Write-Host "  -> $skillName.skill ($fileSize KB)" -ForegroundColor Green
