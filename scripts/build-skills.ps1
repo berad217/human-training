@@ -53,21 +53,9 @@ $skillDefinitions = @{
     }
     "genesis.md" = @{
         name = "project-genesis"
-        description = "Guide Sprint 0 from idea to spec. Challenge ideas, force scope definition, prevent mission creep, then create technical specification with concrete examples."
+        description = "Use when starting a new project, brainstorming an idea, evaluating whether something is worth building, or turning a concept into a technical spec. Covers Sprint 0 end to end: ideation (challenge ideas, red-team, force scope) and spec writing (concrete specs for coding agents). Enter at brainstorming, enter at speccing, or flow through both."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob", "WebSearch", "WebFetch")
-        assets = @("project-spec-template.md", "spec.md")
-    }
-    "ideation-protocol.md" = @{
-        name = "ideation-helper"
-        description = "Brainstorm with the human effectively. Challenge assumptions, red-team ideas, check if solutions exist, force scope decisions. Help decide build vs park vs abandon."
-        allowedTools = @("Read", "Write", "Grep", "Glob", "WebSearch", "WebFetch")
-        assets = @()
-    }
-    "spec-writing-guide.md" = @{
-        name = "spec-writer"
-        description = "Write technical specifications using the 4-round process: info gathering, architecture, review, deliver. Create specs with concrete JSON examples, not vague descriptions."
-        allowedTools = @("Read", "Write", "Edit", "Grep", "Glob")
-        assets = @("project-spec-template.md", "spec.md", "testing-standards.md")
+        assets = @("ideation-protocol.md", "spec-writing-guide.md", "project-spec-template.md", "spec.md", "testing-standards.md")
     }
 }
 
@@ -118,10 +106,16 @@ allowed-tools: [$toolsList]
 
 "@
 
-        # Write SKILL.md with frontmatter + source content
-        $skillContent = $frontmatter + $sourceContent
+        # Write SKILL.md with frontmatter + source content.
+        # Normalize to LF, write UTF-8 without BOM, and end with exactly one
+        # newline so the output is byte-identical to what build-skills.sh
+        # produces (its heredoc forces a single trailing newline) — CI
+        # compares the two builders' output.
+        $skillContent = ($frontmatter + $sourceContent) -replace "`r`n", "`n"
+        $skillContent = $skillContent.TrimEnd("`n") + "`n"
         $skillMdPath = Join-Path $skillDir "SKILL.md"
-        Set-Content -Path $skillMdPath -Value $skillContent -NoNewline -Encoding UTF8
+        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::WriteAllText($skillMdPath, $skillContent, $utf8NoBom)
 
         if ($Verbose) {
             Write-Host "  Created SKILL.md ($([math]::Round((Get-Item $skillMdPath).Length / 1024, 1)) KB)" -ForegroundColor Gray
@@ -132,8 +126,13 @@ allowed-tools: [$toolsList]
             New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null
             foreach ($asset in $def.assets) {
                 $assetSource = Join-Path $TemplatesDir $asset
+                if (-not (Test-Path $assetSource)) {
+                    $assetSource = Join-Path $GuidesDir $asset
+                }
                 if (Test-Path $assetSource) {
-                    Copy-Item $assetSource -Destination $assetsDir
+                    # Normalize to LF / no BOM to match build-skills.sh output.
+                    $assetText = [System.IO.File]::ReadAllText($assetSource) -replace "`r`n", "`n"
+                    [System.IO.File]::WriteAllText((Join-Path $assetsDir $asset), $assetText, $utf8NoBom)
                     if ($Verbose) {
                         Write-Host "  Added asset: $asset" -ForegroundColor Gray
                     }

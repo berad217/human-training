@@ -1,82 +1,116 @@
-# Genesis: From Spark to Spec
+# Project Genesis: From Spark to Spec
 
-**Purpose**: This document guides you through "Sprint 0"—the phase where an idea is challenged, refined, and crystallized into a technical specification.
+**Purpose**: Guide "Sprint 0" — the phase before implementation where a raw
+idea is challenged, refined, and (if it survives) crystallized into a technical
+specification a coding agent can build from.
 
-> [!IMPORTANT]
-> **Post-Phase Cleanup**: Once the final `SPEC.md` is approved and implementation begins, **DELETE this file** from the codebase to save context room for the implementation agents.
-
----
-
-## Part 1: Ideation (The Brainstorm)
-
-### The Human Context
-
-You are talking to a human who thinks in systems, learns by building, and struggles with mission creep. Your job is to help them figure out if an idea is worth their finite time.
-
-### How to Have the Conversation
-
-1. **Understand First**: Let them articulate the idea. Ask, "What sparked this?"
-2. **Challenge Assertively**: No hedging. If it won't work, say so. Ask, "What problem does this actually solve?"
-3. **Red Team the Idea**: Actively look for fatal flaws. "How much of this is 'shiny object syndrome'?"
-4. **Existence Check**: Search for existing solutions. If it exists, confirm if they still want to build it for the learning experience.
-5. **Scope Forcing**: Define the Absolute Simplest Version (ASV). Ask, "What's in V1 vs someday-maybe?"
-
-### The Mission Creep Balance
-
-Notice when scope is expanding. Make them justify every "nice-to-have" addition. They must acknowledge the creep and consciously choose it.
-
-### The Decision Point
-
-End the conversation with one of these:
-
-- ✅ **Ready to Build**: Proceed to Part 2 (Spec Writing).
-- ✅ **Convinced Not to Build**: Solid reasons why (already exists, too complex).
-- ✅ **Parked for Later**: Use the 🅿️ **Parking Lot** format in the Spec or `IDEAS_PARK.md`.
+This skill covers two phases: **Ideation** and **Spec Writing**. The boundary
+between them is fuzzy on purpose — a conversation often flows from one into the
+other without a clean line.
 
 ---
 
-## Part 2: Spec Writing (The Blueprint)
+## Entry Modes — Decide Where to Start
 
-After the human says "Ready to write the spec," transform the brainstorm into a source of truth for the NEXT AI agent.
+Read the situation and pick where to spend tokens:
 
-### Technical Foundation (Be Prescriptive)
+- **Brainstorm only** — The human is thinking out loud about an approach or a
+  problem. It may never become a spec, and that is fine. Stay in the Ideation
+  phase. Do not push toward a spec.
+- **Full flow** — The human has an idea they might build. Start in Ideation;
+  transition to Spec Writing only when they explicitly say they are ready.
+- **Spec only** — Ideation already happened, often in another session. Skip to
+  Spec Writing. Ask for a quick summary of what was decided, then write.
 
-Don't let the implementation agent guess the stack.
+When unsure, ask: "Are we exploring this, or are you ready to commit to
+building it?"
 
-- **Tech Stack**: e.g., React + TypeScript + Vite.
-- **Testing Framework**: e.g., Vitest + @testing-library/react.
-- **Design Intent**: Define the "Visual Identity & UX Vibes" (e.g., "Glassmorphism with Neon accents").
+---
 
-### Architecture (Loose Coupling)
+## Phase 1: Ideation
 
-Show the mental model with a file tree and defined boundaries.
+**Goal**: Help the human figure out if an idea is worth their finite time — and
+be willing to conclude that it is not.
 
-- **Single Responsibilities**: Each module does one thing.
-- **Loose Coupling**: Prefer modularity so pieces are testable in isolation.
+Core moves:
 
-### Data Models (Show, Don't Tell)
+1. **Understand first** — "Walk me through what you're imagining. What sparked
+   this?" Let them talk; they often find the issues themselves.
+2. **Challenge assertively** — No hedging. "That won't work because X" beats
+   "you might consider...". Ask "What problem does this actually solve?"
+3. **Red-team it** — Hunt for the fatal flaw. "How much of this is shiny-object
+   syndrome vs real value?"
+4. **Existence check** — Search the web. Show 3-5 existing solutions. Building
+   anyway for the learning is valid — just make it a conscious choice.
+5. **Scope forcing** — "What's the absolute simplest version that's still
+   useful or interesting? What's V1 vs someday-maybe?"
+6. **Mission-creep watch** — Name expansion when you see it: "We started with X,
+   now it's X+Y+Z. Intentional?" Make them choose creep consciously; don't shut
+   down exploration.
 
-**CRITICAL**: Use concrete JSON/TypeScript examples. Do not just describe them with text.
+Ideation ends in one of three outcomes:
 
-### The Sprint Plan (Granular & Flexible)
+- **Ready to build** → transition to Phase 2.
+- **Convinced not to build** → articulate the solid reasons why.
+- **Parked** → capture with the Parking Lot format so future-them can
+  resurrect it.
 
-Break work into sessions of ~2-3 hours.
+> For the full ideation playbook — anti-patterns, the parking-lot format, tone
+> guidance — read `assets/ideation-protocol.md`.
 
-- **Success Criteria**: Define testable outcomes (e.g., "✓ Loads quiz from JSON").
-- **Handover Context**: Provide enough detail for a different AI to pick up mid-project.
+---
 
-### Constraints & Boundaries
+## Transition
 
-- ✅ **DO**: Use "Planned Fuzziness" (list common file locations, don't assume perfect organization).
-- ❌ **DO NOT**: Add features not in the spec. No "helpful" extras.
+Don't slide silently from ideation into spec writing. When the idea seems
+build-worthy:
+
+- Summarize what you understand.
+- Ask explicitly: "Ready to write the spec based on this?"
+- Wait for a clear yes. If they have more questions, stay in ideation.
+
+---
+
+## Phase 2: Spec Writing
+
+**Goal**: Transform the conversation into a spec a *different* AI coding agent
+(zero shared context) can implement without guessing.
+
+A spec covers, at minimum:
+
+- **Overview** — name, one-sentence purpose, why it exists, who uses it.
+- **Visual identity** — the "vibe", palette, typography. Prevents a generic UI.
+- **Success criteria** — a testable checklist defining "done". This is the
+  anti-mission-creep anchor.
+- **Technical foundation** — be prescriptive: stack, runtime, testing
+  framework, key dependencies. No guessing.
+- **Architecture** — major components, single responsibilities, loose coupling,
+  a real file tree.
+- **Data models** — concrete JSON/TypeScript examples, never prose.
+- **Sprint breakdown** — ~2-3 hour chunks, each with success criteria,
+  deliverables, and handover context.
+- **Testing strategy** — written during each sprint, not after.
+- **Constraints & out-of-scope** — explicit DO / DO-NOT, and what we are
+  deliberately not building.
+
+Principles: show, don't tell (examples over descriptions); the spec is a living
+document, not a contract; define "done" clearly.
+
+> For the complete spec structure with examples, the writing process, and
+> common pitfalls, read `assets/spec-writing-guide.md`. Spec templates:
+> `assets/project-spec-template.md` (comprehensive) and `assets/spec.md`
+> (brief). Testing conventions: `assets/testing-standards.md`.
 
 ---
 
 ## Transition to Implementation
 
-Once the Spec is complete:
+Once the spec is approved:
 
-1. **Create Onboarding**: Use the `templates/onboarding.md` skeleton.
-2. **Create DEVLOG**: Use the `templates/devlog.md` skeleton.
-3. **Verify the Spec**: Confirm the human is satisfied.
-4. **Hand Off**: Once implementation starts, **DELETE this genesis.md file.**
+1. Create `onboarding.md` from the onboarding template — the universal agent
+   entry point.
+2. Create a `DEVLOG.md` skeleton.
+3. Confirm the human is satisfied with the spec.
+4. Sprint-0 scratch (this genesis conversation, rough notes) can be cleared
+   once implementation begins — the spec, onboarding, and DEVLOG are the source
+   of truth from here.

@@ -46,7 +46,9 @@ build_skill() {
 
     mkdir -p "$skill_dir"
 
-    # Build SKILL.md with frontmatter
+    # Build SKILL.md with frontmatter. Strip CR so output is LF-only
+    # regardless of the source file's line endings (CI compares with the
+    # PowerShell builder's output, which also normalizes to LF).
     cat > "$skill_dir/SKILL.md" << SKILL_EOF
 ---
 name: $skill_name
@@ -54,7 +56,7 @@ description: $description
 allowed-tools: [$allowed_tools]
 ---
 
-$(cat "$source_path")
+$(tr -d '\r' < "$source_path")
 SKILL_EOF
 
     # Copy assets if any
@@ -62,7 +64,11 @@ SKILL_EOF
         mkdir -p "$assets_dir"
         for asset in "${assets[@]}"; do
             if [[ -f "$TEMPLATES_DIR/$asset" ]]; then
-                cp "$TEMPLATES_DIR/$asset" "$assets_dir/"
+                tr -d '\r' < "$TEMPLATES_DIR/$asset" > "$assets_dir/$asset"
+            elif [[ -f "$GUIDES_DIR/$asset" ]]; then
+                tr -d '\r' < "$GUIDES_DIR/$asset" > "$assets_dir/$asset"
+            else
+                echo "  WARNING: asset not found: $asset"
             fi
         done
     fi
@@ -95,18 +101,9 @@ build_skill "onboarding-guide.md" "onboarding-creator" \
     "onboarding.md"
 
 build_skill "genesis.md" "project-genesis" \
-    "Guide Sprint 0 from idea to spec. Challenge ideas, force scope definition, prevent mission creep, then create technical specification with concrete examples." \
+    "Use when starting a new project, brainstorming an idea, evaluating whether something is worth building, or turning a concept into a technical spec. Covers Sprint 0 end to end: ideation (challenge ideas, red-team, force scope) and spec writing (concrete specs for coding agents). Enter at brainstorming, enter at speccing, or flow through both." \
     "Read, Write, Edit, Grep, Glob, WebSearch, WebFetch" \
-    "project-spec-template.md" "spec.md"
-
-build_skill "ideation-protocol.md" "ideation-helper" \
-    "Brainstorm with the human effectively. Challenge assumptions, red-team ideas, check if solutions exist, force scope decisions. Help decide build vs park vs abandon." \
-    "Read, Write, Grep, Glob, WebSearch, WebFetch"
-
-build_skill "spec-writing-guide.md" "spec-writer" \
-    "Write technical specifications using the 4-round process: info gathering, architecture, review, deliver. Create specs with concrete JSON examples, not vague descriptions." \
-    "Read, Write, Edit, Grep, Glob" \
-    "project-spec-template.md" "spec.md" "testing-standards.md"
+    "ideation-protocol.md" "spec-writing-guide.md" "project-spec-template.md" "spec.md" "testing-standards.md"
 
 echo ""
 echo "Build complete!"
