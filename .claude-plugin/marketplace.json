@@ -1,0 +1,12 @@
+{
+  "name": "human-training",
+  "owner": {
+    "name": "berad217"
+  },
+  "plugins": [
+    {
+      "name": "human-training",
+      "source": "./"
+    }
+  ]
+}
