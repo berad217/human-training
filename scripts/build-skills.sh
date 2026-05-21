@@ -1,6 +1,11 @@
 #!/bin/bash
 #
-# build-skills.sh - Build Claude Code .skill files from workflow docs
+# build-skills.sh - Build Claude Code plugin skills from workflow docs
+#
+# Generates skills/<name>/SKILL.md (+ assets/) from the model-agnostic
+# guides in workflow/. The workflow docs are the source of truth; the
+# skills/ directory is a generated artifact bundled by the plugin
+# (see .claude-plugin/plugin.json).
 #
 # Usage: ./scripts/build-skills.sh
 #
@@ -9,16 +14,18 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
-OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/claude-skills}"
+OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/skills}"
 WORKFLOW_DIR="$REPO_ROOT/workflow"
 GUIDES_DIR="$WORKFLOW_DIR/guides"
 TEMPLATES_DIR="$WORKFLOW_DIR/templates"
 
-echo "Building Claude Code skills from workflow docs..."
+echo "Building Claude Code plugin skills from workflow docs..."
 echo "Source: $GUIDES_DIR"
 echo "Output: $OUTPUT_DIR"
 echo ""
 
+# Start clean so skills removed from the build definitions don't linger.
+rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
 # Function to build a single skill
@@ -39,16 +46,12 @@ build_skill() {
 
     echo "Building: $skill_name"
 
-    # Create temp directory
-    local temp_dir=$(mktemp -d)
-    local skill_dir="$temp_dir/$skill_name"
+    local skill_dir="$OUTPUT_DIR/$skill_name"
     local assets_dir="$skill_dir/assets"
-
     mkdir -p "$skill_dir"
 
-    # Build SKILL.md with frontmatter. Strip CR so output is LF-only
-    # regardless of the source file's line endings (CI compares with the
-    # PowerShell builder's output, which also normalizes to LF).
+    # SKILL.md = Claude-specific frontmatter + the model-agnostic guide.
+    # Strip CR so output is LF-only regardless of the source's line endings.
     cat > "$skill_dir/SKILL.md" << SKILL_EOF
 ---
 name: $skill_name
@@ -59,7 +62,7 @@ allowed-tools: [$allowed_tools]
 $(tr -d '\r' < "$source_path")
 SKILL_EOF
 
-    # Copy assets if any
+    # Copy assets (also CR-stripped) if any
     if [[ ${#assets[@]} -gt 0 ]]; then
         mkdir -p "$assets_dir"
         for asset in "${assets[@]}"; do
@@ -73,16 +76,7 @@ SKILL_EOF
         done
     fi
 
-    # Create .skill zip (POSIX forward-slash paths)
-    local skill_file="$OUTPUT_DIR/$skill_name.skill"
-    rm -f "$skill_file"
-    (cd "$temp_dir" && zip -rq "$skill_file" "$skill_name")
-
-    local file_size=$(du -h "$skill_file" | cut -f1)
-    echo "  -> $skill_name.skill ($file_size)"
-
-    # Cleanup
-    rm -rf "$temp_dir"
+    echo "  -> $skill_name/SKILL.md"
 }
 
 # Build each skill
@@ -108,6 +102,5 @@ build_skill "genesis.md" "project-genesis" \
 echo ""
 echo "Build complete!"
 echo ""
-echo "To install globally:"
-echo "  Extract each .skill to ~/.claude/skills/"
-echo "  Or (Windows): ./scripts/setup-machine.ps1"
+echo "Skills are distributed via the plugin manifest (.claude-plugin/plugin.json)."
+echo "For local development:  claude --plugin-dir ."

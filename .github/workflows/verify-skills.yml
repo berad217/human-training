@@ -1,15 +1,13 @@
-# Verifies that the committed claude-skills/*.skill artifacts match
-# what build-skills.sh would produce from the current workflow/ docs.
+# Verifies that the committed skills/ directory matches what
+# build-skills.sh would produce from the current workflow/ docs.
 #
-# This catches two failure modes that have bitten this repo before:
-#   1. Source edited without rebuilding skills (silent staleness).
-#   2. Zip entries written with Windows backslash separators that
-#      break extraction on Linux/macOS.
+# Catches silent staleness: workflow source edited without rebuilding
+# the generated skills/ tree.
 #
-# Strategy: rebuild into a temp dir, extract both the rebuilt and
-# committed .skill files, and `diff -r` the contents. We compare
-# extracted trees rather than raw zip bytes so that ZIP metadata
-# (timestamps, compression level) doesn't cause false positives.
+# Strategy: rebuild from source into a temp dir and `diff -r` it against
+# the committed skills/ directory. Both builders (build-skills.sh and
+# build-skills.ps1) normalize to LF / no BOM, so their output is
+# byte-identical regardless of which one produced the committed tree.
 
 name: Verify skills are in sync with source
 
@@ -18,13 +16,13 @@ on:
     branches: [main]
     paths:
       - 'workflow/**'
-      - 'claude-skills/**'
+      - 'skills/**'
       - 'scripts/build-skills.sh'
       - '.github/workflows/verify-skills.yml'
   pull_request:
     paths:
       - 'workflow/**'
-      - 'claude-skills/**'
+      - 'skills/**'
       - 'scripts/build-skills.sh'
       - '.github/workflows/verify-skills.yml'
   workflow_dispatch:
@@ -35,50 +33,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Ensure zip/unzip are available
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends zip unzip
-
-      - name: Verify committed skills have POSIX-style entry names
-        run: |
-          set -e
-          fail=0
-          for s in claude-skills/*.skill; do
-            if unzip -l "$s" | awk 'NR>3 {print $NF}' | grep -q '\\'; then
-              echo "FAIL: $s contains backslash-separated entry names."
-              echo "      This file was built with PowerShell Compress-Archive."
-              echo "      Rebuild with scripts/build-skills.sh or the patched build-skills.ps1."
-              fail=1
-            fi
-          done
-          if [ "$fail" -ne 0 ]; then exit 1; fi
-          echo "All committed .skill files use forward-slash entry names."
-
       - name: Rebuild skills from source into a temp output dir
         run: |
           set -e
-          mkdir -p /tmp/skills-rebuild
           OUTPUT_DIR=/tmp/skills-rebuild bash scripts/build-skills.sh
 
-      - name: Compare extracted contents (committed vs freshly built)
+      - name: Compare committed skills/ with freshly built output
         run: |
           set -e
-          mkdir -p /tmp/extract-committed /tmp/extract-rebuilt
-
-          for s in claude-skills/*.skill; do
-            unzip -q "$s" -d /tmp/extract-committed
-          done
-
-          for s in /tmp/skills-rebuild/*.skill; do
-            unzip -q "$s" -d /tmp/extract-rebuilt
-          done
-
-          if ! diff -r /tmp/extract-committed /tmp/extract-rebuilt; then
+          if ! diff -r skills /tmp/skills-rebuild; then
             echo ""
-            echo "FAIL: Committed claude-skills/ artifacts are stale."
+            echo "FAIL: committed skills/ is stale."
             echo "      Run: bash scripts/build-skills.sh"
-            echo "      Then commit the regenerated .skill files."
+            echo "      Then commit the regenerated skills/ directory."
             exit 1
           fi
-          echo "Committed skills match freshly built artifacts."
+          echo "Committed skills/ matches freshly built output."

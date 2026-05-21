@@ -1,19 +1,23 @@
 <#
 .SYNOPSIS
-    Builds Claude Code .skill files from model-agnostic workflow documents.
+    Builds Claude Code plugin skills from model-agnostic workflow documents.
 
 .DESCRIPTION
-    This script reads workflow guides from workflow/guides/ and packages them
-    into Claude Code .skill files with appropriate frontmatter and assets.
+    Reads workflow guides from workflow/guides/ and generates
+    skills/<name>/SKILL.md (+ assets/) for each skill.
 
     The workflow docs remain the SOURCE OF TRUTH (model-agnostic).
-    The .skill files are GENERATED artifacts for Claude Code specifically.
+    The skills/ directory is a GENERATED artifact bundled by the plugin
+    (see .claude-plugin/plugin.json).
+
+    Output is normalized to LF / no BOM so it is byte-identical to what
+    build-skills.sh produces — CI compares the two builders' output.
 
 .EXAMPLE
     ./scripts/build-skills.ps1
 
 .EXAMPLE
-    ./scripts/build-skills.ps1 -OutputDir ./claude-skills -Verbose
+    ./scripts/build-skills.ps1 -OutputDir ./skills -Verbose
 #>
 
 param(
@@ -23,7 +27,7 @@ param(
 )
 
 if (-not $OutputDir) {
-    $OutputDir = Join-Path $RepoRoot "claude-skills"
+    $OutputDir = Join-Path $RepoRoot "skills"
 }
 
 $WorkflowDir = Join-Path $RepoRoot "workflow"
@@ -37,7 +41,7 @@ $skillDefinitions = @{
         name = "lifecycle-manager"
         description = "Use when actively implementing features in Sprint 1-N: writing code, writing tests right after, updating the DEVLOG with decisions and rationale, checking the confidence bar before acting, orienting at the start of a session, or handling a mid-sprint context reset. The core test-code-document development loop."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob", "Bash", "TodoWrite")
-        assets = @()  # No specific template needed
+        assets = @()
     }
     "handover-guide.md" = @{
         name = "handover-manager"
@@ -59,14 +63,16 @@ $skillDefinitions = @{
     }
 }
 
-# Ensure output directory exists
-New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
-
-Write-Host "Building Claude Code skills from workflow docs..." -ForegroundColor Cyan
+Write-Host "Building Claude Code plugin skills from workflow docs..." -ForegroundColor Cyan
 Write-Host "Source: $GuidesDir" -ForegroundColor Gray
 Write-Host "Output: $OutputDir" -ForegroundColor Gray
 Write-Host ""
 
+# Start clean so skills removed from the definitions above don't linger.
+Remove-Item -Recurse -Force $OutputDir -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
 $builtCount = 0
 $errorCount = 0
 
@@ -83,16 +89,12 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
 
     Write-Host "Building: $skillName" -ForegroundColor Yellow
 
-    # Create temp directory for skill contents
-    $tempDir = Join-Path $env:TEMP "skill-build-$skillName-$(Get-Random)"
-    $skillDir = Join-Path $tempDir $skillName
+    $skillDir = Join-Path $OutputDir $skillName
     $assetsDir = Join-Path $skillDir "assets"
 
     try {
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Force -Path $skillDir | Out-Null
 
-        # Read source content
         $sourceContent = Get-Content $sourcePath -Raw -Encoding UTF8
 
         # Build frontmatter with explicit LF. Ends with a blank line before
@@ -104,22 +106,14 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
             "allowed-tools: [$toolsList]`n" +
             "---`n`n"
 
-        # Write SKILL.md with frontmatter + source content.
-        # Normalize to LF, write UTF-8 without BOM, and end with exactly one
-        # newline so the output is byte-identical to what build-skills.sh
-        # produces (its heredoc forces a single trailing newline) — CI
-        # compares the two builders' output.
+        # Write SKILL.md: normalize to LF, write UTF-8 without BOM, end with
+        # exactly one newline so the output is byte-identical to
+        # build-skills.sh (its heredoc forces a single trailing newline).
         $skillContent = ($frontmatter + $sourceContent) -replace "`r`n", "`n"
         $skillContent = $skillContent.TrimEnd("`n") + "`n"
-        $skillMdPath = Join-Path $skillDir "SKILL.md"
-        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-        [System.IO.File]::WriteAllText($skillMdPath, $skillContent, $utf8NoBom)
+        [System.IO.File]::WriteAllText((Join-Path $skillDir "SKILL.md"), $skillContent, $utf8NoBom)
 
-        if ($Verbose) {
-            Write-Host "  Created SKILL.md ($([math]::Round((Get-Item $skillMdPath).Length / 1024, 1)) KB)" -ForegroundColor Gray
-        }
-
-        # Copy asset files if any
+        # Copy asset files if any (normalized to LF / no BOM)
         if ($def.assets.Count -gt 0) {
             New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null
             foreach ($asset in $def.assets) {
@@ -128,7 +122,6 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
                     $assetSource = Join-Path $GuidesDir $asset
                 }
                 if (Test-Path $assetSource) {
-                    # Normalize to LF / no BOM to match build-skills.sh output.
                     $assetText = [System.IO.File]::ReadAllText($assetSource) -replace "`r`n", "`n"
                     [System.IO.File]::WriteAllText((Join-Path $assetsDir $asset), $assetText, $utf8NoBom)
                     if ($Verbose) {
@@ -140,38 +133,12 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
             }
         }
 
-        # Create .skill zip with POSIX-style (forward-slash) entry names.
-        # We do NOT use Compress-Archive — it writes Windows backslashes into
-        # zip entry names, which break extraction on Linux/macOS.
-        $skillFile = Join-Path $OutputDir "$skillName.skill"
-        Remove-Item $skillFile -ErrorAction SilentlyContinue
-
-        Add-Type -AssemblyName System.IO.Compression -ErrorAction SilentlyContinue
-        Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
-
-        $zip = [System.IO.Compression.ZipFile]::Open($skillFile, [System.IO.Compression.ZipArchiveMode]::Create)
-        try {
-            $tempRoot = (Resolve-Path $tempDir).Path.TrimEnd('\','/') + [System.IO.Path]::DirectorySeparatorChar
-            Get-ChildItem -Path $skillDir -Recurse -File | ForEach-Object {
-                $entryName = $_.FullName.Substring($tempRoot.Length).Replace('\','/')
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entryName) | Out-Null
-            }
-        } finally {
-            $zip.Dispose()
-        }
-
-        $fileSize = [math]::Round((Get-Item $skillFile).Length / 1024, 1)
-        Write-Host "  -> $skillName.skill ($fileSize KB)" -ForegroundColor Green
-
+        Write-Host "  -> $skillName/SKILL.md" -ForegroundColor Green
         $builtCount++
     }
     catch {
         Write-Error "Failed to build $skillName : $_"
         $errorCount++
-    }
-    finally {
-        # Cleanup temp directory
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 }
 
@@ -182,6 +149,5 @@ if ($errorCount -gt 0) {
     Write-Host "  Errors: $errorCount" -ForegroundColor Red
 }
 Write-Host ""
-Write-Host "To install globally:" -ForegroundColor Yellow
-Write-Host "  1. Extract each .skill file to ~/.claude/skills/" -ForegroundColor Gray
-Write-Host "  2. Or run: ./scripts/setup-machine.ps1" -ForegroundColor Gray
+Write-Host "Skills are distributed via the plugin manifest (.claude-plugin/plugin.json)." -ForegroundColor Yellow
+Write-Host "For local development:  claude --plugin-dir ." -ForegroundColor Gray

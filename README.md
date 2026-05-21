@@ -16,16 +16,19 @@ A standardized workflow and template system for effective collaboration between 
 
 ### For Claude Code Specifically
 
-```powershell
-# Clone repo
-git clone https://github.com/berad217/human-training.git
-cd human-training
+The workflow skills ship as a Claude Code **plugin** (`.claude-plugin/plugin.json`).
 
-# Set up this machine (run once per machine)
-./scripts/setup-machine.ps1
-```
+- **Use it:** install the plugin through Claude Code's `/plugin` system, pointed
+  at this repo. Claude Code then manages updates — you only move to a new
+  version when the plugin's `version` is bumped.
+- **Develop it locally:** `claude --plugin-dir .` from the repo root loads the
+  plugin straight from disk.
 
-Now skills like `/project-genesis`, `/lifecycle-manager`, `/handover-manager` are available in ALL Claude Code sessions.
+Skills are namespaced under the plugin: `/human-training:project-genesis`,
+`/human-training:lifecycle-manager`, `/human-training:handover-manager`,
+`/human-training:onboarding-creator`.
+
+Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 
 ---
 
@@ -33,6 +36,9 @@ Now skills like `/project-genesis`, `/lifecycle-manager`, `/handover-manager` ar
 
 ```
 human-training/
+├── .claude-plugin/
+│   └── plugin.json              # Plugin manifest (name, version)
+│
 ├── workflow/                    # SOURCE OF TRUTH (model-agnostic)
 │   ├── guides/                  # Core workflow documents
 │   │   ├── genesis.md           # Sprint 0: idea → spec
@@ -50,18 +56,16 @@ human-training/
 │   ├── global-preferences.md    # Communication style (customize this!)
 │   └── claude-code.md           # Global CLAUDE.md for Claude Code
 │
-├── claude-skills/               # GENERATED (don't edit directly)
-│   ├── project-genesis.skill
-│   ├── lifecycle-manager.skill
-│   ├── handover-manager.skill
-│   ├── onboarding-creator.skill
-│   ├── ideation-helper.skill
-│   └── spec-writer.skill
+├── skills/                      # GENERATED (don't edit directly)
+│   ├── project-genesis/         # SKILL.md + assets/
+│   ├── lifecycle-manager/
+│   ├── handover-manager/
+│   └── onboarding-creator/
 │
 └── scripts/
-    ├── build-skills.ps1         # Generate skills from workflow docs
+    ├── build-skills.ps1         # Generate skills/ from workflow docs
     ├── build-skills.sh          # Same, for Linux/Mac
-    └── setup-machine.ps1        # Install skills globally
+    └── setup-machine.ps1        # Link the global CLAUDE.md
 ```
 
 ---
@@ -77,36 +81,37 @@ human-training/
 │                                                             │
 │                    ↓ build-skills.ps1                       │
 │                                                             │
-│  claude-skills/*.skill                                      │
+│  skills/<name>/SKILL.md                                     │
 │  ──────────────────────                                     │
-│  Auto-generated Claude Code packages.                       │
+│  Generated Claude Code skills, bundled by the plugin.       │
 │  Same content + Claude Code frontmatter.                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 **Edit the workflow docs. Run the build script. Skills stay in sync.**
 
+CI (`verify-skills.yml`) rebuilds `skills/` from `workflow/` on every push and
+fails if the committed `skills/` is stale — so a forgotten rebuild is caught
+automatically.
+
 ---
 
 ## Multi-Machine Setup
 
-Your workflow docs live in this git repo. On each machine:
+The skills are a plugin, so each machine just installs the plugin once through
+Claude Code's `/plugin` system — Claude Code keeps it updated.
 
-1. Clone this repo
-2. Run `./scripts/setup-machine.ps1`
-3. Skills and CLAUDE.md are installed to `~/.claude/`
-
-**When you update workflow docs:**
+**When you change the workflow docs:**
 ```powershell
-# On any machine, edit workflow/ files, then:
+# Edit workflow/ files, then regenerate skills/ and bump the version:
 ./scripts/build-skills.ps1
-git add . && git commit -m "Updated workflow"
+# edit .claude-plugin/plugin.json -> bump "version"
+git add . && git commit -m "Update workflow"
 git push
-
-# On other machines:
-git pull
-./scripts/setup-machine.ps1 -Force
 ```
+
+Other machines pick up the new version through Claude Code's plugin update flow.
+The `version` bump is what tells Claude Code an update is available.
 
 ---
 
@@ -114,12 +119,10 @@ git pull
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
-| **project-genesis** | Idea → Spec (Sprint 0) | Starting a new project |
+| **project-genesis** | Sprint 0: ideation + spec writing | Brainstorming an idea, or turning one into a spec |
 | **lifecycle-manager** | Active development loop | During implementation |
 | **handover-manager** | Context resets | Switching sessions, context full |
 | **onboarding-creator** | Create onboarding.md | New project setup |
-| **ideation-helper** | Brainstorming | Evaluating ideas |
-| **spec-writer** | Write specifications | After ideation, before coding |
 
 ---
 
@@ -127,14 +130,14 @@ git pull
 
 ### Phase 0: Idea to Spec
 
-1. **Brainstorm** using `ideation-protocol.md` (or `/ideation-helper`)
+1. **Brainstorm** with `/project-genesis`
    - Challenge assumptions, red-team the idea
    - Check if solution already exists
    - Force scope definition
 
-2. **Write spec** using `spec-writing-guide.md` (or `/spec-writer`)
-   - 4 rounds: info gathering → architecture → review → deliver
+2. **Write spec** with `/project-genesis` (same skill — ideation flows into speccing)
    - Concrete JSON examples, not vague descriptions
+   - Brief `spec.md` template, depth from the bundled spec-writing guide
 
 3. **Create onboarding** using `onboarding-guide.md` (or `/onboarding-creator`)
    - Entry point for any AI agent
@@ -210,10 +213,12 @@ A: No. The workflow docs work with any AI. Claude Code skills are optional.
 A: The project docs (spec.md, DEVLOG.md, onboarding.md) are plain markdown. Any AI can read them.
 
 **Q: How do I update skills after editing workflow docs?**
-A: Run `./scripts/build-skills.ps1` then `./scripts/setup-machine.ps1 -Force`
+A: Run `./scripts/build-skills.ps1` to regenerate `skills/`, bump `version` in
+`.claude-plugin/plugin.json`, then commit. Claude Code picks up the new version.
 
 **Q: Can I add my own skills?**
-A: Yes! Add a guide to `workflow/guides/`, update the skill definitions in `build-skills.ps1`, run build.
+A: Yes! Add a guide to `workflow/guides/`, add a matching definition in both
+`build-skills.ps1` and `build-skills.sh`, then run the build.
 
 ---
 
@@ -233,4 +238,4 @@ Use freely, modify as needed, share improvements.
 
 ---
 
-**Next:** Clone this repo, run setup, and start your next project with `/project-genesis`
+**Next:** Install the plugin, then start your next project with `/project-genesis`
