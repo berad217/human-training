@@ -16,6 +16,8 @@
 
 - **Be Lazy**: Don't read a 1000-line file until you need to edit it. Use outlines first.
 - **Reference, Don't Copy**: Name files/docs; don't dump their entire content into chat.
+- **Orient by relevance**: Read temporal context fully (latest DEVLOG entry, current handover). For large reference docs, pull only the slice you need — your target section of the spec, not the whole file. Reference files are for lookup, not required reading.
+- **Watch the proportion, not a line count**: There is no fixed orientation budget — a bigger project legitimately needs more orientation. The warning sign is proportional: if orienting consumes a large share of your context before any work begins, you're treating lookup files as required reading. Read more selectively; never skip context you actually need.
 
 ### Joining a "Moving Train"
 
