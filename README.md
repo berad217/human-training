@@ -26,7 +26,8 @@ in Claude Code:
 
 After install, the skills are namespaced under the plugin:
 `/human-training:project-genesis`, `/human-training:lifecycle-manager`,
-`/human-training:handover-manager`, `/human-training:onboarding-creator`.
+`/human-training:handover-manager`, `/human-training:onboarding-creator`,
+`/human-training:workflow-orientation`.
 
 Claude Code manages updates — a new version is picked up when `version` is
 bumped in `.claude-plugin/plugin.json`.
@@ -44,7 +45,7 @@ Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 ```
 human-training/
 ├── .claude-plugin/
-│   ├── plugin.json              # Plugin manifest (name, version 1.0.0)
+│   ├── plugin.json              # Plugin manifest (name, version 1.1.0)
 │   └── marketplace.json         # Single-plugin marketplace catalog
 │
 ├── workflow/                    # SOURCE OF TRUTH (model-agnostic)
@@ -68,7 +69,8 @@ human-training/
 │   ├── project-genesis/         # SKILL.md + assets/
 │   ├── lifecycle-manager/
 │   ├── handover-manager/
-│   └── onboarding-creator/
+│   ├── onboarding-creator/
+│   └── workflow-orientation/
 │
 ├── scripts/
 │   ├── build-skills.ps1         # Generate skills/ from workflow docs

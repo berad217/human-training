@@ -23,9 +23,10 @@
 
 If you arrive mid-project:
 
-1. **Read the latest DEVLOG entry**: Learn the recent technical baggage.
-2. **Read the current Handover**: Learn what's currently "breaking" or being debated.
-3. **Verify the Build**: Run the tests immediately. Don't trust the environment until the terminal proves it.
+1. **Read `onboarding.md` (if present)**: Use its "Getting Oriented" section as your map for where DEVLOG, handover, spec, and other docs actually live in this project. This is essential in projects bridged to non-canonical layouts; in canonical layouts it just confirms the defaults. If no `onboarding.md` exists, proceed with the defaults below.
+2. **Read the latest DEVLOG entry**: At the path from `onboarding.md`, or default: `DEVLOG.md`, `./docs/devlog.md`. Learn the recent technical baggage.
+3. **Read the current Handover**: At the path from `onboarding.md`, or default: `HANDOVER.md`, `./docs/.agents/current-handover.md`. Learn what's currently "breaking" or being debated.
+4. **Verify the Build**: Run the tests immediately. Don't trust the environment until the terminal proves it.
 
 ---
 

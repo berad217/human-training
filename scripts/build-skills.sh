@@ -99,6 +99,10 @@ build_skill "genesis.md" "project-genesis" \
     "Read, Write, Edit, Grep, Glob, WebSearch, WebFetch" \
     "ideation-protocol.md" "spec-writing-guide.md" "spec.md" "testing-standards.md"
 
+build_skill "workflow-orientation.md" "workflow-orientation" \
+    "Use when entering a project to align it with the sprint-based workflow: empty project (scaffold rails), existing project with no workflow (propose onboarding), partial setup (gap report), canonical-healthy (drift check), or mature project with its own conventions (bridge mode via onboarding.md). Always audits read-only first, discusses, then acts non-destructively." \
+    "Read, Write, Edit, Grep, Glob, Bash"
+
 echo ""
 echo "Build complete!"
 echo ""
