@@ -16,17 +16,24 @@ A standardized workflow and template system for effective collaboration between 
 
 ### For Claude Code Specifically
 
-The workflow skills ship as a Claude Code **plugin** (`.claude-plugin/plugin.json`).
+The workflow skills ship as a Claude Code **plugin**. Install once per machine,
+in Claude Code:
 
-- **Use it:** install the plugin through Claude Code's `/plugin` system, pointed
-  at this repo. Claude Code then manages updates — you only move to a new
-  version when the plugin's `version` is bumped.
-- **Develop it locally:** `claude --plugin-dir .` from the repo root loads the
-  plugin straight from disk.
+```
+/plugin marketplace add berad217/human-training
+/plugin install human-training@human-training
+```
 
-Skills are namespaced under the plugin: `/human-training:project-genesis`,
-`/human-training:lifecycle-manager`, `/human-training:handover-manager`,
-`/human-training:onboarding-creator`.
+After install, the skills are namespaced under the plugin:
+`/human-training:project-genesis`, `/human-training:lifecycle-manager`,
+`/human-training:handover-manager`, `/human-training:onboarding-creator`.
+
+Claude Code manages updates — a new version is picked up when `version` is
+bumped in `.claude-plugin/plugin.json`.
+
+For local development of this repo itself, `claude --plugin-dir .` from the
+repo root loads the plugin straight from disk without going through the
+marketplace.
 
 Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 
@@ -37,7 +44,8 @@ Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 ```
 human-training/
 ├── .claude-plugin/
-│   └── plugin.json              # Plugin manifest (name, version)
+│   ├── plugin.json              # Plugin manifest (name, version 1.0.0)
+│   └── marketplace.json         # Single-plugin marketplace catalog
 │
 ├── workflow/                    # SOURCE OF TRUTH (model-agnostic)
 │   ├── guides/                  # Core workflow documents
@@ -45,8 +53,8 @@ human-training/
 │   │   ├── lifecycle.md         # Sprint 1-N: active development
 │   │   ├── handover-guide.md    # Context resets between sessions
 │   │   ├── onboarding-guide.md  # Creating agent entry points
-│   │   ├── ideation-protocol.md # Brainstorming conversations
-│   │   └── spec-writing-guide.md# Writing specifications
+│   │   ├── ideation-protocol.md # Brainstorming conversations (asset)
+│   │   └── spec-writing-guide.md# Writing specifications (asset)
 │   ├── templates/               # Starter templates
 │   │   ├── devlog.md
 │   │   ├── handover.md
@@ -62,10 +70,13 @@ human-training/
 │   ├── handover-manager/
 │   └── onboarding-creator/
 │
-└── scripts/
-    ├── build-skills.ps1         # Generate skills/ from workflow docs
-    ├── build-skills.sh          # Same, for Linux/Mac
-    └── setup-machine.ps1        # Link the global CLAUDE.md
+├── scripts/
+│   ├── build-skills.ps1         # Generate skills/ from workflow docs
+│   ├── build-skills.sh          # Same, for Linux/Mac
+│   └── setup-machine.ps1        # Link the global CLAUDE.md
+│
+└── .github/workflows/
+    └── verify-skills.yml        # CI: skills/ in sync with workflow/
 ```
 
 ---
@@ -130,22 +141,22 @@ The `version` bump is what tells Claude Code an update is available.
 
 ### Phase 0: Idea to Spec
 
-1. **Brainstorm** with `/project-genesis`
+1. **Brainstorm** with `/human-training:project-genesis`
    - Challenge assumptions, red-team the idea
    - Check if solution already exists
    - Force scope definition
 
-2. **Write spec** with `/project-genesis` (same skill — ideation flows into speccing)
+2. **Write spec** with `/human-training:project-genesis` (same skill — ideation flows into speccing)
    - Concrete JSON examples, not vague descriptions
    - Brief `spec.md` template, depth from the bundled spec-writing guide
 
-3. **Create onboarding** using `onboarding-guide.md` (or `/onboarding-creator`)
+3. **Create onboarding** using `onboarding-guide.md` (or `/human-training:onboarding-creator`)
    - Entry point for any AI agent
    - "Office tour" style, not formal policy
 
 ### Phase 1-N: Implementation
 
-Follow `lifecycle.md` (or `/lifecycle-manager`):
+Follow `lifecycle.md` (or `/human-training:lifecycle-manager`):
 
 1. **Orient**: Read onboarding → handover → spec → DEVLOG
 2. **Implement**: Feature from spec
@@ -155,7 +166,7 @@ Follow `lifecycle.md` (or `/lifecycle-manager`):
 
 ### Context Management
 
-Use `handover-guide.md` (or `/handover-manager`) when:
+Use `handover-guide.md` (or `/human-training:handover-manager`) when:
 - Context window filling up
 - Stuck and need fresh perspective
 - Natural pause point (end of sprint)
@@ -238,4 +249,4 @@ Use freely, modify as needed, share improvements.
 
 ---
 
-**Next:** Install the plugin, then start your next project with `/project-genesis`
+**Next:** Install the plugin, then start your next project with `/human-training:project-genesis`
