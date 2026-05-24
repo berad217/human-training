@@ -212,6 +212,7 @@ See `skills-drafts/README.md` for the convention.
 | **onboarding-creator** | workflow/guides/ | Create onboarding.md | New project setup |
 | **workflow-orientation** | workflow/guides/ | Align an existing project with this workflow | Entering a project that doesn't yet use the sprint scaffold |
 | **robustness-audit** | skills-source/ | Defect-class audit of existing code | Returning to a codebase after a long absence; pre-release hardening pass; "what's likely broken?" |
+| **gemini-api** | skills-source/ | Current-Gemini-API working reference | Writing/reviewing/migrating Gemini 3.x code; preventing the training-data-default stumble when wiring up Gemini for text/image/function calling |
 
 ---
 
