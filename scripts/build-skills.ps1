@@ -1,17 +1,23 @@
 <#
 .SYNOPSIS
-    Builds Claude Code plugin skills from model-agnostic workflow documents.
+    Builds Claude Code plugin skills from two sources: model-agnostic workflow
+    documents, and fully-formed session-authored skill packages.
 
 .DESCRIPTION
-    Reads workflow guides from workflow/guides/ and generates
-    skills/<name>/SKILL.md (+ assets/) for each skill.
+    Produces skills/<name>/ for each skill the plugin ships. Two source tracks
+    feed the same output directory:
 
-    The workflow docs remain the SOURCE OF TRUTH (model-agnostic).
-    The skills/ directory is a GENERATED artifact bundled by the plugin
-    (see .claude-plugin/plugin.json).
+      1. Generated skills — workflow/guides/<source>.md + an entry in the
+         $skillDefinitions table below. The body is model-agnostic; the
+         frontmatter is synthesized from $skillDefinitions.
 
-    Output is normalized to LF / no BOM so it is byte-identical to what
-    build-skills.sh produces — CI compares the two builders' output.
+      2. Session-authored skills — fully-formed skill packages dropped into
+         skills-source/<name>/. These are copied through to skills/<name>/
+         as-is (with line-ending normalization).
+
+    Output is normalized to LF / no BOM so the two builders (this one and
+    build-skills.sh) produce byte-identical output regardless of which one
+    populated the committed skills/ tree.
 
 .EXAMPLE
     ./scripts/build-skills.ps1
@@ -33,6 +39,7 @@ if (-not $OutputDir) {
 $WorkflowDir = Join-Path $RepoRoot "workflow"
 $GuidesDir = Join-Path $WorkflowDir "guides"
 $TemplatesDir = Join-Path $WorkflowDir "templates"
+$SkillsSourceDir = Join-Path $RepoRoot "skills-source"
 
 # Skill definitions - maps source files to skill metadata
 # Edit this to add/modify skills
@@ -148,9 +155,54 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
     }
 }
 
+# Copy session-authored skills from skills-source/ into the output dir.
+# These are fully-formed skill packages (their own SKILL.md + any
+# assets/evals) — no transformation, just line-ending normalization so
+# both builders produce byte-identical output.
+$copiedCount = 0
+if (Test-Path $SkillsSourceDir) {
+    Get-ChildItem -Path $SkillsSourceDir -Directory | ForEach-Object {
+        $srcDir = $_.FullName
+        $skillName = $_.Name
+        $destDir = Join-Path $OutputDir $skillName
+
+        if (Test-Path $destDir) {
+            Write-Warning "skills-source/$skillName collides with a generated skill of the same name — skipping pass-through."
+            $errorCount++
+            return
+        }
+
+        Write-Host "Copying:  $skillName (from skills-source/)" -ForegroundColor Yellow
+
+        Get-ChildItem -Path $srcDir -Recurse -File | ForEach-Object {
+            $relPath = $_.FullName.Substring($srcDir.Length).TrimStart('\','/')
+            $outPath = Join-Path $destDir $relPath
+            $outParent = Split-Path -Parent $outPath
+            New-Item -ItemType Directory -Force -Path $outParent | Out-Null
+
+            # Normalize line endings to LF for text files (matches sh builder's
+            # tr -d '\r'). Binary files are byte-copied as-is.
+            $textExtensions = @('.md', '.json', '.yml', '.yaml', '.txt', '.sh', '.ps1', '.py', '.js', '.ts', '.css', '.html')
+            if ($textExtensions -contains $_.Extension.ToLower()) {
+                $text = [System.IO.File]::ReadAllText($_.FullName) -replace "`r`n", "`n"
+                [System.IO.File]::WriteAllText($outPath, $text, $utf8NoBom)
+            } else {
+                Copy-Item -LiteralPath $_.FullName -Destination $outPath -Force
+            }
+            if ($Verbose) {
+                Write-Host "  -> $skillName/$relPath" -ForegroundColor Gray
+            }
+        }
+
+        Write-Host "  -> $skillName/ (session-authored)" -ForegroundColor Green
+        $copiedCount++
+    }
+}
+
 Write-Host ""
 Write-Host "Build complete!" -ForegroundColor Cyan
-Write-Host "  Skills built: $builtCount" -ForegroundColor Green
+Write-Host "  Generated skills: $builtCount" -ForegroundColor Green
+Write-Host "  Session-authored skills: $copiedCount" -ForegroundColor Green
 if ($errorCount -gt 0) {
     Write-Host "  Errors: $errorCount" -ForegroundColor Red
 }

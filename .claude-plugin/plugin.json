@@ -1,7 +1,7 @@
 {
   "name": "human-training",
-  "description": "Sprint-based AI-collaboration workflow skills: project genesis (idea to spec), the active development lifecycle, session handovers, and agent onboarding.",
-  "version": "1.1.0",
+  "description": "Sprint-based AI-collaboration workflow skills (project genesis, lifecycle, handovers, onboarding, workflow alignment) plus session-authored skills like robustness-audit.",
+  "version": "1.2.0",
   "author": {
     "name": "berad217"
   }

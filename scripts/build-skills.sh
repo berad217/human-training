@@ -1,11 +1,14 @@
 #!/bin/bash
 #
-# build-skills.sh - Build Claude Code plugin skills from workflow docs
+# build-skills.sh - Build Claude Code plugin skills from two source tracks
 #
-# Generates skills/<name>/SKILL.md (+ assets/) from the model-agnostic
-# guides in workflow/. The workflow docs are the source of truth; the
-# skills/ directory is a generated artifact bundled by the plugin
-# (see .claude-plugin/plugin.json).
+# Produces skills/<name>/ from:
+#   1) Generated skills: workflow/guides/<source>.md combined with metadata
+#      in the build_skill calls below (model-agnostic body + synthesized
+#      frontmatter).
+#   2) Session-authored skills: fully-formed skill packages under
+#      skills-source/<name>/, copied through as-is (text files have CRLF
+#      stripped so output is byte-identical regardless of which builder ran).
 #
 # Usage: ./scripts/build-skills.sh
 #
@@ -18,6 +21,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/skills}"
 WORKFLOW_DIR="$REPO_ROOT/workflow"
 GUIDES_DIR="$WORKFLOW_DIR/guides"
 TEMPLATES_DIR="$WORKFLOW_DIR/templates"
+SKILLS_SOURCE_DIR="$REPO_ROOT/skills-source"
 
 echo "Building Claude Code plugin skills from workflow docs..."
 echo "Source: $GUIDES_DIR"
@@ -102,6 +106,46 @@ build_skill "genesis.md" "project-genesis" \
 build_skill "workflow-orientation.md" "workflow-orientation" \
     "Use when entering a project to align it with the sprint-based workflow: empty project (scaffold rails), existing project with no workflow (propose onboarding), partial setup (gap report), canonical-healthy (drift check), or mature project with its own conventions (bridge mode via onboarding.md). Always audits read-only first, discusses, then acts non-destructively." \
     "Read, Write, Edit, Grep, Glob, Bash"
+
+# --- Pass-through: copy session-authored skills from skills-source/ ---
+# These are fully-formed packages (their own SKILL.md + any assets/evals).
+# Text files have CRLF stripped so output is byte-identical to the PS builder.
+copy_session_skill() {
+    local src_dir="$1"
+    local skill_name="$2"
+    local dest_dir="$OUTPUT_DIR/$skill_name"
+
+    if [[ -d "$dest_dir" ]]; then
+        echo "WARNING: skills-source/$skill_name collides with a generated skill of the same name — skipping pass-through."
+        return 1
+    fi
+
+    echo "Copying:  $skill_name (from skills-source/)"
+
+    while IFS= read -r -d '' file; do
+        local rel="${file#$src_dir/}"
+        local out="$dest_dir/$rel"
+        mkdir -p "$(dirname "$out")"
+        case "${file,,}" in
+            *.md|*.json|*.yml|*.yaml|*.txt|*.sh|*.ps1|*.py|*.js|*.ts|*.css|*.html)
+                tr -d '\r' < "$file" > "$out"
+                ;;
+            *)
+                cp "$file" "$out"
+                ;;
+        esac
+    done < <(find "$src_dir" -type f -print0)
+
+    echo "  -> $skill_name/ (session-authored)"
+}
+
+if [[ -d "$SKILLS_SOURCE_DIR" ]]; then
+    for src in "$SKILLS_SOURCE_DIR"/*/; do
+        [[ -d "$src" ]] || continue
+        name="$(basename "$src")"
+        copy_session_skill "${src%/}" "$name"
+    done
+fi
 
 echo ""
 echo "Build complete!"

@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I haven't touched this repo in 6 months and I'm getting back into it. Before I add anything new, I'd like to know what's probably broken — the kind of bugs that would silently pass my test suite (1100 tests, all green) but show up the moment someone actually runs the thing. Can you walk through the code and look?",
+    "should_trigger": true
+  },
+  {
+    "query": "do a robustness audit on the pose detection app please — focus on the angle pipeline and the new sprint 17 smoothing stuff",
+    "should_trigger": true
+  },
+  {
+    "query": "i'm at a coffee shop on my laptop and don't have access to my actual dev box where i could fire up the docker stack. can you cold-read the code and tell me what runtime bugs are likely?",
+    "should_trigger": true
+  },
+  {
+    "query": "before this PR merges I want to make sure I haven't introduced any unhandled promise rejections or resource leaks. The diff touches client/src/auth.ts and server/middleware/jwt.ts. Look for the bug-classes that wouldn't show up in our jest tests.",
+    "should_trigger": true
+  },
+  {
+    "query": "what's likely broken in here? the tests pass but the deployed version is doing weird things. I want to catch the silent stuff before we ship next sprint.",
+    "should_trigger": true
+  },
+  {
+    "query": "hardening pass on the websocket layer — focus on stuff like unhandled errors, listeners not being removed, that kind of thing. don't worry about style",
+    "should_trigger": true
+  },
+  {
+    "query": "the gesture detector module silently stops working after one disable/re-enable cycle. I bet there are other modules with similar lifecycle bugs across this monorepo. can you go look?",
+    "should_trigger": true
+  },
+  {
+    "query": "fmea style audit on the new payment flow before we go live with it next week. /apps/checkout-v2",
+    "should_trigger": true
+  },
+  {
+    "query": "audit my code for security holes — path traversal, auth gaps on write routes, that kind of thing",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm worried about this codebase. been mostly working solo and I want a second pair of eyes to read it carefully and tell me what's likely to bite us. tests are green but I have a bad feeling",
+    "should_trigger": true
+  },
+  {
+    "query": "my jest test run is failing with `TypeError: Cannot read property 'x' of undefined` in dataBus.test.js line 47. help me figure out what's happening",
+    "should_trigger": false
+  },
+  {
+    "query": "explain to me how the angle calculator's smoother handles null values. just walk me through the logic",
+    "should_trigger": false
+  },
+  {
+    "query": "i want to add input validation to my Express routes. write me a zod schema for the user creation endpoint",
+    "should_trigger": false
+  },
+  {
+    "query": "refactor displayModule.js — it's gotten too long and i want to split out the angle-rendering stuff into its own file",
+    "should_trigger": false
+  },
+  {
+    "query": "set up github actions CI for this project. it should run npm test and npm run lint on every push and PR",
+    "should_trigger": false
+  },
+  {
+    "query": "convert this Express app to use Hono instead. focus on the routes file",
+    "should_trigger": false
+  },
+  {
+    "query": "write unit tests for the AngleSmoother class — I want coverage of the null-reset path and the live config update",
+    "should_trigger": false
+  },
+  {
+    "query": "look at the git history and tell me which sprints touched the filter pipeline",
+    "should_trigger": false
+  },
+  {
+    "query": "optimize the angle calculation function — it's running slow on large pose histories",
+    "should_trigger": false
+  },
+  {
+    "query": "what does this regex do? `pattern.replace(/[.+?^${}()|[\\]\\\\]/g, '\\$&')`",
+    "should_trigger": false
+  }
+]

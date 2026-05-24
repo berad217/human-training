@@ -17,12 +17,14 @@ on:
     paths:
       - 'workflow/**'
       - 'skills/**'
+      - 'skills-source/**'
       - 'scripts/build-skills.sh'
       - '.github/workflows/verify-skills.yml'
   pull_request:
     paths:
       - 'workflow/**'
       - 'skills/**'
+      - 'skills-source/**'
       - 'scripts/build-skills.sh'
       - '.github/workflows/verify-skills.yml'
   workflow_dispatch:
