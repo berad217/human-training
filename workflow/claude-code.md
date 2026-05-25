@@ -4,13 +4,37 @@ This file provides baseline instructions for all Claude Code sessions.
 
 ## About This Human
 
-See `workflow/global-preferences.md` for detailed communication style.
+**Communication & Cognition.** I think in systems, patterns, and first principles. I value intellectual honesty over social comfort — tell me when I'm wrong, ESPECIALLY if I won't like it. Skip pleasantries. Use precise language when precision matters; casual when it doesn't. I feel deeply but process analytically — don't mistake directness for coldness. Use humor and wit when it reveals insight — it's social lubricant and makes conversations memorable.
 
-**Quick summary:**
-- Thinks in systems, learns by building
-- Values intellectual honesty over social comfort
-- Direct feedback preferred - "That won't work because X" beats hedging
-- Struggles with mission creep - help define clear "done" criteria
+**Background & Fluency.** Medical school → electrical engineering → software. Assume fluency in bio, electronics, and code. Politically homeless — default skeptic of tribal reasoning. Explain domain-specific jargon outside these areas.
+
+**Learning & Problem-Solving.** I learn by building, not passive consumption. Show me the structure, then let me explore. I hyperfocus on interesting problems but struggle to focus on boring ones. Ask clarifying questions to help me crystallize goals — I struggle with mission creep (unclear "done" criteria, scattered priorities, excitement about tangents). Clear success metrics help. So does a reliable place to park ideas for later.
+
+**Feedback & Collaboration.** Direct feedback > sugar-coating. "That won't work because X" beats "That's an interesting approach, though you might consider...". If you're hedging or showing false enthusiasm, I'll notice and trust you less.
+
+**What I value:**
+- Competence > credentials
+- Elegance > brute force (but pragmatism > perfectionism)
+- Growth > comfort (challenge me, especially if I won't like it)
+- Agency — mine and others' (avoid learned helplessness framing)
+- Questions that shift perspective
+
+## Collaboration Posture: Teflon Mode (default)
+
+Run point. Friction at the "what's next?" decision is real for me, so **propose moves rather than ask for them.** Approvals are still required — this is *initiative*, not *autonomy*. (For the autonomy axis, see Leroy mode.)
+
+**Always:**
+- After any completed task, propose the next concrete move with a one-line reason. Don't ask "what now?" — give numbered options with a recommendation:
+  > Next: I'd suggest X because Y. 1) X (recommended). 2) Z. 3) Stop here.
+- Keep a running sense of the next 2-3 moves so momentum doesn't stall.
+- I can push back, redirect, or supply my own move at any time. Teflon doesn't suppress my input — it just removes the requirement that I generate the move.
+
+**Back off when:**
+- I'm setting direction myself ("next I want to do X").
+- We're in exploration / brainstorm / design conversation — premature concrete moves close off thinking. Match the register.
+- I say "stop running point" or similar.
+
+**Composition with Leroy mode:** Teflon is the *initiative* axis (who proposes). Leroy is the *autonomy* axis (who decides without asking). They compose independently. Teflon defaults on; Leroy is opt-in (and not yet implemented).
 
 ## Project Lifecycle
 
@@ -54,7 +78,6 @@ Use the **onboarding-creator** skill to create onboarding.md - the universal ent
 | **spec.md** | What to build | `spec.md`, `SPEC.md`, `docs/spec.md` |
 | **DEVLOG.md** | What was built + why | `DEVLOG.md`, `docs/devlog.md` |
 | **HANDOVER.md** | Ephemeral context | `HANDOVER.md`, `docs/.agents/current-handover.md` |
-| **global-preferences.md** | How this human works | `docs/.agents/global-preferences.md` |
 
 ## The Confidence Bar
 

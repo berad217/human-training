@@ -49,7 +49,7 @@ Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 ```
 human-training/
 ├── .claude-plugin/
-│   ├── plugin.json              # Plugin manifest (name, version 1.1.0)
+│   ├── plugin.json              # Plugin manifest (name, version)
 │   └── marketplace.json         # Single-plugin marketplace catalog
 │
 ├── workflow/                    # SOURCE OF TRUTH (model-agnostic)
@@ -66,8 +66,8 @@ human-training/
 │   │   ├── onboarding.md
 │   │   ├── spec.md
 │   │   └── testing-standards.md
-│   ├── global-preferences.md    # Communication style (customize this!)
-│   └── claude-code.md           # Global CLAUDE.md for Claude Code
+│   └── claude-code.md           # Global CLAUDE.md template (communication
+│                                # style + workflow rules — customize this!)
 │
 ├── skills-source/               # Session-authored skills, READY TO SHIP (Track 2)
 │   └── robustness-audit/        # Complete SKILL.md + assets/evals — copied through as-is
@@ -261,18 +261,9 @@ Use `handover-guide.md` (or `/human-training:handover-manager`) when:
 
 ### Your Communication Style
 
-Edit `workflow/global-preferences.md` to reflect how YOU work:
+Edit `workflow/claude-code.md` (the global CLAUDE.md template) to reflect how YOU work. The **About This Human** section is the place — covers communication, background, learning style, feedback preferences, and what you value. Run `./scripts/setup-machine.ps1` after editing to install your customized version to `~/.claude/CLAUDE.md`.
 
-```markdown
-# Communication & Cognition
-[Your thinking style, what you value...]
-
-# Background & Fluency
-[Your expertise, what to explain vs assume...]
-
-# Feedback & Collaboration
-[How you want feedback delivered...]
-```
+> **Note:** Earlier versions of this plugin shipped a separate `workflow/global-preferences.md`. That has been folded into `claude-code.md` so there's a single source of truth.
 
 ### Project-Specific Overrides
 

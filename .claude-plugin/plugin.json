@@ -1,7 +1,7 @@
 {
   "name": "human-training",
   "description": "Sprint-based AI-collaboration workflow skills (project genesis, lifecycle, handovers, onboarding, workflow alignment) plus session-authored skills (robustness-audit, gemini-api).",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "berad217"
   }
