@@ -35,7 +35,7 @@ jobs:
   verify-bash:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Rebuild skills from source into a temp output dir
         run: |
@@ -60,7 +60,7 @@ jobs:
     # issues that PS 7+ tolerates but 5.1 does not.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Rebuild skills via build-skills.ps1 (Windows PowerShell 5.1)
         shell: powershell
