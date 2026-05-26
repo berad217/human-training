@@ -19,6 +19,7 @@ on:
       - 'skills/**'
       - 'skills-source/**'
       - 'scripts/build-skills.sh'
+      - 'scripts/build-skills.ps1'
       - '.github/workflows/verify-skills.yml'
   pull_request:
     paths:
@@ -26,11 +27,12 @@ on:
       - 'skills/**'
       - 'skills-source/**'
       - 'scripts/build-skills.sh'
+      - 'scripts/build-skills.ps1'
       - '.github/workflows/verify-skills.yml'
   workflow_dispatch:
 
 jobs:
-  verify:
+  verify-bash:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,3 +53,29 @@ jobs:
             exit 1
           fi
           echo "Committed skills/ matches freshly built output."
+
+  verify-powershell:
+    # Exercises build-skills.ps1 under Windows PowerShell 5.1 (the version
+    # shipped with Windows) to catch regressions like missing-BOM / encoding
+    # issues that PS 7+ tolerates but 5.1 does not.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild skills via build-skills.ps1 (Windows PowerShell 5.1)
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./scripts/build-skills.ps1 -OutputDir "$env:RUNNER_TEMP\skills-rebuild-ps"
+
+      - name: Compare committed skills/ with PS-built output
+        shell: bash
+        run: |
+          set -e
+          if ! diff -r skills "$RUNNER_TEMP/skills-rebuild-ps"; then
+            echo ""
+            echo "FAIL: build-skills.ps1 output differs from committed skills/."
+            echo "      The two builders must produce byte-identical output."
+            exit 1
+          fi
+          echo "PS builder output matches committed skills/."
