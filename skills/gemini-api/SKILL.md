@@ -1,6 +1,6 @@
 ---
 name: gemini-api
-description: Use when writing, reviewing, debugging, or migrating Gemini API code — especially Gemini 3.x (3 Flash, 3.5 Flash, 3.1 Flash-Lite). Triggers on imports of `google.genai` / `@google/genai`, model strings like `gemini-3-flash`, `gemini-3.5-flash`, or `gemini-3.1-flash-lite`, calls to `generate_content` / `generateContent`, configuration of `GenerateContentConfig` / `ThinkingConfig`, and explicit user requests to wire up Gemini for a task (text, image, function calling, structured output, PDF, audio). Use proactively when about to write Gemini code so the default patterns reflect current 3.x conventions rather than older training-data defaults. Do NOT use for general LLM-provider comparisons, OpenAI/Anthropic specifics, or non-Gemini Google Cloud (storage, Vertex unrelated to Gemini, etc.).
+description: Use when writing, reviewing, debugging, or migrating Gemini API code — especially Gemini 3.x (3 Flash, 3.5 Flash, 3.1 Flash-Lite) and Gemma 4 served via the same hosted API (gemma-4-31b-it, gemma-4-26b-a4b-it). Triggers on imports of `google.genai` / `@google/genai`, model strings like `gemini-3-flash`, `gemini-3.5-flash`, `gemini-3.1-flash-lite`, `gemma-4-31b-it`, or `gemma-4-26b-a4b-it`, calls to `generate_content` / `generateContent`, configuration of `GenerateContentConfig` / `ThinkingConfig`, and explicit user requests to wire up Gemini or Gemma for a task (text, image, function calling, structured output, PDF, audio). Use proactively when about to write Gemini/Gemma code so the default patterns reflect current 3.x conventions rather than older training-data defaults. Do NOT use for general LLM-provider comparisons, OpenAI/Anthropic specifics, locally-hosted Gemma open weights (Ollama / HuggingFace / vLLM — this skill covers the hosted API path), or non-Gemini Google Cloud (storage, Vertex unrelated to Gemini, etc.).
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, WebFetch]
 ---
 
@@ -10,7 +10,7 @@ A working reference for writing Gemini API code in 2026 and beyond. This skill e
 
 The skill owns the **conventions and footguns** (the TL;DR below and `assets/current-conventions.md`). For use-case how-to, see `assets/cookbook.md`. For anything not covered there, Google's official docs are the source of truth — the pointer table at the bottom is your map; `WebFetch` is in the allowed tools so you can pull current pages live.
 
-## TL;DR — load these five facts before writing any Gemini code
+## TL;DR — load these six facts before writing any Gemini code
 
 1. **Use `google-genai` (Python) or `@google/genai` (JavaScript).** `google-generativeai` is the deprecated Python SDK; any example or Stack Overflow answer using `import google.generativeai as genai` is pre-current and will not match the current client shape. Install: `pip install google-genai` / `npm install @google/genai`.
 
@@ -21,6 +21,8 @@ The skill owns the **conventions and footguns** (the TL;DR below and `assets/cur
 4. **For function calling, prefer Python's automatic mode.** Pass the Python function directly in `tools=[my_function]`; the SDK extracts the schema from the signature + docstring and handles the call/response loop. If you must use manual mode (or you're in JavaScript, which has no automatic mode), **every** `FunctionResponse` MUST include `id=` matching the original `FunctionCall.id`. Omitting `id=` causes `finish_reason: STOP` with empty content — a silent failure mode, not an error.
 
 5. **Current 3.x model IDs:** `gemini-3.5-flash` (default for production, GA), `gemini-3.1-flash-lite` (high-volume / latency-sensitive / cost-sensitive), `gemini-3-flash-preview` (only if you need Computer Use, not yet on 3.5). Do NOT hardcode `gemini-pro`, `gemini-1.5-flash`, `gemini-2.5-flash` in new code — those are pre-3.x. Full table in `assets/current-conventions.md`.
+
+6. **Gemma 4 runs on the *same* hosted Gemini API — and has a far higher free-tier limit.** IDs: `gemma-4-31b-it` (dense, 30.7B) and `gemma-4-26b-a4b-it` (MoE, 25.2B total / 3.8B active). Both are multimodal (text + image), 256K context, and support `system_instruction`, function calling, structured JSON output, Google Search grounding, and `thinking_level`. They hit the same `generateContent` endpoint with the same request shape — no separate SDK, no local weights needed. **For high-volume batch work (captioning, judging, eval loops) Gemma 4 is the workhorse**: free-tier requests-per-day run roughly Gemma 4 ≈ 1,500 ≫ `gemini-3.1-flash-lite` ≈ 500 ≫ `gemini-3.5-flash` ≈ 20 (verify current numbers — they shift). **Caveat:** fact 2 (don't set `temperature`) is specific to Gemini 3.x reasoning calibration — Google does NOT document sampling guidance for Gemma, so do not assume the rule transfers to a different model family. See `assets/current-conventions.md` for the Gemma section.
 
 ## Setup and first call
 
@@ -181,6 +183,8 @@ This skill covers setup, main flow, image input, function calling, and the docum
 | Pricing | https://ai.google.dev/gemini-api/docs/pricing |
 | Built-in tools (Search, URL context, code execution) | https://ai.google.dev/gemini-api/docs/tool-combination |
 | Models overview | https://ai.google.dev/gemini-api/docs/models |
+| Running Gemma 4 via the hosted Gemini API | https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api |
+| Gemma 4 model card (variants, params, modalities) | https://ai.google.dev/gemma/docs/core/model_card_4 |
 
 If a URL above 404s, the page was reshuffled — start from https://ai.google.dev/gemini-api/docs and follow the left nav.
 

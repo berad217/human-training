@@ -297,3 +297,42 @@ If you must persist conversations to a database, store the full `Content` object
 Pricing differs by roughly an order of magnitude between Flash and Flash-Lite — verify the current numbers at https://ai.google.dev/gemini-api/docs/pricing before scaling. Knowledge cutoffs may shift as Google ships point releases; verify via the models overview at https://ai.google.dev/gemini-api/docs/models if it matters for your use case.
 
 Pre-3.x model IDs (`gemini-pro`, `gemini-1.5-flash`, `gemini-1.5-pro`, `gemini-2.0-flash`, `gemini-2.5-flash`, etc.) are out of scope for these conventions — if you're maintaining code on those, the migration checklist in https://ai.google.dev/gemini-api/docs/whats-new-gemini-3.5 is the canonical upgrade path.
+
+---
+
+## Gemma 4 on the hosted Gemini API
+
+Gemma 4 (Google's open-weight family, released April 2026, Apache 2.0) is served on the **same** hosted Gemini API as the Gemini-branded models — same `generativelanguage.googleapis.com/v1beta/models/{id}:generateContent` endpoint, same `google-genai` / `@google/genai` SDK, same request shape. You do NOT need to download weights or run a local server to use these via the API. (The smaller on-device variants — E2B, E4B — are open-weights-only and not served on the hosted API; only the two below are.)
+
+| Model | Model code | Arch | Params | Context | Modalities |
+|---|---|---|---|---|---|
+| Gemma 4 31B | `gemma-4-31b-it` | Dense | 30.7B | 256K | text + image |
+| Gemma 4 26B | `gemma-4-26b-a4b-it` | MoE (8 of 128 experts active, 1 shared) | 25.2B total / 3.8B active | 256K | text + image |
+
+**Dense vs MoE — which to pick.** The dense `gemma-4-31b-it` gives predictable full-parameter quality and is the safer default when output *consistency* matters (e.g. a judge/scorer whose outputs you compare across runs). The MoE `gemma-4-26b-a4b-it` is cheaper/faster per token (only ~3.8B params active) and near-31B quality — a good captioner/generator, worth A/B-ing, but the routing makes it a slightly less stable choice for a scoring role. Both share the identical API shape, so supporting both is just two entries in a model list.
+
+**Why Gemma 4 matters for batch work — free-tier RPD.** The free-tier requests-per-day limit is dramatically higher for Gemma than for the Gemini Flash models, which flips the usual default for high-volume jobs (captioning, judging, eval/search loops):
+
+| Model | Approx. free-tier RPD |
+|---|---|
+| Gemma 4 | ~1,500 |
+| `gemini-3.1-flash-lite` | ~500 |
+| `gemini-3.5-flash` | ~20 |
+
+At ~20 RPD, `gemini-3.5-flash` cannot complete even one moderate batch (e.g. a 27-item caption + judge pass = 54 requests). For any loop that fans out across a dataset, reach for Gemma 4 first. **Verify current numbers** at https://ai.google.dev/gemini-api/docs/rate-limits — Google adjusts these.
+
+### Supported features (confirmed via Google's "Run Gemma with the Gemini API" page)
+
+- ✅ **`system_instruction` / `systemInstruction`** — fully supported, same as Gemini. (Note: this is a *correction* of a common stale belief that Gemma lacks system-instruction support — older locally-hosted Gemma chat templates folded the system prompt into the first user turn, but the hosted API exposes the real field.)
+- ✅ **Image input** — works both ways: inline base64 (`Part.from_bytes` / `inline_data`) AND the Files API (`file_data` + `file_uri`). Google's doc example uses Files API; inline bytes also work, same as Gemini. Use inline for one-shot small images, Files API for large or reused ones.
+- ✅ **Function calling**, ✅ **structured JSON output**, ✅ **Google Search grounding**, ✅ **`thinking_level`** (Google's example sets `thinking_level="high"`).
+
+### The one real footgun: sampling parameters
+
+Footgun 1 above (**don't set `temperature` / `top_p` / `top_k`**) is specific to **Gemini 3.x**, whose *reasoning is calibrated against the defaults*. That justification does **not** automatically extend to Gemma — it's a different model family, and Google does **not** publish sampling guidance for Gemma on the API. So:
+
+- Do not blindly apply the "never set temperature" rule to Gemma code, and do not blindly copy a temperature you'd use elsewhere either.
+- If you need deterministic-style output, the system-instruction approach (Footgun 1's "right way") is still the safest portable move.
+- If you genuinely need sampling control on Gemma, treat it as unverified: test empirically and check the current model card (https://ai.google.dev/gemma/docs/core/model_card_4) rather than assuming.
+
+This asymmetry — a rule that's load-bearing for Gemini 3.x but unverified for Gemma — is exactly the kind of thing that produces subtly wrong code when you pattern-match "it's all the Gemini API" too eagerly.
