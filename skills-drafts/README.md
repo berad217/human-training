@@ -48,5 +48,5 @@ When a draft is ready to ship:
    research/notes if you don't want them shipping in the plugin — only what
    the skill actually needs at runtime should travel.
 3. Run `./scripts/build-skills.ps1`.
-4. Bump `version` in `.claude-plugin/plugin.json`.
+4. Bump `version` in both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`.
 5. Commit, push, `/plugin update human-training@human-training`.

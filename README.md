@@ -2,7 +2,7 @@
 
 A standardized workflow and template system for effective collaboration between non-professional developers and AI coding agents.
 
-**Key feature:** Model-agnostic workflow documents that work with ANY AI (Claude, GPT, Gemini, Cursor, etc.), with optional Claude Code skills auto-generated from the same source.
+**Key feature:** Model-agnostic workflow documents that work with ANY AI (Claude, GPT, Gemini, Cursor, etc.), with optional Claude Code and Codex skills generated from the same source.
 
 > **AI agents arriving in this repo: read [onboarding.md](onboarding.md) first.**
 > It covers how *this* repo works (the workflow infrastructure), which is
@@ -42,9 +42,25 @@ marketplace.
 
 Optionally run `./scripts/setup-machine.ps1` to also link the global CLAUDE.md.
 
+### For Codex Specifically
+
+The same built `skills/` tree is exposed through `.codex-plugin/plugin.json`.
+Install it through a Codex local/personal plugin entry that points at this
+checkout. Codex reads the same `skills/` output as Claude Code; the Codex
+manifest exists only to describe the package to Codex.
+
+When changing shipped skills or plugin metadata, keep
+`.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` on the same
+`version`. CI verifies that alignment.
+
 ---
 
 ## Repository Structure
+
+Codex support adds `.codex-plugin/plugin.json`, which points at the same
+`skills/` build output as the Claude manifest. CI also runs
+`scripts/verify-plugin-manifests.py` to keep both manifests valid and
+version-aligned.
 
 ```
 human-training/
@@ -151,26 +167,31 @@ subagents, Claude Code tooling, etc.) and was authored in-session — the
 session-context SKILL.md *is* the artifact, not a translation of a generic doc.
 
 CI (`verify-skills.yml`) rebuilds `skills/` on every push and fails if the
-committed `skills/` is stale — so a forgotten rebuild is caught automatically.
+committed `skills/` is stale. It also verifies the Claude and Codex plugin
+manifests are valid and version-aligned.
 
 ---
 
 ## Multi-Machine Setup
 
-The skills are a plugin, so each machine just installs the plugin once through
-Claude Code's `/plugin` system — Claude Code keeps it updated.
+The skills are distributed as plugins. Claude Code uses `.claude-plugin/`;
+Codex uses `.codex-plugin/`. Both manifests point at the same built `skills/`
+tree and must keep the same version.
 
 **When you change anything that goes into the plugin:**
 ```powershell
 # Edit workflow/ files or drop a new skill into skills-source/, then:
 ./scripts/build-skills.ps1
-# edit .claude-plugin/plugin.json -> bump "version"
+# edit both plugin manifests -> bump "version" to the same value
+python scripts/verify-plugin-manifests.py
 git add . && git commit -m "Update workflow"
 git push
 ```
 
 Other machines pick up the new version through Claude Code's plugin update flow.
-The `version` bump is what tells Claude Code an update is available.
+The `version` bump is what tells Claude Code an update is available. Codex
+local installs may also need a plugin reinstall/cache refresh and a new thread
+to pick up changed skills.
 
 ### Adding a new session-authored skill (Track 2)
 
@@ -182,7 +203,7 @@ When a session produces a high-yield workflow worth keeping:
 2. Drop the folder into `skills-source/<skill-name>/`.
 3. Open a session in this repo: "I dropped a new skill in skills-source — wire it in."
 4. That session will: validate the frontmatter, run `./scripts/build-skills.ps1`,
-   bump `.claude-plugin/plugin.json`, commit, push.
+   bump both plugin manifests, commit, push.
 5. `/plugin update human-training@human-training` on each machine.
 
 ### Developing a skill in this repo (skills-drafts/)
@@ -202,7 +223,7 @@ See `skills-drafts/README.md` for the convention.
 
 ---
 
-## Available Skills (Claude Code)
+## Available Skills (Claude Code and Codex)
 
 | Skill | Source Track | Purpose | When to Use |
 |-------|--------------|---------|-------------|
@@ -288,14 +309,16 @@ Projects can have their own `.claude/` folder that overrides global settings:
 ## FAQ
 
 **Q: Do I need Claude Code to use this?**
-A: No. The workflow docs work with any AI. Claude Code skills are optional.
+A: No. The workflow docs work with any AI. Claude Code and Codex skills are optional.
 
 **Q: What if I switch AI tools mid-project?**
 A: The project docs (spec.md, DEVLOG.md, onboarding.md) are plain markdown. Any AI can read them.
 
 **Q: How do I update skills after editing workflow docs?**
 A: Run `./scripts/build-skills.ps1` to regenerate `skills/`, bump `version` in
-`.claude-plugin/plugin.json`, then commit. Claude Code picks up the new version.
+both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`, then commit.
+Claude Code picks up the new version through its plugin update flow; Codex local
+installs may need a reinstall/cache refresh and a new thread.
 
 **Q: Can I add my own skills?**
 A: Yes — two ways:

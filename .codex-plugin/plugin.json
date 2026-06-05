@@ -1,0 +1,38 @@
+{
+  "name": "human-training",
+  "version": "1.7.0",
+  "description": "Sprint-based AI-collaboration workflow skills (project genesis, lifecycle, handovers, onboarding, workflow alignment) plus session-authored skills.",
+  "author": {
+    "name": "berad217",
+    "url": "https://github.com/berad217"
+  },
+  "homepage": "https://github.com/berad217/human-training",
+  "repository": "https://github.com/berad217/human-training",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "skills",
+    "ai-collaboration",
+    "project-management",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Human Training",
+    "shortDescription": "Sprint workflow skills for AI-human projects",
+    "longDescription": "Human Training provides sprint-based workflow skills for project genesis, active development, handovers, onboarding, workflow orientation, robustness audits, and provider-specific working references.",
+    "developerName": "berad217",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/berad217/human-training",
+    "defaultPrompt": [
+      "Help me shape this project idea into a spec.",
+      "Orient to this project workflow and start the next task.",
+      "Create a handover for the next session."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

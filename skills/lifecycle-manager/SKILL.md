@@ -1,6 +1,7 @@
 ---
 name: lifecycle-manager
-description: Use when actively implementing features in Sprint 1-N: writing code, writing tests right after, updating the DEVLOG with decisions and rationale, checking the confidence bar before acting, orienting at the start of a session, or handling a mid-sprint context reset. The core test-code-document development loop.
+description: >-
+  Use when actively implementing features in Sprint 1-N: writing code, writing tests right after, updating the DEVLOG with decisions and rationale, checking the confidence bar before acting, orienting at the start of a session, or handling a mid-sprint context reset. The core test-code-document development loop.
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, TodoWrite]
 ---
 

@@ -1,5 +1,6 @@
 # Verifies that the committed skills/ directory matches what
-# build-skills.sh would produce from the current workflow/ docs.
+# build-skills.sh would produce from the current workflow/ docs, and
+# that Claude/Codex plugin manifests remain valid and version-aligned.
 #
 # Catches silent staleness: workflow source edited without rebuilding
 # the generated skills/ tree.
@@ -9,7 +10,7 @@
 # build-skills.ps1) normalize to LF / no BOM, so their output is
 # byte-identical regardless of which one produced the committed tree.
 
-name: Verify skills are in sync with source
+name: Verify skills and plugin manifests
 
 on:
   push:
@@ -18,16 +19,22 @@ on:
       - 'workflow/**'
       - 'skills/**'
       - 'skills-source/**'
+      - '.claude-plugin/plugin.json'
+      - '.codex-plugin/plugin.json'
       - 'scripts/build-skills.sh'
       - 'scripts/build-skills.ps1'
+      - 'scripts/verify-plugin-manifests.py'
       - '.github/workflows/verify-skills.yml'
   pull_request:
     paths:
       - 'workflow/**'
       - 'skills/**'
       - 'skills-source/**'
+      - '.claude-plugin/plugin.json'
+      - '.codex-plugin/plugin.json'
       - 'scripts/build-skills.sh'
       - 'scripts/build-skills.ps1'
+      - 'scripts/verify-plugin-manifests.py'
       - '.github/workflows/verify-skills.yml'
   workflow_dispatch:
 
@@ -36,6 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Verify plugin manifests
+        run: python scripts/verify-plugin-manifests.py
 
       - name: Rebuild skills from source into a temp output dir
         run: |
@@ -61,6 +71,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Verify plugin manifests
+        shell: powershell
+        run: python scripts/verify-plugin-manifests.py
 
       - name: Rebuild skills via build-skills.ps1 (Windows PowerShell 5.1)
         shell: powershell

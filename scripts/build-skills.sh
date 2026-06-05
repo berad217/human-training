@@ -59,7 +59,8 @@ build_skill() {
     cat > "$skill_dir/SKILL.md" << SKILL_EOF
 ---
 name: $skill_name
-description: $description
+description: >-
+  $description
 allowed-tools: [$allowed_tools]
 ---
 
@@ -150,5 +151,5 @@ fi
 echo ""
 echo "Build complete!"
 echo ""
-echo "Skills are distributed via the plugin manifest (.claude-plugin/plugin.json)."
+echo "Skills are distributed via plugin manifests (.claude-plugin/plugin.json and .codex-plugin/plugin.json)."
 echo "For local development:  claude --plugin-dir ."

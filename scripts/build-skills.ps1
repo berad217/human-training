@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Builds Claude Code plugin skills from two sources: model-agnostic workflow
     documents, and fully-formed session-authored skill packages.
@@ -115,7 +115,8 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
         $toolsList = ($def.allowedTools | ForEach-Object { $_ }) -join ", "
         $frontmatter = "---`n" +
             "name: $skillName`n" +
-            "description: $($def.description)`n" +
+            "description: >-`n" +
+            "  $($def.description)`n" +
             "allowed-tools: [$toolsList]`n" +
             "---`n`n"
 
@@ -207,5 +208,5 @@ if ($errorCount -gt 0) {
     Write-Host "  Errors: $errorCount" -ForegroundColor Red
 }
 Write-Host ""
-Write-Host "Skills are distributed via the plugin manifest (.claude-plugin/plugin.json)." -ForegroundColor Yellow
+Write-Host "Skills are distributed via plugin manifests (.claude-plugin/plugin.json and .codex-plugin/plugin.json)." -ForegroundColor Yellow
 Write-Host "For local development:  claude --plugin-dir ." -ForegroundColor Gray
