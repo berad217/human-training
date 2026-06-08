@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Builds Claude Code plugin skills from two sources: model-agnostic workflow
     documents, and fully-formed session-authored skill packages.
