@@ -7,11 +7,11 @@
     Produces skills/<name>/ for each skill the plugin ships. Two source tracks
     feed the same output directory:
 
-      1. Generated skills — workflow/guides/<source>.md + an entry in the
+      1. Generated skills -- workflow/guides/<source>.md + an entry in the
          $skillDefinitions table below. The body is model-agnostic; the
          frontmatter is synthesized from $skillDefinitions.
 
-      2. Session-authored skills — fully-formed skill packages dropped into
+      2. Session-authored skills -- fully-formed skill packages dropped into
          skills-source/<name>/. These are copied through to skills/<name>/
          as-is (with line-ending normalization).
 
@@ -158,7 +158,7 @@ foreach ($sourceFile in $skillDefinitions.Keys) {
 
 # Copy session-authored skills from skills-source/ into the output dir.
 # These are fully-formed skill packages (their own SKILL.md + any
-# assets/evals) — no transformation, just line-ending normalization so
+# assets/evals) -- no transformation, just line-ending normalization so
 # both builders produce byte-identical output.
 $copiedCount = 0
 if (Test-Path $SkillsSourceDir) {
@@ -168,7 +168,7 @@ if (Test-Path $SkillsSourceDir) {
         $destDir = Join-Path $OutputDir $skillName
 
         if (Test-Path $destDir) {
-            Write-Warning "skills-source/$skillName collides with a generated skill of the same name — skipping pass-through."
+            Write-Warning "skills-source/$skillName collides with a generated skill of the same name -- skipping pass-through."
             $errorCount++
             return
         }
