@@ -97,7 +97,7 @@ build_skill "handover-guide.md" "handover-manager" \
 build_skill "onboarding-guide.md" "onboarding-creator" \
     "Use when setting up a new project, after the Sprint 0 spec is complete, or when an AI agent entry point is missing. Creates onboarding.md, the universal orientation doc that works across any environment (Cursor, VSCode, Claude Code, web) - the office tour, not the employee handbook." \
     "Read, Write, Edit, Grep, Glob" \
-    "onboarding.md"
+    "onboarding.md" "CONTEXT.md"
 
 build_skill "genesis.md" "project-genesis" \
     "Use when starting a new project, brainstorming an idea, evaluating whether something is worth building, or turning a concept into a technical spec. Covers Sprint 0 end to end: ideation (challenge ideas, red-team, force scope) and spec writing (concrete specs for coding agents). Enter at brainstorming, enter at speccing, or flow through both." \

@@ -5,6 +5,7 @@ Welcome! You're building [One sentence purpose].
 ## 1. Getting Oriented
 
 - **Spec**: `docs/.agents/spec.md` (What to build)
+- **Context**: `CONTEXT.md` (Shared language / glossary — if the project has one)
 - **Lifecycle**: `docs/.agents/lifecycle.md` (Critical workflow handbook)
 - **DEVLOG**: `docs/DEVLOG.md` (What happened)
 - **Handover**: `HANDOVER.md` (Current in-flight bridging)

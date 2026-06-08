@@ -42,6 +42,7 @@ read sequence and hands off when something is missing:
 Check each canonical doc at its candidate locations. First hit wins.
 
 - **onboarding.md**: project root → `./docs/onboarding.md` → `./docs/.agents/onboarding.md`
+- **CONTEXT.md**: project root → `./docs/CONTEXT.md`
 - **DEVLOG.md**: project root → `./docs/devlog.md` → `./docs/DEVLOG.md`
 - **Handover**: `./HANDOVER.md` → `./docs/.agents/current-handover.md` → `.agents/current-handover.md` → legacy `.claude/current-handover.md`
 
@@ -60,6 +61,10 @@ everything:
 
 - **onboarding.md** — read the "Getting Oriented" / map section to learn where
   things live. Skim, don't memorize the whole file.
+- **CONTEXT.md, if present** — the project's glossary. Durable rather than
+  temporal, but small and high-leverage: it's the shared language, so reading it
+  keeps your naming aligned. Skip it silently if absent — not every project has
+  one.
 - **Latest DEVLOG entry only** — the most recent sprint entry. The recent
   technical baggage, not the full history.
 - **Current handover, in full** — this is the ephemeral delta: what was

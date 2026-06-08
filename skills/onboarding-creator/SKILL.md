@@ -99,6 +99,11 @@ Welcome! You're here to help build [project description in one sentence].
 - What it contains: Technical specification, architecture, **Visual Identity**, and the **Sprint Plan**.
 - If you can't find it: Ask the user.
 
+**Context (glossary):**
+- Common locations: `CONTEXT.md`, `./docs/CONTEXT.md`
+- What it contains: The project's shared language — terms defined once and used everywhere. A glossary and nothing else (no plans, decisions, or implementation — those live in the spec and DEVLOG).
+- If it doesn't exist yet: That's fine. Seed it lazily — only when the project has domain jargon worth pinning down. `/grill` maintains it inline during design sessions; you can stub it from the `CONTEXT.md` template when first setting up.
+
 **DEVLOG:**
 - Common locations: `DEVLOG.md`, `./docs/devlog.md`, `./docs/DEVLOG.md`
 - What it contains: Sprint-by-sprint record of what was built and why.
@@ -458,6 +463,7 @@ Welcome! You're here to help build [one sentence description].
 **Look for these documents (locations may vary):**
 
 - **Spec:** `spec.md`, `./docs/spec.md` - Technical specification & **Visual Identity**.
+- **Context:** `CONTEXT.md` - The project's shared language / glossary (if it has one).
 - **DEVLOG:** `DEVLOG.md`, `./docs/devlog.md` - What's been built and why.
 - **Handover:** `HANDOVER.md`, `./docs/.agents/current-handover.md` - Current state & **Parking Lot**.
 - **Global Preferences:** `./docs/.agents/global-preferences.md` - How this human works (if exists).
@@ -539,6 +545,7 @@ Welcome! You're here to help build [one sentence description].
 
 - **Global preferences** - Who the human is (reusable across projects)
 - **Onboarding** - How to work on THIS project (project-specific entry point)
+- **Context** - What the project's words mean (the shared glossary/language)
 - **Spec Section 11** - Technical implementation constraints (engineering rules)
 - **Handover** - Current conversation state (ephemeral, constantly changing)
 

@@ -24,9 +24,10 @@
 If you arrive mid-project:
 
 1. **Read `onboarding.md` (if present)**: Use its "Getting Oriented" section as your map for where DEVLOG, handover, spec, and other docs actually live in this project. This is essential in projects bridged to non-canonical layouts; in canonical layouts it just confirms the defaults. If no `onboarding.md` exists, proceed with the defaults below.
-2. **Read the latest DEVLOG entry**: At the path from `onboarding.md`, or default: `DEVLOG.md`, `./docs/devlog.md`. Learn the recent technical baggage.
-3. **Read the current Handover**: At the path from `onboarding.md`, or default: `HANDOVER.md`, `./docs/.agents/current-handover.md`. Learn what's currently "breaking" or being debated.
-4. **Verify the Build**: Run the tests immediately. Don't trust the environment until the terminal proves it.
+2. **Read `CONTEXT.md` (if present)**: The project's glossary — its shared language. It's small and high-leverage; reading it up front keeps your naming consistent with the project's. Default: `CONTEXT.md`, `./docs/CONTEXT.md`. If none exists, the project may not need one yet (`/grill` creates it lazily).
+3. **Read the latest DEVLOG entry**: At the path from `onboarding.md`, or default: `DEVLOG.md`, `./docs/devlog.md`. Learn the recent technical baggage.
+4. **Read the current Handover**: At the path from `onboarding.md`, or default: `HANDOVER.md`, `./docs/.agents/current-handover.md`. Learn what's currently "breaking" or being debated.
+5. **Verify the Build**: Run the tests immediately. Don't trust the environment until the terminal proves it.
 
 ---
 

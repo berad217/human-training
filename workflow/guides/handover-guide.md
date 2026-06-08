@@ -31,6 +31,7 @@ A handover is NOT a status report. It is a bridge.
 - [ ] onboarding.md (how to work with this human)
 - [ ] docs/.agents/global-preferences.md (communication style) — legacy aliases: `.agents/global-preferences.md`, `.claude/global-preferences.md`
 - [ ] SPEC.md or similar (what to build)
+- [ ] CONTEXT.md (the project's glossary / shared language)
 - [ ] DEVLOG.md (what was built and why)
 - [ ] Code (actual implementation)
 
@@ -39,6 +40,7 @@ A handover is NOT a status report. It is a bridge.
 - global preferences: `./docs/.agents/global-preferences.md`, `.agents/global-preferences.md`, `.claude/global-preferences.md`
 - handover: `HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, `.claude/current-handover.md`, `./docs/handover.md`
 - spec: `spec.md`, `SPEC.md`, `./docs/spec.md`, `./documentation/spec.md`
+- context: `CONTEXT.md`, `./docs/CONTEXT.md`
 - devlog: `DEVLOG.md`, `./docs/DEVLOG.md`, `./docs/devlog.md`
 ```
 
@@ -53,6 +55,7 @@ Different docs serve different purposes:
 | Spec | What to build (decisions made) | Decisions still in flight |
 | DEVLOG | What was built + rationale | Current discussions, unsolved problems |
 | Code | Implementation | Why we chose this approach over alternatives we discussed |
+| CONTEXT.md | The project's shared vocabulary (glossary) | Plans, decisions, implementation — those live in spec/DEVLOG |
 | **Handover** | **Conversation state** | Nothing - handover is ephemeral |
 
 **Handover captures the discussion, not just the state.**
@@ -101,6 +104,7 @@ As soon as a task is done and the DEVLOG is updated:
 1. **Wipe the handover clean** or reduce it to the next immediate "in-flight" thought.
 2. The goal is to keep the handover under 200 tokens whenever possible.
 3. **Draft the Handover**: Tell the user you've prepared it, summarize the "Delta", and save/overwrite the file.
+4. **Flush the glossary**: If any domain terms got sharpened or coined this session, land them in `CONTEXT.md` now (if the project keeps one). Terms are Record, not Delta — they belong in the glossary, not the handover.
 
 ---
 

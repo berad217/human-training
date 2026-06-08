@@ -60,7 +60,7 @@ $skillDefinitions = @{
         name = "onboarding-creator"
         description = "Use when setting up a new project, after the Sprint 0 spec is complete, or when an AI agent entry point is missing. Creates onboarding.md, the universal orientation doc that works across any environment (Cursor, VSCode, Claude Code, web) - the office tour, not the employee handbook."
         allowedTools = @("Read", "Write", "Edit", "Grep", "Glob")
-        assets = @("onboarding.md")
+        assets = @("onboarding.md", "CONTEXT.md")
     }
     "genesis.md" = @{
         name = "project-genesis"
