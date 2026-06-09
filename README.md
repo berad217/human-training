@@ -188,10 +188,20 @@ git add . && git commit -m "Update workflow"
 git push
 ```
 
-Other machines pick up the new version through Claude Code's plugin update flow.
-The `version` bump is what tells Claude Code an update is available. Codex
-local installs may also need a plugin reinstall/cache refresh and a new thread
-to pick up changed skills.
+Other machines pick up the new version through Claude Code's plugin update
+flow — but it is **not** automatic. The `version` bump tells Claude Code an
+update exists; each machine must then refresh the marketplace catalog, install,
+and restart:
+
+```bash
+claude plugin marketplace update human-training      # refresh catalog (autoUpdate only does this at startup)
+claude plugin update human-training@human-training   # install the new version
+# then fully quit + relaunch Claude Code
+```
+
+Skipping the `marketplace update` line is the usual reason a machine reports
+"latest" while sitting versions behind. Codex local installs may also need a
+plugin reinstall/cache refresh and a new thread to pick up changed skills.
 
 ### Adding a new session-authored skill (Track 2)
 
@@ -204,7 +214,10 @@ When a session produces a high-yield workflow worth keeping:
 3. Open a session in this repo: "I dropped a new skill in skills-source — wire it in."
 4. That session will: validate the frontmatter, run `./scripts/build-skills.ps1`,
    bump both plugin manifests, commit, push.
-5. `/plugin update human-training@human-training` on each machine.
+5. On each machine: `claude plugin marketplace update human-training`, then
+   `claude plugin update human-training@human-training`, then restart Claude
+   Code. The marketplace-refresh step is required — `autoUpdate` only runs it at
+   startup, so a push isn't visible until the catalog is refreshed.
 
 ### Developing a skill in this repo (skills-drafts/)
 
@@ -316,9 +329,11 @@ A: The project docs (spec.md, DEVLOG.md, onboarding.md) are plain markdown. Any 
 
 **Q: How do I update skills after editing workflow docs?**
 A: Run `./scripts/build-skills.ps1` to regenerate `skills/`, bump `version` in
-both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`, then commit.
-Claude Code picks up the new version through its plugin update flow; Codex local
-installs may need a reinstall/cache refresh and a new thread.
+both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`, then commit
+and push. On each machine, refresh then install — it is not automatic:
+`claude plugin marketplace update human-training`, then
+`claude plugin update human-training@human-training`, then restart Claude Code.
+Codex local installs may need a reinstall/cache refresh and a new thread.
 
 **Q: Can I add my own skills?**
 A: Yes — two ways:

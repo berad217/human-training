@@ -247,29 +247,47 @@ infra itself.
 
 ---
 
-## When the user wants the plugin updated on this machine
+## When the user wants the plugin updated (any machine)
 
-The dev install of the plugin lives at
-`C:\Users\brad\.claude\plugins\cache\human-training\human-training\<version>\`.
-That cache is what Claude Code's plugin loader reads — *not* the working
-copy at `D:\Coding_projects\human-training\`. Editing the working copy
-does **not** affect the running session until either:
+This repo distributes itself: it is **both** the plugin
+(`.claude-plugin/plugin.json`) and its own marketplace
+(`.claude-plugin/marketplace.json`, `source: "./"`). GitHub is the single
+source of truth — no machine-specific paths, no hand-copying. But a push is
+**not** instantly live, because Claude Code reads through two local caches per
+machine, not the repo directly:
 
-- `/plugin update human-training@human-training` runs after a version bump
-  has been pushed to the remote, **or**
-- (for fast iteration) the user launches `claude --plugin-dir .` from this
-  repo's root, which loads the plugin directly from the working copy.
+1. **Source of truth** — the GitHub repo. Bumping `version` in both manifests
+   is the signal that an update exists.
+2. **Marketplace catalog** — a local clone Claude Code keeps. The "is there an
+   update?" check compares against *this*, not GitHub. `autoUpdate` is on, so it
+   refreshes at Claude Code **startup** — but a long-running session or a failed
+   pull leaves it stale. That is exactly how a machine sits many versions behind
+   while reporting "you're on the latest."
+3. **Installed plugin** — the actual loaded skills. Refreshing the catalog does
+   **not** install the new version; that is a separate step.
 
-This is the #1 source of "I changed the skill but Claude doesn't see it"
-confusion. If a change isn't visible, check whether the plugin cache has
-the new version, not whether the repo does.
+**To update a machine** (machine-independent — no absolute paths):
 
-User-scope skills at `C:\Users\brad\.claude\skills\<name>\` will shadow
-plugin-scope skills with the same name. If the user has been developing a
-skill standalone before adding it to this repo, that user-scope copy needs
-to be deleted after the plugin ships the skill — otherwise the prefix-less
-user-scope version keeps showing up alongside the plugin's `human-training:`-
-prefixed version.
+```bash
+claude plugin marketplace update human-training      # force-refresh the catalog
+claude plugin update human-training@human-training   # install the new version
+# then FULLY quit and relaunch Claude Code — a new thread/session is not enough
+```
+
+The marketplace-refresh line is the one people forget. Without it, `plugin
+update` checks a stale catalog and says you're already current — the #1 source
+of "I bumped the version but Claude doesn't see it." `autoUpdate` is meant to do
+that refresh automatically at startup, but force it explicitly whenever a push
+isn't showing up.
+
+**Fast local iteration (no commit/push):** launch `claude --plugin-dir .` from
+the repo root to load the plugin straight from the working copy.
+
+**User-scope shadowing:** a skill installed at user scope
+(`~/.claude/skills/<name>/`) shadows the plugin's copy of the same name. If a
+skill was developed standalone before being added here, delete the user-scope
+copy once the plugin ships it — otherwise the prefix-less version shows up
+alongside the plugin's `human-training:`-prefixed one.
 
 ---
 
