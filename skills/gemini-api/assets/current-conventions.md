@@ -319,13 +319,34 @@ Gemma 4 (Google's open-weight family, released April 2026, Apache 2.0) is served
 | `gemini-3.1-flash-lite` | ~500 |
 | `gemini-3.5-flash` | ~20 |
 
-At ~20 RPD, `gemini-3.5-flash` cannot complete even one moderate batch (e.g. a 27-item caption + judge pass = 54 requests). For any loop that fans out across a dataset, reach for Gemma 4 first. **Verify current numbers** at https://ai.google.dev/gemini-api/docs/rate-limits — Google adjusts these.
+At ~20 RPD, `gemini-3.5-flash` cannot complete even one moderate batch (e.g. a 27-item caption + judge pass = 54 requests). For any loop that fans out across a dataset, reach for Gemma 4 first. **Verify current numbers in AI Studio** (https://aistudio.google.com/rate-limit) — as of 2026-06 the public docs page (https://ai.google.dev/gemini-api/docs/rate-limits) no longer publishes per-model tables; AI Studio shows your actual active limits. Two empirical data points (2026-06): free-tier `gemini-3.1-flash-lite` is **15 RPM** (the 429 says so explicitly), and Gemma 4 sustained ~13 req/min for 40+ vision calls without throttling. RPM limits mean batch loops should pace themselves (~4–5s between calls) and treat a 429's `retryDelay` as authoritative.
 
 ### Supported features (confirmed via Google's "Run Gemma with the Gemini API" page)
 
 - ✅ **`system_instruction` / `systemInstruction`** — fully supported, same as Gemini. (Note: this is a *correction* of a common stale belief that Gemma lacks system-instruction support — older locally-hosted Gemma chat templates folded the system prompt into the first user turn, but the hosted API exposes the real field.)
 - ✅ **Image input** — works both ways: inline base64 (`Part.from_bytes` / `inline_data`) AND the Files API (`file_data` + `file_uri`). Google's doc example uses Files API; inline bytes also work, same as Gemini. Use inline for one-shot small images, Files API for large or reused ones.
-- ✅ **Function calling**, ✅ **structured JSON output**, ✅ **Google Search grounding**, ✅ **`thinking_level`** (Google's example sets `thinking_level="high"`).
+- ✅ **Function calling**, ✅ **Google Search grounding**, ✅ **`thinking_level`** (Google's example sets `thinking_level="high"`).
+- ⚠️ **Structured output is best-effort, not enforced.** Google's Gemma page deliberately does *not* list structured output as supported, and empirically (2026-06, vision extraction, both Gemma 4 variants) that's the right read: `response_mime_type="application/json"` + `response_schema=<pydantic model>` is accepted without error and the JSON usually conforms — but it is **prompt-level steering, not constrained decoding**. Occasionally the response comes back wrapped in markdown fences (` ```json … ``` `), which leaves `response.parsed` as `None` while `response.text` holds perfectly good JSON. On Gemini 3.x `response_schema` is contractual and `parsed` is reliable; on Gemma, parse defensively:
+
+```python
+import json, re
+_FENCE = re.compile(r"^\s*`{3,}(?:json)?\s*|\s*`{3,}\s*$")
+
+parsed = response.parsed
+if parsed is None and response.text:  # Gemma fence-leak fallback
+    try:
+        parsed = MySchema.model_validate(json.loads(_FENCE.sub("", response.text.strip())))
+    except Exception:
+        parsed = None  # genuinely unparseable — handle as failure
+```
+
+### Behavioral calibration vs Gemini 3.x (empirical, 2026-06)
+
+From an A/B of the same system prompt + images through `gemini-3.1-flash-lite` and both Gemma 4 variants (structured field extraction from photos, n=17 including deliberately bad inputs):
+
+- **Field accuracy at parity overall.** Gemma matched Gemini on amounts and each family won date calls the other lost. For batch extraction with a downstream verifier, Gemma is a real substitute, not a downgrade.
+- **"Never guess / return null" instructions bind more weakly on Gemma.** Both variants invented a date from an ambiguous `YY/MM/DD` string despite an explicit "if ambiguous, return null" system instruction; Gemini parsed the same string correctly. Don't rely on instruction-level null-discipline alone — keep a downstream verifier.
+- **Dense vs MoE, observed:** the MoE (`gemma-4-26b-a4b-it`) hallucinated a missing year where the dense 31B correctly returned null, and once emitted `2026/02/26` despite an explicit `YYYY-MM-DD` format instruction. Consistent with the dense-for-calibration guidance above.
 
 ### The one real footgun: sampling parameters
 
