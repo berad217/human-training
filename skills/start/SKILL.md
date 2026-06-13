@@ -45,6 +45,7 @@ Check each canonical doc at its candidate locations. First hit wins.
 - **CONTEXT.md**: project root → `./docs/CONTEXT.md`
 - **DEVLOG.md**: project root → `./docs/devlog.md` → `./docs/DEVLOG.md`
 - **Handover**: `./HANDOVER.md` → `./docs/.agents/current-handover.md` → `.agents/current-handover.md` → legacy `.claude/current-handover.md`
+- **TASKS.md**: project root → `./docs/TASKS.md`
 
 If a project has its own `onboarding.md`, trust its "Getting Oriented" section
 as the map for where the other docs live — it overrides the defaults above
@@ -69,6 +70,9 @@ everything:
   technical baggage, not the full history.
 - **Current handover, in full** — this is the ephemeral delta: what was
   in-flight, breaking, or being debated. Read all of it (it's short by design).
+- **TASKS.md — Active section only, if present** — the forward queue. Read the
+  **Active** items (not Someday, the parking lot; not Done). Skip silently if
+  there's no TASKS.md.
 
 Don't read the spec, source files, or full DEVLOG unless a specific question
 requires it. Reference files are for lookup, not required reading.
@@ -81,13 +85,14 @@ A concise summary, then the next move at the top of mind (Teflon Mode):
 **Where we are:** <one or two lines — current sprint/branch and what state it's in>
 **In flight (from handover):** <what was mid-stream or unresolved, or "nothing — clean stop">
 **Last DEVLOG entry:** <date + one-line summary>
+**Active tasks:** <top 1–3 from TASKS.md Active — omit this line entirely if there's no TASKS.md>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
 
 Keep it tight. The point is to remove inertia, not to produce a report. If the
-handover or DEVLOG names a concrete unfinished task, that *is* the recommended
-next move — don't invent alternatives just to fill the list.
+handover, DEVLOG, or TASKS Active names a concrete unfinished task, that *is* the
+recommended next move — don't invent alternatives just to fill the list.
 
 Verifying the build/tests is a legitimate next move to *offer* here (it's
 lifecycle's step 4), but `/start` never runs it unprompted — that's the
@@ -101,7 +106,8 @@ untrusted (fresh clone, lockfile drift mentioned in handover).
 - **Re-implementing orientation.** This is a trigger for lifecycle §1, not a
   third copy of it. When docs are missing, delegate to `workflow-orientation`.
 - **Reading everything.** Latest DEVLOG entry, not the whole log. Onboarding
-  map, not the whole file. Temporal context only.
+  map, not the whole file. From TASKS, the **Active** section only — never
+  surface Someday or Done at orient. Temporal context only.
 - **Running tests or writing files.** Docs-only, read-only. Verification is
   offered as a next move, never executed by this skill.
 - **Burying the next move.** It's the lead, not a footnote. Propose, don't ask
