@@ -203,6 +203,12 @@ Skipping the `marketplace update` line is the usual reason a machine reports
 "latest" while sitting versions behind. Codex local installs may also need a
 plugin reinstall/cache refresh and a new thread to pick up changed skills.
 
+**Shortcut:** [`update-plugin.bat`](update-plugin.bat) at the repo root runs both
+commands in one step — run it on any machine, then relaunch. It pulls from
+GitHub, so it works even where this repo isn't cloned. (Reliability depends on
+bumping `version` on every skills change — `plugin update` keys off the version,
+not the content.)
+
 ### Adding a new session-authored skill (Track 2)
 
 When a session produces a high-yield workflow worth keeping:

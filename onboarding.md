@@ -280,6 +280,9 @@ of "I bumped the version but Claude doesn't see it." `autoUpdate` is meant to do
 that refresh automatically at startup, but force it explicitly whenever a push
 isn't showing up.
 
+**Shortcut:** [`update-plugin.bat`](update-plugin.bat) at the repo root runs both
+lines in one step — run it on any machine, then relaunch.
+
 **Fast local iteration (no commit/push):** launch `claude --plugin-dir .` from
 the repo root to load the plugin straight from the working copy.
 
