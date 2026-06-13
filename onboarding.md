@@ -220,9 +220,10 @@ declaring done. Treat it like tests passing in a normal project.
   (spec.md, testing-standards.md, handover.md, onboarding.md). When you
   see `assets/` inside a built skill, this is the source.
 
-There is no `DEVLOG.md`, no `spec.md`, no `HANDOVER.md` here, and there
-shouldn't be. Those belong in downstream projects, not in the workflow
-infra itself.
+There is no `DEVLOG.md` and no `spec.md` here, and there shouldn't be — those
+belong in downstream projects, not in the workflow infra itself. The one
+exception is `HANDOVER.md` at the repo root: this repo *does* keep one to bridge
+its own sessions (see "Writing a handover" below).
 
 ---
 
