@@ -131,3 +131,12 @@ re-deriving anything.
 - **Firing in this repo's own workflow.** This skill ships to downstream hobby
   projects. The plugin-factory repo itself has no sprint workflow, no DEVLOG,
   and no CONTEXT.md to grill against.
+
+---
+
+## Credit
+
+Adapted from [Matt Pocock's skills](https://github.com/mattpocock/skills)
+(MIT — © 2026 Matt Pocock): his `grill-me` and `grill-with-docs`, merged into one
+docs-aware skill and rewired to this workflow's `CONTEXT.md` glossary and DEVLOG
+decision log. The adversarial-alignment idea and the grilling discipline are his.

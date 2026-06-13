@@ -13,6 +13,25 @@ It's called *human*-training. After a few sprints you stop being sure who's trai
 
 ---
 
+## Two ways to use this repo
+
+This is really two repos wearing one trench coat:
+
+**You just want some skills.** That's most people. Point your coding agent at
+this repo and say *"read through this, tell me what's useful, and take it"* — or
+skim [the skills table](#the-skills) and lift the folder you want. Everything
+past that table (the build pipeline, the two source tracks, the CI invariant) is
+**not your problem**. That machinery is what makes the repo *look* complicated;
+as a consumer you can cheerfully ignore all of it.
+
+**You want to add your own skills.** *Now* the pipeline matters — and yes, it's
+the fiddly bit. It's written up under [How the repo is wired](#how-the-repo-is-wired)
+and [Shipping a change](#shipping-a-change-to-your-other-machines). Come back for
+it when you're actually building a skill; until then it's just noise you can
+scroll past.
+
+---
+
 ## Quick start
 
 ### Any AI tool (the model-agnostic path)
@@ -323,6 +342,16 @@ A: Yes, two ways. **Track 1:** add a `workflow/guides/<name>.md` plus a matching
 **It's for hobby projects.** Optimized for non-professional developers who'd rather hand the technical complexity to an agent and stay in the driver's seat on direction.
 
 **It should evolve.** These guides aren't scripture. When you find a better pattern, update them.
+
+---
+
+## Credits
+
+The `grill` skill is adapted from [Matt Pocock's skills](https://github.com/mattpocock/skills)
+(MIT, © 2026 Matt Pocock) — his `grill-me` and `grill-with-docs`, merged into a
+single docs-aware skill. The `CONTEXT.md` glossary idea comes from the same
+place. If the adversarial-alignment flavor lands for you, the original is well
+worth a star.
 
 ---
 
