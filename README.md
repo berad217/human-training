@@ -92,7 +92,7 @@ distinction means is two sections down — for now, just grab the one you need.
 | **grill** | skills-source/ | Adversarial pre-build alignment — pokes holes in the plan against your own docs *before* you write code | Right before building, to find out why it won't work while it's still cheap |
 | **robustness-audit** | skills-source/ | Defect-class audit of existing code (reads it carefully, doesn't run it) | Back in a codebase after a while; a pre-release "what's likely broken?" pass |
 | **project-checkup** | skills-source/ | State-aware health check: orientation + robustness audit + next-move + friction inventory | Re-entering a dormant or half-abandoned hobby project |
-| **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to the DEVLOG | You've got quota about to reset and nothing queued. *(Name is a warning, not an accident.)* |
+| **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to the DEVLOG | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
 | **gemini-api** | skills-source/ | Current Gemini-API working reference so the agent stops defaulting to stale 3.x patterns | Writing, reviewing, or migrating Gemini code |
 
 ---
