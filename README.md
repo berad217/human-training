@@ -223,6 +223,34 @@ the **version number, not the content**, so the shortcut is only reliable if you
 bump `version` on every skills change. Forget the bump and the new content
 silently stays home.
 
+### ...and to your phone, web, and the desktop app
+
+Here's the ambush. Everything above updates machines that install through the
+**CLI** marketplace. The **Claude desktop app, the web app, and your phone** don't
+read that — they pull a *separate* copy from your **claude.ai account**. That copy
+is a frozen snapshot pinned to whatever commit was HEAD when you first added the
+marketplace; it does **not** track `main`. New commits, version bumps, even
+removing and re-adding the marketplace on the account — none of it moves the
+snapshot, because there's nothing newer for it to resolve *to*.
+
+What it resolves to is a **tagged release**. So once your change is pushed:
+
+```bash
+claude plugin tag --push      # cuts + pushes human-training--vX.Y.Z (keys off plugin.json)
+gh release create human-training--vX.Y.Z --title "vX.Y.Z — ..." --notes-file notes.md   # optional blurb
+```
+
+Now the account copy has a real version to grab. The desktop app may need a
+**full restart** (quit the process, not just the window) to drop its cached
+snapshot. Confirm by counting skills: `claude -p "list every human-training
+skill"` always reports the truth from the CLI — if the app shows *fewer*, it's
+still on the old account snapshot.
+
+The model to keep: **there's a local copy (CLI) and a remote copy (claude.ai
+account), and the app will cheerfully serve whichever combination is most likely
+to ruin your day.** A push updates local; a tagged release updates remote. You
+usually want both.
+
 ### Adding a session-authored skill (Track 2)
 
 When a session produces a workflow worth keeping:
@@ -328,7 +356,7 @@ A: No. The workflow docs are plain markdown and work with any AI. The Claude Cod
 A: Fine. `spec.md`, `DEVLOG.md`, and `onboarding.md` are plain markdown — any agent can pick up where the last one left off.
 
 **Q: How do I update skills after editing workflow docs?**
-A: Run `./scripts/build-skills.ps1`, bump `version` in *both* manifests, commit, push. Then on each machine run `update-plugin.bat` (or `claude plugin marketplace update human-training` → `claude plugin update human-training@human-training`) and restart. It is not automatic — see "Shipping a change" above.
+A: Run `./scripts/build-skills.ps1`, bump `version` in *both* manifests, commit, push. Then on each machine run `update-plugin.bat` (or `claude plugin marketplace update human-training` → `claude plugin update human-training@human-training`) and restart. It is not automatic — see "Shipping a change" above. **Using the desktop/web/phone apps too?** Those read a separate claude.ai-account copy that only updates from a *tagged release* (`claude plugin tag --push`) — see ["...and to your phone, web, and the desktop app"](#and-to-your-phone-web-and-the-desktop-app).
 
 **Q: Can I add my own skills?**
 A: Yes, two ways. **Track 1:** add a `workflow/guides/<name>.md` plus a matching definition in *both* build scripts — use this when the body is model-agnostic and you want a standalone doc too. **Track 2:** drop a complete `<name>/` folder into `skills-source/` — use this for Claude-specific skills where the SKILL.md *is* the artifact.
