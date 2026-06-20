@@ -1,0 +1,3 @@
+# Python bytecode (the plugin ships .py assets; running/importing them drops these)
+__pycache__/
+*.py[cod]

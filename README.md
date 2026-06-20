@@ -94,6 +94,7 @@ distinction means is two sections down — for now, just grab the one you need.
 | **project-checkup** | skills-source/ | State-aware health check: orientation + robustness audit + next-move + friction inventory | Re-entering a dormant or half-abandoned hobby project |
 | **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to the DEVLOG | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
 | **gemini-api** | skills-source/ | Current Gemini-API working reference so the agent stops defaulting to stale 3.x patterns | Writing, reviewing, or migrating Gemini code |
+| **pdf-toc-splitter** | skills-source/ | Splits large PDFs along an editable, structure-aware plan (TOC, inferred headings, fixed-page, or manual breaks), preserving bookmarks per chunk | A PDF too big to process; slicing a book/manual into chapters for reading or LLM ingestion |
 
 ---
 
@@ -120,14 +121,15 @@ human-training/
 │   ├── start/  tasks/  grill/   #   each a complete SKILL.md (+ assets/evals),
 │   ├── robustness-audit/        #   copied through to skills/ byte-for-byte
 │   ├── project-checkup/  leroy-jenkins/
-│   └── gemini-api/
+│   ├── gemini-api/
+│   └── pdf-toc-splitter/
 │
 ├── skills-drafts/               # In-progress ideas. Tracked in git, NEVER shipped.
 │   └── <idea>/                  #   the messy workshop; research, half-baked drafts
 │
 ├── skills/                      # BUILD OUTPUT — do not hand-edit
 │   ├── project-genesis/  …      #   5 generated from workflow/guides/
-│   └── start/  tasks/  …        #   7 copied from skills-source/
+│   └── start/  tasks/  …        #   8 copied from skills-source/
 │
 ├── scripts/
 │   ├── build-skills.ps1         # Windows builder
