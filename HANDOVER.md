@@ -1,46 +1,62 @@
 # Handover — human-training
 
-**Session date:** 2026-06-19
-**State:** All work committed AND pushed. `main` at `7f07bfb`, tree clean. Plugin
-**1.12.0** now has its **first tagged release** (`human-training--v1.12.0`), so the
-skills reach the desktop/web/phone apps, not just the CLI. Nothing in flight.
+**Session date:** 2026-06-20
+**State:** All work committed AND pushed. `main` at `fe655bc`, tree clean, in sync with
+origin. Plugin **1.13.0** is released (tag `human-training--v1.13.0`, GitHub release
+"Cut to the Chapter"). New skill **`pdf-toc-splitter`** shipped. CLI plugin updated
+1.12.0 -> 1.13.0 at user scope — **a full Claude Code relaunch is pending** to load it.
+Nothing in flight.
 
 ---
 
-## This session (short version — detail lives elsewhere)
+## This session (short version)
 
-Solved the "newer human-training skills are missing in the desktop/web app" mystery
-and shipped the fix. Full root cause + diagnostic playbook are in **auto-memory**
-(`desktop-prefers-stale-remote-human-training`); the cross-device publish step is now
-in the **README** ("…and to your phone, web, and the desktop app"); the tag + release
-are on GitHub. One line: a stale **claude.ai-account (remote)** copy was being
-preferred over the current **local CLI** install, and the cure was cutting a
-**versioned release** so the remote had something newer to resolve to.
+Shipped a new session-authored skill, `pdf-toc-splitter`. `/start` surfaced it as an
+untracked draft; from there: adversarial review -> hardening -> a **reframe** -> graduation
+-> release. Workflows exercised: #2 (develop in `skills-drafts/`) -> #1 (wire from
+`skills-source/`) -> #5 (version bump + cross-device release). All complete.
 
-## The delta (not yet in any file)
+What it does now: splits a large PDF along an **editable slice plan** generated from the
+TOC, inferred headings (font + regex), fixed-page intervals, or a manual page list —
+preserving/rebasing bookmarks, reporting (and optionally capturing) uncovered pages, and
+handing scanned PDFs off to OCR.
 
-- **Fuzzy bit, on purpose:** it works on web + desktop, but we never isolated whether
-  the account marketplace actively *re-pulled* the release or whether the **full
-  desktop restart** alone cleared a cache. Brad's call: "whether it pulled the remote
-  or not, it works." Don't re-investigate unless it regresses — memory has the tells.
-- **New publish discipline:** cross-device changes now need `claude plugin tag --push`
-  (+ optional `gh release create`) on top of build → bump → push. `update-plugin.bat`
-  still only covers local CLI machines.
+## The delta (decisions made in-conversation)
 
-## Deferred by choice (not blocked)
+- **Editable-plan architecture (Brad's reframe — the load-bearing idea).** The break list
+  IS the primitive; every mode just generates it; editing it is how you refine and recurse
+  (delete a break -> merge, add one -> subdivide a giant chunk). Don't regress this back to
+  TOC-only. Plans round-trip via `--dump-plan` / `--plan`.
+- **Scope boundary, held deliberately.** Did NOT broaden into general PDF manipulation —
+  `anthropic-skills:pdf` already owns merge/rotate/watermark/forms/OCR. This skill stays the
+  structure-aware *splitter*; scanned PDFs hand OFF to that skill.
+- `--cover-gaps` defaults **off** (gaps always reported loudly; written only on opt-in).
+- Heading inference is **best-effort by design** — it seeds an editable plan, the human
+  corrects; never trusted blindly.
+- **Single source of truth:** shipped script lives in `skills-source/pdf-toc-splitter/`; the
+  regression test stays at `skills-drafts/pdf-toc-splitter/test_pdf_splitter.py` (doesn't
+  ship; `sys.path` points at the skills-source copy). Needs PyMuPDF (`pip install pymupdf`,
+  installed locally this session). 33/33 tests green.
 
-- **Leroy 1.12.0 live test** — the stated-goals-first-class + unattended-mode behavior
-  is shipped but never exercised live. Brad is parking it until he has *inference to
-  burn* and a real goal (the Unreal-learning project). Confidence is fine: even the old
-  prescriptive style stayed steerable with a little prompting.
+## Invariant checks (all passed)
+
+`build-skills.ps1` + `diff -r skills /tmp/skills-rebuild` (sh) empty; `verify-plugin-manifests.py`
+valid & aligned at 1.13.0. Added a repo `.gitignore` (`__pycache__/`, `*.py[cod]`) — the
+plugin ships Python now, and stray bytecode was breaking build parity. New gotchas saved to
+auto-memory (`project_skills-source-graduation-gotchas`).
 
 ## Carried forward (durable, unchanged)
 
-- **Matt-skills roadmap — NEXT = `diagnose`** (disciplined live-bug loop; the dynamic
-  counterpart to `robustness-audit`). Behind it: `improve-codebase-architecture`, `tdd`.
+- **Matt-skills roadmap — NEXT = `diagnose`** (disciplined live-bug loop; dynamic counterpart
+  to `robustness-audit`). Behind it: `improve-codebase-architecture`, `tdd`.
+- **Leroy live test** still never exercised (now on 1.13.0). Parked until inference-to-burn +
+  a real goal.
 - Branch protection on `main` still deferred (solo direct-to-main).
+- **pdf-toc-splitter v2 ideas, if it ever needs more** (parked, not promised): JSON output
+  manifest, token/size-aware thresholds, overlap windows, page-label fidelity, cross-chunk
+  link-break reporting.
 
 ---
 
-*Ephemeral bridge — prune once absorbed. The durable record is the commits, README,
-and auto-memory.*
+*Ephemeral bridge — prune once absorbed. The durable record is the commits, README, and
+auto-memory.*
