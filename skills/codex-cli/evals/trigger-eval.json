@@ -1,0 +1,22 @@
+[
+  {"query": "my `codex exec \"summarize this repo\"` just hangs forever and prints nothing — exit never comes. running it from a bash script. what's going on?", "should_trigger": true},
+  {"query": "can claude shell out to codex and bring the answer back? i want a second opinion from gpt without leaving my claude code terminal", "should_trigger": true},
+  {"query": "i want to run codex non-interactively and save only its final answer to a file, not the whole reasoning stream", "should_trigger": true},
+  {"query": "is there a headless / print mode for codex, something like `codex -p` that runs one prompt and exits without the TUI?", "should_trigger": true},
+  {"query": "automating a codex call inside a CI job — fire a prompt, capture stdout, fail the build if it errors. how do i wire that up?", "should_trigger": true},
+  {"query": "i already have the codex desktop app installed — can i just call `codex` from my terminal or is the cli a separate thing?", "should_trigger": true},
+  {"query": "how do i make codex actually edit files vs just read them when i'm driving it from a script unattended?", "should_trigger": true},
+  {"query": "need to pin the model and crank reasoning effort when running codex exec headless in a scheduled job", "should_trigger": true},
+  {"query": "driving the codex cli from a python subprocess — codex keeps reading my heavy local config.toml with all the MCP servers. how do i get a clean-room run?", "should_trigger": true},
+  {"query": "codex exec is stuck / frozen with no output when i pipe a prompt into it — is there a stdin trap or something?", "should_trigger": true},
+  {"query": "help me use the codex chat in the desktop app, the conversation panel won't scroll", "should_trigger": false},
+  {"query": "walk me through the codex TUI — what do the slash commands and the approval prompts do interactively?", "should_trigger": false},
+  {"query": "write me some python against the openai Responses API with streaming and tool calls", "should_trigger": false},
+  {"query": "i'm getting a 429 from the anthropic api, how do i add backoff to my claude calls?", "should_trigger": false},
+  {"query": "run a prompt through ollama locally with llama 3 and capture the output", "should_trigger": false},
+  {"query": "which model should i pick for my chatgpt plus subscription for coding help?", "should_trigger": false},
+  {"query": "set up github copilot in vs code and get inline suggestions working", "should_trigger": false},
+  {"query": "can claude call agy (the antigravity cli) headless and bring back a gemini answer? `agy -p` prints nothing", "should_trigger": false},
+  {"query": "wire up gemini 3 flash with google.genai, generate_content with a structured json schema", "should_trigger": false},
+  {"query": "compare gpt-5 codex vs claude opus for an autonomous coding agent, which handles tool use better?", "should_trigger": false}
+]
