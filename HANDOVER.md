@@ -36,11 +36,10 @@ same commit.
 
 ## Parked / untested (carried)
 
-- Whether `agy --sandbox` + an auto-approving `toolPermission` can HARD-confine `agy` to
-  cwd the way Codex's sandbox does. No verified flag-based cwd confinement yet — only
-  tool-free deprivation reliably scopes it. Worth settling in a throwaway isolated dir.
-- Matt-skills roadmap — **NEXT = `diagnose`**; behind it `improve-codebase-architecture`, `tdd`.
-- **Leroy** live test still never exercised.
+- **Confining `agy` to its cwd** — the real goal: agy agents must not bash their way to
+  places they should never be. No verified flag-based cwd confinement yet (`--sandbox` +
+  an auto-approving `toolPermission` is the candidate, untested); only tool-free
+  deprivation reliably scopes it today. Worth settling in a throwaway isolated dir.
 - Branch protection on `main` still deferred (solo direct-to-main).
 
 ---
