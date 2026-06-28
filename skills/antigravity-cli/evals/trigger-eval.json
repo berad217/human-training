@@ -1,0 +1,22 @@
+[
+  {"query": "i've got the antigravity cli installed (agy) and i'm calling it from a bash script to get a quick answer, but `agy -p \"...\"` just returns nothing — exit code 0, empty stdout. what gives?", "should_trigger": true},
+  {"query": "can claude shell out to agy and bring the response back? i want gemini as a second opinion from inside my claude code session without leaving the terminal", "should_trigger": true},
+  {"query": "writing a little automation that runs a prompt through the antigravity cli non-interactively. how do i actually capture what the agent says?", "should_trigger": true},
+  {"query": "is there a headless / print mode for antigravity's agy command, kind of like codex exec? want to run one prompt and have it exit", "should_trigger": true},
+  {"query": "my agy run hangs for like 5 minutes then dies when i try to get it to edit a file from a script. how do i stop it prompting for permission?", "should_trigger": true},
+  {"query": "i already installed the antigravity IDE — does that mean i can just call `agy` from my terminal, or is the cli a separate install?", "should_trigger": true},
+  {"query": "need to pin the model and auto-approve tool permissions when running the antigravity cli unattended in a scheduled job", "should_trigger": true},
+  {"query": "heard agy stashes a transcript on disk somewhere — how do i read the final answer out of it when the command prints nothing?", "should_trigger": true},
+  {"query": "trying to use antigravity (agy) as a gemini-backed code reviewer that my own agent drives over the command line", "should_trigger": true},
+  {"query": "automate an `agy` call from python subprocess — fire the prompt, grab the final message, no TUI popping up", "should_trigger": true},
+  {"query": "wire up gemini 3 flash in my python app with google.genai — generate_content with a ThinkingConfig and a structured JSON response schema", "should_trigger": false},
+  {"query": "i'm getting a 429 from the gemini api calling gemini-3.5-flash, how do i handle rate limits and backoff in my node backend?", "should_trigger": false},
+  {"query": "walk me through the antigravity cli TUI — what do the slash commands like /resume, /model and /diff actually do?", "should_trigger": false},
+  {"query": "the antigravity IDE won't launch on windows after the latest update, just a white screen on startup", "should_trigger": false},
+  {"query": "i want to build a custom agent with the antigravity python SDK and deploy it to cloud run with zero code changes", "should_trigger": false},
+  {"query": "set up antigravity 2.0 to orchestrate three agents working on different repos in parallel from one screen", "should_trigger": false},
+  {"query": "run codex exec headless on ./src and save the review to REVIEW.md without opening the tui", "should_trigger": false},
+  {"query": "which gemini model should i pick for a cheap high-volume classification job — flash or flash-lite?", "should_trigger": false},
+  {"query": "how do i sign into the antigravity desktop app with my google workspace account?", "should_trigger": false},
+  {"query": "compare gemini 3 flash vs claude opus 4.8 for a coding agent i'm putting together, which is better at tool use?", "should_trigger": false}
+]

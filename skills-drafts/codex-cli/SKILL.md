@@ -101,6 +101,13 @@ For "ask a question, read the answer," **`-o FILE` is the right tool** — the f
 message, so a downstream reader pulls in only that. For machine-parseable output, pair `--output-schema` with a
 JSON Schema file. Reserve `--json` for when you genuinely need the event log; it's the opposite of lean.
 
+**The agent's self-report is NOT the run's outcome — trust the capture.** `-o FILE` is written by the *CLI*, not
+the sandboxed agent, so it lands the final message even when the agent believes it failed. Under `-s read-only`
+the model sometimes *tries* to write a file itself, gets blocked, and announces *"I couldn't write the file"* —
+yet `-o` captured its final message just fine. Don't let that prose trigger a false *"the consult failed"*: the
+source of truth is the **`-o` file + the exit code**, not the agent's narration. (Same lesson as the Antigravity
+CLI's empty-stdout: the headless capture is robust even when the agent's own account of events isn't.)
+
 ## 5. Safety: sandbox & approval
 
 `codex exec` can run shell commands and edit files. Govern it with the sandbox flag:

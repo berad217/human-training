@@ -1,3 +1,6 @@
 # Python bytecode (the plugin ships .py assets; running/importing them drops these)
 __pycache__/
 *.py[cod]
+
+# Run/eval artifacts from skill-dev workspaces (transient, never shipped)
+*.log
