@@ -326,19 +326,30 @@ At ~20 RPD, `gemini-3.5-flash` cannot complete even one moderate batch (e.g. a 2
 - ✅ **`system_instruction` / `systemInstruction`** — fully supported, same as Gemini. (Note: this is a *correction* of a common stale belief that Gemma lacks system-instruction support — older locally-hosted Gemma chat templates folded the system prompt into the first user turn, but the hosted API exposes the real field.)
 - ✅ **Image input** — works both ways: inline base64 (`Part.from_bytes` / `inline_data`) AND the Files API (`file_data` + `file_uri`). Google's doc example uses Files API; inline bytes also work, same as Gemini. Use inline for one-shot small images, Files API for large or reused ones.
 - ✅ **Function calling**, ✅ **Google Search grounding**, ✅ **`thinking_level`** (Google's example sets `thinking_level="high"`).
-- ⚠️ **Structured output is best-effort, not enforced.** Google's Gemma page deliberately does *not* list structured output as supported, and empirically (2026-06, vision extraction, both Gemma 4 variants) that's the right read: `response_mime_type="application/json"` + `response_schema=<pydantic model>` is accepted without error and the JSON usually conforms — but it is **prompt-level steering, not constrained decoding**. Occasionally the response comes back wrapped in markdown fences (` ```json … ``` `), which leaves `response.parsed` as `None` while `response.text` holds perfectly good JSON. On Gemini 3.x `response_schema` is contractual and `parsed` is reliable; on Gemma, parse defensively:
+- ⚠️ **Structured output is best-effort, not enforced.** Google's Gemma page deliberately does *not* list structured output as supported, and empirically (2026-06, vision extraction, both Gemma 4 variants) that's the right read: `response_mime_type="application/json"` + `response_schema=<pydantic model>` is accepted without error and the JSON usually conforms — but it is **prompt-level steering, not constrained decoding**. There are **two distinct leak modes**, and a naive "strip the fence" fallback catches only the first: (1) the JSON arrives wrapped in markdown fences (` ```json … ``` `), leaving `response.parsed` as `None`; and (2) the JSON object is followed by **trailing commentary or a second block** (`{…}\n\nHere is the breakdown of the scene above.`), which a whole-string `json.loads` rejects with `Extra data: line N column 1`. Mode (2) is not rare — in a 2026-06 batch (caption_lab, 14-image vision extraction × `gemma-4-31b-it`) it failed ~1 call in 6, concentrated on some strategies, and a fence-only regex would NOT have recovered any of them. In both modes a *valid JSON value sits at the front* of `response.text`. On Gemini 3.x `response_schema` is contractual and `parsed` is reliable; on Gemma, decode the **first** JSON value defensively — `raw_decode` from the first brace subsumes both leak modes (don't bother with a fence-only regex):
 
 ```python
-import json, re
-_FENCE = re.compile(r"^\s*`{3,}(?:json)?\s*|\s*`{3,}\s*$")
+import json
+
+def _first_json_value(text: str):
+    """First complete JSON value in `text`, ignoring a leading ```json fence or
+    prose AND any trailing commentary / second block. Covers both Gemma
+    best-effort leak modes: fenced, and 'Extra data' trailing content."""
+    starts = [i for i in (text.find("{"), text.find("[")) if i != -1]
+    if not starts:
+        raise ValueError("no JSON value in response")
+    obj, _ = json.JSONDecoder().raw_decode(text, min(starts))  # stops at end of first value
+    return obj
 
 parsed = response.parsed
-if parsed is None and response.text:  # Gemma fence-leak fallback
+if parsed is None and response.text:  # Gemma best-effort fallback (both leak modes)
     try:
-        parsed = MySchema.model_validate(json.loads(_FENCE.sub("", response.text.strip())))
+        parsed = MySchema.model_validate(_first_json_value(response.text))
     except Exception:
         parsed = None  # genuinely unparseable — handle as failure
 ```
+
+(Raw-REST callers that bypass the SDK's `response.parsed` should run `_first_json_value` on the concatenated non-`thought` text parts directly — same remedy, no `parsed` field to check first.)
 
 ### Behavioral calibration vs Gemini 3.x (empirical, 2026-06)
 
