@@ -3,6 +3,31 @@
 In-progress skill development workspace. Nothing here ships in the plugin —
 this is where skills get *built*, not where they get bundled.
 
+## ⚠️ Two kinds of folder live here — they look identical, they aren't
+
+A folder in `skills-drafts/<name>/` is one of two things:
+
+1. **A genuine draft** — a skill still being built, *not yet shipped*.
+2. **Post-graduation residue** — non-shipping scratch (research, eval
+   harnesses, test files) left behind when a skill graduated. The `SKILL.md`
+   moved to `skills-source/`; only the scratch stayed.
+
+**The one rule that tells them apart:** *is there a matching
+`skills-source/<name>/`?*
+
+- **Yes** → this folder is just **residue**. The skill already ships. Leave it
+  (the scratch is kept on purpose — re-runnable evals, source notes) or delete
+  it if it's no longer useful. It is **not** unfinished work.
+- **No** → this is a **genuine draft**. It does not ship anywhere yet.
+
+This ambiguity is the price of the graduation ritual below (move `SKILL.md`
+out, leave research behind). If you're staring at this folder wondering "why is
+half-finished stuff still here?" — run the check above before assuming anything
+is broken or abandoned.
+
+*Current residue (skills that shipped): `antigravity-cli-workspace/`,
+`gemini-api/research/`, `pdf-toc-splitter/`. Current genuine draft: `ollama/`.*
+
 ## What goes here
 
 - Raw research and reference material (model cards, API docs, transcripts)
