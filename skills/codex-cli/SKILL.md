@@ -10,8 +10,9 @@ Drive OpenAI's Codex CLI from a script or another agent: fire a prompt, capture 
 context-lean. `codex exec` is the non-interactive entry point (alias `codex e`) — it runs the agent to
 completion and exits, no TUI.
 
-**Verified against `codex-cli 0.142.2`.** Flags drift between versions — confirm with `codex exec --help` on the
-target machine. The honesty line matters because this is a skill another agent will trust: re-check, don't assume.
+**Verified against `codex-cli 0.144.1`** (latest at writing: `0.144.6`; default model `gpt-5.6-sol`). Flags and
+models drift between versions — confirm with `codex exec --help` on the target machine. The honesty line matters
+because this is a skill another agent will trust: re-check, don't assume.
 
 ## TL;DR — the rules that keep headless Codex from biting you
 
@@ -31,11 +32,16 @@ The canonical call:
 
 ```bash
 codex exec --ignore-user-config -s read-only \
+  -m gpt-5.6-terra \
   -o ANSWER.md \
   -c 'model_reasoning_effort="high"' \
   "Your full prompt here." \
   < /dev/null
 ```
+
+Default `-m gpt-5.6-terra` for most delegated work; escalate to `gpt-5.6-sol` for the hard, ambiguous calls. See
+[§6](#6-picking-the-model) — and note that `--ignore-user-config` throws away your configured model default, so
+pass `-m` explicitly whenever you use it.
 
 ## 1. The CLI is not the desktop app
 
@@ -124,17 +130,36 @@ CLI's empty-stdout: the headless capture is robust even when the agent's own acc
   Command failures are returned to the model, not escalated to a human.
 - `--dangerously-bypass-approvals-and-sandbox` exists for externally-sandboxed CI. The name is the warning.
 
-## 6. Model, reasoning effort, config
+## 6. Picking the model
 
-- **`-m, --model MODEL`** — pick the model (e.g. `-m gpt-5.5`). With `--ignore-user-config` you get the CLI
-  default.
-- **`-c, --config key=value`** — override any `config.toml` value. The value is parsed as **TOML** (falls back
-  to a literal string if it doesn't parse), so quote strings: `-c 'model_reasoning_effort="high"'`. Dotted paths
-  reach nested keys: `-c shell_environment_policy.inherit=all`.
-- **Reasoning effort** — `-c 'model_reasoning_effort="high"'` (levels `minimal`/`low`/`medium`/`high`). The
-  startup banner on stderr prints `reasoning effort: <level>` — use it to confirm the override took.
+`-m, --model` takes any model string. The live frontier family is **GPT-5.6**, which splits into three tiers
+that map cleanly onto the Claude tiers you already reason in:
+
+| Tier | `-m` string | Reach for it like… | Sweet spot |
+|---|---|---|---|
+| **Sol** | `gpt-5.6-sol` | **Opus** | Hard, ambiguous, high-value work — deep reasoning, tricky refactors, research, security |
+| **Terra** | `gpt-5.6-terra` | **Sonnet** | The everyday default — balanced depth for most delegated tasks |
+| **Luna** | `gpt-5.6-luna` | **Haiku** | Fast, cheap, repeatable — extraction, classification, mechanical passes |
+
+**Default to Terra; escalate to Sol** when the task is genuinely hard or under-specified; drop to **Luna** for
+high-volume mechanical work. Older families (`gpt-5.5` and below) remain callable but there's rarely a reason to
+reach for them now — pick a 5.6 tier and pass it explicitly.
+
+**`--ignore-user-config` discards your `config.toml` model preference**, so pair it with an explicit `-m` —
+otherwise you get whatever built-in default the CLI falls back to, not the Sol/Terra you intended.
+
+**Reasoning effort is the second dial:** `-c 'model_reasoning_effort="high"'`. Accepted values
+`minimal` / `low` / `medium` / `high` / `xhigh` (`xhigh` is model-dependent; the `0.143.0` changelog adds `max`
+for 5.6, not yet in the config-reference enum — confirm on your version before relying on it). The startup banner
+on stderr prints `reasoning effort: <level>` — use it to confirm the override took.
+
+**Other config knobs:**
+
+- **`-c, --config key=value`** — override any `config.toml` value. Parsed as **TOML** (falls back to a literal
+  string if it doesn't parse), so quote strings: `-c 'model_reasoning_effort="high"'`. Dotted paths reach nested
+  keys: `-c shell_environment_policy.inherit=all`.
 - **`--ignore-user-config`** — skip `config.toml` (auth still works; it lives in `$CODEX_HOME`). The clean-room
-  switch for reproducible automation.
+  switch for reproducible automation — but see the `-m` caveat above.
 - **`--strict-config`** — error on unrecognized config keys (catch drift after upgrades).
 - **`-C, --cd DIR`** set the working root · **`--skip-git-repo-check`** run outside a git repo ·
   **`--ephemeral`** don't persist a session file (good for throwaway probes).
@@ -143,15 +168,15 @@ CLI's empty-stdout: the headless capture is robust even when the agent's own acc
 
 **Read-only analysis → file (the workhorse):**
 ```bash
-codex exec --ignore-user-config -s read-only -o REVIEW.md \
+codex exec --ignore-user-config -s read-only -m gpt-5.6-terra -o REVIEW.md \
   -c 'model_reasoning_effort="high"' \
   "Read ./src and ./docs/spec.md. List the top 5 mismatches between spec and implementation." \
   < /dev/null
 ```
 
-**Structured JSON output:**
+**Structured JSON output (mechanical extraction → Luna):**
 ```bash
-codex exec --ignore-user-config -s read-only \
+codex exec --ignore-user-config -s read-only -m gpt-5.6-luna \
   --output-schema schema.json -o result.json \
   "Extract every TODO in ./src as {file, line, text}." < /dev/null
 ```
@@ -164,7 +189,7 @@ codex exec -s workspace-write -o SUMMARY.md \
 
 **Throwaway smoke test (writes nothing persistent):**
 ```bash
-codex exec --ephemeral --ignore-user-config "Reply with exactly: OK" < /dev/null
+codex exec --ephemeral --ignore-user-config -m gpt-5.6-luna "Reply with exactly: OK" < /dev/null
 ```
 
 **Related subcommands:**
@@ -195,5 +220,5 @@ hook cannot *initiate* a run. To start Codex with a prompt, use `codex exec`; to
 ---
 
 *Provenance: distilled from a real dogfood (driving Codex as a headless cross-vendor consultant from another
-agent's shell), verified end-to-end against `codex-cli 0.142.2` (default model `gpt-5.5`). Re-run
-`codex exec --help` to confirm flags on any other version.*
+agent's shell), verified end-to-end against `codex-cli 0.144.1` (default model `gpt-5.6-sol`). Re-run
+`codex exec --help` to confirm flags and models on any other version.*
