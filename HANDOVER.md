@@ -1,28 +1,27 @@
 # Handover — human-training
 
-**Session date:** 2026-06-28
-**State:** Two skills graduated and shipped this session — **`antigravity-cli`** (v1.14.0)
-and **`codex-cli`** (v1.15.0). Both **committed, pushed, tagged, and released** on GitHub.
-Plugin at **1.15.0**. Working tree clean. **Not yet installed on this machine** (`/plugin
-update` / `update-plugin.bat` pending).
+**Session date:** 2026-07-20
+**State:** Plugin at **1.15.1**, both manifests aligned. Working tree clean; latest commit
+`dcb341e fix(start): glob-first doc location + role-based bridge (1.15.1)`. No skill graduated
+this session — the change was a **fix to the `start` skill itself** (Track 2, `skills-source/start/`).
+Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed, pushed, tagged, and
+released on GitHub.
 
 ---
 
-## This session (short version)
+## Recent work (most recent first)
 
-1. Triaged last session's uncommitted tree and **graduated `antigravity-cli`** (headless
-   `agy` driver) → v1.14.0, [release "Defying Gravity"].
-2. Pruned a stale "Matt-skills roadmap" from the handover (the Matt Pocock adaptation is
-   closed — orthogonal skills adopted + credited, clone deleted; `diagnose` etc. were never
-   real backlog).
-3. **Graduated `codex-cli`** (headless `codex exec` driver) → v1.15.0, [release "Exec
-   Order"]. It had been used by hand for ages but was never a formal skill. Authored its
-   `evals/trigger-eval.json` from the existing `eval-queries.md` candidates and verified
-   **20/20** triggering via blind subagent judges (see method note below). Draft folder
-   deleted entirely — no residue.
-4. **Documented the drafts confusion** in `skills-drafts/README.md`: a folder there is
-   either a genuine draft or post-graduation residue; the disambiguator is "does a matching
+1. **`start` skill hardened → 1.15.1** (`dcb341e`): reworked doc location to **glob-first**
+   (never assume a hardcoded path — empty glob, *then* "missing") and added **role-based
+   bridging** so it maps chronicle/handover/queue by role rather than filename, following
+   onboarding's map (and one hop through any active-project pointer) on non-canonical layouts.
+   Edited in `skills-source/start/SKILL.md`, rebuilt, version-bumped both manifests.
+2. **Drafts residue-vs-genuine clarified** (`6f417dc`) in `skills-drafts/README.md`: a folder
+   there is either a genuine draft or post-graduation residue; disambiguator is "does a matching
    `skills-source/<name>/` exist?".
+3. Earlier: **graduated `codex-cli`** (headless `codex exec` driver) → v1.15.0, [release "Exec
+   Order"]; verified 20/20 triggering via blind subagent judges. **Graduated `antigravity-cli`**
+   (headless `agy` driver) → v1.14.0, [release "Defying Gravity"].
 
 ## The delta (not in the files)
 
@@ -50,5 +49,6 @@ update` / `update-plugin.bat` pending).
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the shipped skills, the two GitHub
-releases, `skills-drafts/README.md`, and auto-memory.*
+*Ephemeral bridge — prune once absorbed. Durable record: the shipped skills, the GitHub
+releases, `skills-source/start/SKILL.md` (the 1.15.1 fix), `skills-drafts/README.md`, and
+auto-memory.*
