@@ -1,17 +1,26 @@
 # Handover — human-training
 
 **Session date:** 2026-07-20
-**State:** Plugin at **1.15.1**, both manifests aligned. Working tree clean; latest commit
-`dcb341e fix(start): glob-first doc location + role-based bridge (1.15.1)`. No skill graduated
-this session — the change was a **fix to the `start` skill itself** (Track 2, `skills-source/start/`).
-Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed, pushed, tagged, and
-released on GitHub.
+**State:** Plugin at **1.15.2**, both manifests aligned. Working tree clean; latest commit
+`552b771 docs(codex-cli): refresh for GPT-5.6 model selection (1.15.2)`. No skill graduated this
+session — content refreshes only, to the `codex-cli` and `start` skills (both Track 2,
+`skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed,
+pushed, tagged, and released on GitHub.
 
 ---
 
 ## Recent work (most recent first)
 
-1. **`start` skill hardened → 1.15.1** (`dcb341e`): reworked doc location to **glob-first**
+1. **`codex-cli` refreshed for GPT-5.6 → 1.15.2** (`552b771`): made the skill model-forward —
+   new "Picking the model" section mapping **Sol/Terra/Luna → Opus/Sonnet/Haiku** (default Terra,
+   escalate to Sol, drop to Luna for mechanical work); documented that **`--ignore-user-config`
+   discards the config.toml model default** so it must be paired with explicit `-m`; corrected the
+   reasoning-effort enum to `minimal|low|medium|high|xhigh` (+ `max` for 5.6 per the 0.143.0
+   changelog, not yet in config-reference); refreshed version/default to `0.144.1`/`gpt-5.6-sol`.
+   Model string dogfood-verified via a Luna smoke test (exit 0). **Deliberately excluded** the
+   subscription-economics / "near-free capacity" angle — that's a personal-workflow argument, not
+   a repo concern; Brad is still deciding where (if anywhere) it lives.
+2. **`start` skill hardened → 1.15.1** (`dcb341e`): reworked doc location to **glob-first**
    (never assume a hardcoded path — empty glob, *then* "missing") and added **role-based
    bridging** so it maps chronicle/handover/queue by role rather than filename, following
    onboarding's map (and one hop through any active-project pointer) on non-canonical layouts.
@@ -25,6 +34,12 @@ released on GitHub.
 
 ## The delta (not in the files)
 
+- **Codex CLI research is current as of 2026-07-20** (from OpenAI's `learn.chatgpt.com` docs):
+  live frontier family is **GPT-5.6** (Sol/Terra/Luna, added CLI `0.143.0` on Jul 8); latest CLI
+  is `0.144.6` (Jul 18) — Brad's machine is on `0.144.1`, which emits a non-fatal
+  `models cache: missing field supports_reasoning_summaries` on startup that `0.144.6`
+  ("GPT-5.6 model metadata" fix) likely clears. Codex usage is metered as **messages per rolling
+  5h window, weighted by model** — that's the honest shape behind the (excluded) economics angle.
 - **Trigger evals can't use the real harness in this environment.** Nested `claude -p`
   **401s** here (confirmed by probe), so `run_trigger_eval_win.py` would report every query
   as a false negative. The working method is **blind subagent judges**: spawn N general-purpose
@@ -50,5 +65,5 @@ released on GitHub.
 ---
 
 *Ephemeral bridge — prune once absorbed. Durable record: the shipped skills, the GitHub
-releases, `skills-source/start/SKILL.md` (the 1.15.1 fix), `skills-drafts/README.md`, and
-auto-memory.*
+releases, `skills-source/codex-cli/SKILL.md` (the 1.15.2 GPT-5.6 refresh),
+`skills-source/start/SKILL.md` (the 1.15.1 fix), `skills-drafts/README.md`, and auto-memory.*
