@@ -12,3 +12,15 @@
 *.yaml  text eol=lf
 *.json  text eol=lf
 *.md    text eol=lf
+
+# Shipped skill assets: both builders normalize these to LF, so pin them LF
+# too. Without this, `* text=auto` checks them out CRLF on the Windows CI
+# runner, and the byte-for-byte parity diff (committed skills/ vs PS-built,
+# which emits LF) fails on every line. The pdf-toc-splitter `.py` asset was
+# the first to trip this; the rest are pinned pre-emptively.
+*.py    text eol=lf
+*.txt   text eol=lf
+*.js    text eol=lf
+*.ts    text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
