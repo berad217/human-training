@@ -28,6 +28,13 @@ stale CLI, so this may be the user's only nudge to update.
 
 ## TL;DR — the rules that keep headless Codex from biting you
 
+**The meta-rule: Codex fails *quietly*.** It hangs instead of erroring (stdin), silently falls back to a default
+model (`--ignore-user-config`), misreports which model it is, apologizes *in-band* when a blocked write fails, and
+clobbers a reused `-o` path without a word. So the posture for anything you depend on is
+**assume-degraded-until-verified**: every leg gets a cheap explicit check — the stderr **banner** (model + effort),
+the **`-o` file** (exists, non-empty, de-preambled), and the **exit code**. The numbered rules are the specific
+instances.
+
 1. **Always close stdin.** Append `< /dev/null` (bash) or `'' |` (PowerShell). The #1 footgun — without it the
    call can hang forever (it's blocked *reading stdin*, not working). See [§3](#3-the-stdin-trap).
 2. **Capture the answer with `-o FILE`.** stdout carries **only the final message**; stderr carries the banner,
@@ -121,10 +128,23 @@ JSON Schema file. Reserve `--json` for when you genuinely need the event log; it
 
 **The agent's self-report is NOT the run's outcome — trust the capture.** `-o FILE` is written by the *CLI*, not
 the sandboxed agent, so it lands the final message even when the agent believes it failed. Under `-s read-only`
-the model sometimes *tries* to write a file itself, gets blocked, and announces *"I couldn't write the file"* —
-yet `-o` captured its final message just fine. Don't let that prose trigger a false *"the consult failed"*: the
-source of truth is the **`-o` file + the exit code**, not the agent's narration. (Same lesson as the Antigravity
-CLI's empty-stdout: the headless capture is robust even when the agent's own account of events isn't.)
+the model sometimes *tries* to write a file itself, gets blocked, and announces *"I couldn't write the file."*
+Don't let that prose trigger a false *"the consult failed"*: the source of truth is the **`-o` file + the exit
+code**, not the agent's narration. More generally the agent is an *unreliable narrator about its own execution* —
+whether it succeeded, and even which **model** it ran as, come from the CLI/banner, not its prose
+(see [§6](#6-picking-the-model)). (Same lesson as the Antigravity CLI's empty-stdout: the headless capture is
+robust even when the agent's own account of events isn't.)
+
+**`-o` is robust but not always pristine.** When you tell a *read-only* agent to write its own output file, its
+final message often *opens with a 1–2 line apology* ("I'm in a read-only workspace and can't save the file, so
+here's the content directly:") followed by the real answer — and since `-o` captures the final message verbatim,
+that preamble lands at the **top of the file**, ahead of what you wanted. Two clean fixes: **strip the leading
+apology on read** (safest for a pure read task), or grant **`-s workspace-write` scoped to the output folder** so
+the agent writes its file successfully and emits no apology.
+
+**One `-o` path per run.** `-o` is a plain overwrite — not an append, not a lock. Fan out several runs in parallel
+with two pointed at the same file and the second to finish silently clobbers the first: no error, just an arm
+that's missing when you go looking. Template the path off the run's identity (coordinate / arm / vendor / index).
 
 ## 5. Safety: sandbox & approval
 
@@ -163,7 +183,15 @@ otherwise you get whatever built-in default the CLI falls back to, not the Sol/T
 **Reasoning effort is the second dial:** `-c 'model_reasoning_effort="high"'`. Accepted values
 `minimal` / `low` / `medium` / `high` / `xhigh` (`xhigh` is model-dependent; the `0.143.0` changelog adds `max`
 for 5.6, not yet in the config-reference enum — confirm on your version before relying on it). The startup banner
-on stderr prints `reasoning effort: <level>` — use it to confirm the override took.
+on stderr prints `reasoning effort: <level>` — use it to confirm the override took. That **same banner is the
+model-of-record**: an agent asked which model it is will often name the wrong one (a `gpt-5.6-sol` run answering
+"GPT-5"), so when you need to *attribute* a result to a model, read the banner's `model:` line — never the
+agent's self-report.
+
+**Match effort to the leg's stakes, not habit.** Spend `high`/`xhigh` on the calls whose *wrongness is expensive*
+— validation, lock-in, adversarial verification. Leave generative-breadth legs (produce many candidates for a
+downstream gate to cull) at default/`medium`: paying `high` × N candidates mostly buys latency. This pairs with
+the tiers above — the common shape is `terra @ medium` for breadth, `sol @ high` for the load-bearing judgment.
 
 **Other config knobs:**
 
@@ -221,6 +249,10 @@ codex exec resume --last "..."    # continue the most recent session with a new 
 | Reasoning effort seems wrong | Check the stderr banner; set `-c 'model_reasoning_effort="high"'`. |
 | Config key rejected after upgrade | `--strict-config` to surface it, or `codex doctor`. |
 | Won't edit files | Default/`read-only` sandbox blocks writes — pass `-s workspace-write`. §5. |
+| Missing / overwritten output in a parallel fan-out | Two runs shared one `-o` path — last writer wins. Give each a unique path. §4. |
+| Agent claims it's a different model than you set | Self-report is unreliable — read the stderr banner's `model:` line. §6. |
+| Output starts with a "can't write the file" apology | Read-only agent told to save its own file; strip the leading preamble, or use scoped `-s workspace-write`. §4. |
+| Non-ASCII garbled (em-dash → `â€"`) | Windows console encoding; cosmetic if symmetric, but breaks downstream *machine* parses — keep parse-bound output ASCII-safe or normalize on read. |
 
 ## Hooks are reactive, not a launcher
 
