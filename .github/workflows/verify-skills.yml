@@ -25,6 +25,7 @@ on:
       - 'scripts/build-skills.ps1'
       - 'scripts/verify-plugin-manifests.py'
       - '.github/workflows/verify-skills.yml'
+      - '.gitattributes'
   pull_request:
     paths:
       - 'workflow/**'
@@ -36,6 +37,7 @@ on:
       - 'scripts/build-skills.ps1'
       - 'scripts/verify-plugin-manifests.py'
       - '.github/workflows/verify-skills.yml'
+      - '.gitattributes'
   workflow_dispatch:
 
 jobs:
