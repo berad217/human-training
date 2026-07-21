@@ -10,9 +10,21 @@ Drive OpenAI's Codex CLI from a script or another agent: fire a prompt, capture 
 context-lean. `codex exec` is the non-interactive entry point (alias `codex e`) — it runs the agent to
 completion and exits, no TUI.
 
-**Verified against `codex-cli 0.144.1`** (latest at writing: `0.144.6`; default model `gpt-5.6-sol`). Flags and
-models drift between versions — confirm with `codex exec --help` on the target machine. The honesty line matters
-because this is a skill another agent will trust: re-check, don't assume.
+**Verified against `codex-cli 0.144.6`** (default model `gpt-5.6-sol`). Flags and models drift between versions —
+confirm with `codex exec --help` on the target machine. The honesty line matters because this is a skill another
+agent will trust: re-check, don't assume.
+
+**On first use, check the CLI is current — and tell the user if it isn't.** An outdated Codex is the root of most
+footguns below: flag drift, missing models, model-metadata load errors on startup. Compare the running build
+against the latest published, and surface any gap:
+
+```bash
+codex --version                 # running build
+npm view @openai/codex version  # latest published   →  npm i -g @openai/codex   to upgrade
+```
+
+Say it once, but do say it: an agent driving Codex headlessly is often the *only* thing positioned to notice a
+stale CLI, so this may be the user's only nudge to update.
 
 ## TL;DR — the rules that keep headless Codex from biting you
 
@@ -220,5 +232,5 @@ hook cannot *initiate* a run. To start Codex with a prompt, use `codex exec`; to
 ---
 
 *Provenance: distilled from a real dogfood (driving Codex as a headless cross-vendor consultant from another
-agent's shell), verified end-to-end against `codex-cli 0.144.1` (default model `gpt-5.6-sol`). Re-run
+agent's shell), verified end-to-end against `codex-cli 0.144.6` (default model `gpt-5.6-sol`). Re-run
 `codex exec --help` to confirm flags and models on any other version.*
