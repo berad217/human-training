@@ -15,7 +15,24 @@ prompt to completion and exits, no TUI.
 target machine. This skill is one another agent will trust, so the honesty matters: `agy` is **TUI-first**, and
 its headless path has a real, easy-to-miss output bug (below). Re-test, don't assume.
 
+**Check `agy --version` at the start of a session — it self-updates silently.** `agy` arms a background updater
+(§2), so unlike a manually-managed CLI the build can change *underneath you* between runs. There's no `npm`-style
+"latest" to diff against and no manual upgrade to nudge the user toward — so the check serves the *opposite*
+purpose of the codex-cli one: not "you're stale, go update," but **catch silent drift in this skill's own
+assumptions.** If the running build is newer than the `1.0.13` verified here, the version-specific workarounds
+below — above all the empty-stdout capture bug (§4) — may no longer hold. Re-test the load-bearing behavior before
+trusting it, and tell the user what changed: a silent update that *fixes* the stdout bug collapses the whole
+transcript-recovery dance into `ANSWER=$("$AGY" -p "..." < /dev/null)`.
+
 ## TL;DR — the rules that keep headless `agy` from biting you
+
+**The meta-rule: `agy` degrades *quietly*.** Its headline failure mode is *success with no output* — exit 0, the
+model answered, stdout empty (rule 1). The same quiet character runs through the rest: the startup log cries "not
+logged in" then silently auths anyway (§2), an agentic run's final answer comes back *blank* (§4), and
+`--dangerously-skip-permissions` walks out of your cwd and writes elsewhere *without a word* (rule 5). So the
+posture is **assume-degraded-until-verified** — the same one the [codex-cli](../codex-cli/SKILL.md) skill spells
+out: judge every leg by the recovered **transcript** + **exit code** + what the run actually *touched*, never by
+stdout or the agent's own narration.
 
 1. **`agy -p` prints NOTHING to a redirected/piped stdout (v1.0.13).** The #1 footgun. The run succeeds (exit 0),
    the model answers, but **stdout is empty whenever it isn't a real terminal** — i.e. every script, subprocess,
