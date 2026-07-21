@@ -1,50 +1,44 @@
 # Handover — human-training
 
 **Session date:** 2026-07-20
-**State:** Plugin at **1.15.3**, both manifests aligned. Working tree clean. **CI is green** —
-see item 1: the `verify-powershell` job had been chronically red (since ~1.14.0) and is now fixed.
-No skill graduated this session — content refreshes only, to the `codex-cli` and `start` skills
-(both Track 2, `skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0)
-remain committed, pushed, tagged, and released on GitHub.
+**State:** Plugin at **1.15.5**, both manifests aligned. Working tree clean. **CI is green** and
+**`main` is now branch-protected** (see items 3–4). No skill graduated this session — content
+refreshes only, to the `codex-cli`, `antigravity-cli`, and `start` skills (all Track 2,
+`skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed,
+pushed, tagged, and released on GitHub.
 
 ---
 
 ## Recent work (most recent first)
 
-1. **Fixed chronically-red CI** (`5215a06` + `5b4b2dd`, no version bump): `verify-powershell` had
-   failed on *every* push since ~1.14.0 while `verify-bash` passed — nobody noticed on unprotected
-   main. Root cause: shipped `.py` assets fell under `* text=auto`, so the committed `skills/` tree
-   checked out **CRLF** on the Windows runner while both builders emit **LF**, failing the parity
-   diff on every line. Fix: pin `.py/.txt/.js/.ts/.css/.html` to `eol=lf` in `.gitattributes` (no
-   plugin content change — index blobs were already LF), and add `.gitattributes` to the workflow's
-   `paths:` filter so such changes re-run the check. **Both jobs now green.**
-2. **`codex-cli` version-mismatch nudge → 1.15.3**: added a first-use check (`codex --version` vs
-   `npm view @openai/codex version`) instructing the agent to surface a stale CLI to the user —
-   the skill is often the *only* thing positioned to notice, so it doubles as an update prompt.
-   Placed in the always-read honesty block, not the (skippable) install section. Bumped local CLI
-   to **0.144.6** in the process; the pre-existing `models cache: missing field
-   supports_reasoning_summaries` startup error was a **stale cache from the old CLI** and cleared
-   after the upgrade + one refresh run (verified — a real instance of the footgun the nudge warns about).
-2. **`codex-cli` refreshed for GPT-5.6 → 1.15.2** (`552b771`): made the skill model-forward —
-   new "Picking the model" section mapping **Sol/Terra/Luna → Opus/Sonnet/Haiku** (default Terra,
-   escalate to Sol, drop to Luna for mechanical work); documented that **`--ignore-user-config`
-   discards the config.toml model default** so it must be paired with explicit `-m`; corrected the
-   reasoning-effort enum to `minimal|low|medium|high|xhigh` (+ `max` for 5.6 per the 0.143.0
-   changelog, not yet in config-reference); refreshed version/default to `0.144.1`/`gpt-5.6-sol`.
-   Model string dogfood-verified via a Luna smoke test (exit 0). **Deliberately excluded** the
-   subscription-economics / "near-free capacity" angle — that's a personal-workflow argument, not
-   a repo concern; Brad is still deciding where (if anywhere) it lives.
-2. **`start` skill hardened → 1.15.1** (`dcb341e`): reworked doc location to **glob-first**
-   (never assume a hardcoded path — empty glob, *then* "missing") and added **role-based
-   bridging** so it maps chronicle/handover/queue by role rather than filename, following
-   onboarding's map (and one hop through any active-project pointer) on non-canonical layouts.
-   Edited in `skills-source/start/SKILL.md`, rebuilt, version-bumped both manifests.
-2. **Drafts residue-vs-genuine clarified** (`6f417dc`) in `skills-drafts/README.md`: a folder
-   there is either a genuine draft or post-graduation residue; disambiguator is "does a matching
-   `skills-source/<name>/` exist?".
-3. Earlier: **graduated `codex-cli`** (headless `codex exec` driver) → v1.15.0, [release "Exec
-   Order"]; verified 20/20 triggering via blind subagent judges. **Graduated `antigravity-cli`**
-   (headless `agy` driver) → v1.14.0, [release "Defying Gravity"].
+1. **`antigravity-cli` quiet-failure frame + version-drift check → 1.15.5** (`5f88720`, "Radio
+   Silence"): ported the two transferable ideas from the codex field-notes pass, *adapted* not
+   copied — a TL;DR "agy degrades quietly → assume-degraded-until-verified" meta-rule (cross-linked
+   to codex-cli), and a version check *inverted* for agy's silent self-update (not "go update" but
+   "re-test the version-pinned empty-stdout bug, it may have been silently fixed"). Finer field-notes
+   items skipped — already present in agy-specific form.
+2. **`codex-cli` field notes folded in → 1.15.4** (`8afd89c`, "Trust but Verify"): integrated items
+   A–E from the (now-deleted) `codex-cli-field-notes.md` staging doc around one frame — Codex fails
+   *quietly*. TL;DR meta-rule; §4 `-o`-not-always-pristine (read-only apology preamble) + one-`-o`-
+   path-per-run + model-identity added to the unreliable-narrator lesson; §6 banner-as-model-of-record
+   + effort-per-leg-class; four new §8 troubleshooting rows.
+3. **Branch protection enabled on `main`** (2026-07-20): required checks (`verify-bash` +
+   `verify-powershell`) + require-PR (0 approvals), but **`enforce_admins=false`** so admins push
+   directly — because the `gh` token here **cannot create/merge PRs** (see delta + auto-memory
+   [[gh-token-cannot-do-prs]]). Also dropped the PR paths filter so required checks always report.
+4. **Fixed chronically-red CI** (`5215a06` + `5b4b2dd`): `verify-powershell` had failed on *every*
+   push since ~1.14.0 while `verify-bash` passed — unnoticed on then-unprotected main. Cause: shipped
+   `.py` assets under `* text=auto` checked out **CRLF** on the Windows runner vs the builders' **LF**.
+   Fix: pin `.py/.txt/.js/.ts/.css/.html` to `eol=lf` in `.gitattributes` (index blobs already LF, no
+   content change) + add `.gitattributes` to the workflow paths. Both jobs green.
+5. **`codex-cli` GPT-5.6 refresh + version nudge → 1.15.2 / 1.15.3**: model-forward "Picking the
+   model" section (**Sol/Terra/Luna → Opus/Sonnet/Haiku**, default Terra); `--ignore-user-config`
+   discards the model default (pair with `-m`); reasoning enum `minimal|low|medium|high|xhigh` (+`max`
+   for 5.6); a first-use version-mismatch nudge; local CLI bumped to **0.144.6**. **Excluded** the
+   subscription-economics angle (personal-workflow, not a repo concern — Brad deciding where it lives).
+6. Earlier this session: **`start` hardened → 1.15.1** (glob-first + role-based bridging); drafts
+   residue-vs-genuine note (`6f417dc`). Prior: `codex-cli` 1.15.0 ("Exec Order"), `antigravity-cli`
+   1.14.0 ("Defying Gravity").
 
 ## The delta (not in the files)
 
