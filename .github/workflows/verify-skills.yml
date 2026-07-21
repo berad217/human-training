@@ -26,18 +26,12 @@ on:
       - 'scripts/verify-plugin-manifests.py'
       - '.github/workflows/verify-skills.yml'
       - '.gitattributes'
+  # No paths filter on PRs: these jobs are required status checks for merging
+  # into main, so they must ALWAYS report a result. A path-filtered PR (e.g. a
+  # docs-only change) would otherwise leave the required checks pending forever
+  # and block the merge. The jobs are ~15s, so running them on every PR is cheap.
   pull_request:
-    paths:
-      - 'workflow/**'
-      - 'skills/**'
-      - 'skills-source/**'
-      - '.claude-plugin/plugin.json'
-      - '.codex-plugin/plugin.json'
-      - 'scripts/build-skills.sh'
-      - 'scripts/build-skills.ps1'
-      - 'scripts/verify-plugin-manifests.py'
-      - '.github/workflows/verify-skills.yml'
-      - '.gitattributes'
+    branches: [main]
   workflow_dispatch:
 
 jobs:

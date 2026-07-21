@@ -75,7 +75,12 @@ remain committed, pushed, tagged, and released on GitHub.
   inline content yourself — the consultant pattern) reliably scopes it today. Settle in a
   throwaway isolated dir.
 - **`ollama`** — live but low priority; graduate when it earns it.
-- Branch protection on `main` still deferred (solo direct-to-main).
+- Branch protection on `main` is **enabled** (2026-07-20): PRs required (0 approvals — solo
+  self-merge), `verify-bash` + `verify-powershell` must be green, enforced for admins too. **Direct
+  pushes to main are blocked** — work on a branch and open a PR (`gh pr create` → wait for CI →
+  `gh pr merge`). To relax if the friction bites: set `enforce_admins=false` (admin override) or
+  lift protection in repo settings. The verify workflow runs on *all* PRs to main (no paths filter)
+  so required checks always report.
 
 ---
 
