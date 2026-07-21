@@ -1,16 +1,24 @@
 # Handover — human-training
 
 **Session date:** 2026-07-20
-**State:** Plugin at **1.15.3**, both manifests aligned. Working tree clean. No skill graduated this
-session — content refreshes only, to the `codex-cli` and `start` skills (both Track 2,
-`skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed,
-pushed, tagged, and released on GitHub.
+**State:** Plugin at **1.15.3**, both manifests aligned. Working tree clean. **CI is green** —
+see item 1: the `verify-powershell` job had been chronically red (since ~1.14.0) and is now fixed.
+No skill graduated this session — content refreshes only, to the `codex-cli` and `start` skills
+(both Track 2, `skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0)
+remain committed, pushed, tagged, and released on GitHub.
 
 ---
 
 ## Recent work (most recent first)
 
-1. **`codex-cli` version-mismatch nudge → 1.15.3**: added a first-use check (`codex --version` vs
+1. **Fixed chronically-red CI** (`5215a06` + `5b4b2dd`, no version bump): `verify-powershell` had
+   failed on *every* push since ~1.14.0 while `verify-bash` passed — nobody noticed on unprotected
+   main. Root cause: shipped `.py` assets fell under `* text=auto`, so the committed `skills/` tree
+   checked out **CRLF** on the Windows runner while both builders emit **LF**, failing the parity
+   diff on every line. Fix: pin `.py/.txt/.js/.ts/.css/.html` to `eol=lf` in `.gitattributes` (no
+   plugin content change — index blobs were already LF), and add `.gitattributes` to the workflow's
+   `paths:` filter so such changes re-run the check. **Both jobs now green.**
+2. **`codex-cli` version-mismatch nudge → 1.15.3**: added a first-use check (`codex --version` vs
    `npm view @openai/codex version`) instructing the agent to surface a stale CLI to the user —
    the skill is often the *only* thing positioned to notice, so it doubles as an update prompt.
    Placed in the always-read honesty block, not the (skippable) install section. Bumped local CLI
