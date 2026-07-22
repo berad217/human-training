@@ -76,7 +76,7 @@ CI checks.
 
 ## The skills
 
-Twelve of them. The first five are generated from model-agnostic workflow docs
+Sixteen of them. The first five are generated from model-agnostic workflow docs
 (Track 1); the rest are session-authored Claude skills (Track 2). What that
 distinction means is two sections down — for now, just grab the one you need.
 
@@ -95,6 +95,9 @@ distinction means is two sections down — for now, just grab the one you need.
 | **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to the DEVLOG | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
 | **gemini-api** | skills-source/ | Current Gemini-API working reference so the agent stops defaulting to stale 3.x patterns | Writing, reviewing, or migrating Gemini code |
 | **pdf-toc-splitter** | skills-source/ | Splits large PDFs along an editable, structure-aware plan (TOC, inferred headings, fixed-page, or manual breaks), preserving bookmarks per chunk | A PDF too big to process; slicing a book/manual into chapters for reading or LLM ingestion |
+| **antigravity-cli** | skills-source/ | Working reference for driving Google's Antigravity CLI (`agy`) headlessly — the quiet-failure footguns and the tool-free consultant pattern | Automating `agy -p` / using Gemini as a cross-vendor consultant from the terminal |
+| **codex-cli** | skills-source/ | Working reference for driving OpenAI's Codex CLI headlessly (`codex exec`) — stdin trap, output capture, sandbox, model tiers | Calling Codex from a script or another agent |
+| **image-gen** | skills-source/ | Generate *and* edit photorealistic images by driving Codex's built-in gpt-image-2 tool — no API key, on a ChatGPT sub | "Make me an image / edit this photo" — the ChatGPT-style capability, from the CLI |
 
 ---
 
@@ -121,15 +124,16 @@ human-training/
 │   ├── start/  tasks/  grill/   #   each a complete SKILL.md (+ assets/evals),
 │   ├── robustness-audit/        #   copied through to skills/ byte-for-byte
 │   ├── project-checkup/  leroy-jenkins/
-│   ├── gemini-api/
-│   └── pdf-toc-splitter/
+│   ├── gemini-api/  pdf-toc-splitter/
+│   ├── antigravity-cli/  codex-cli/
+│   └── image-gen/
 │
 ├── skills-drafts/               # In-progress ideas. Tracked in git, NEVER shipped.
 │   └── <idea>/                  #   the messy workshop; research, half-baked drafts
 │
 ├── skills/                      # BUILD OUTPUT — do not hand-edit
 │   ├── project-genesis/  …      #   5 generated from workflow/guides/
-│   └── start/  tasks/  …        #   8 copied from skills-source/
+│   └── start/  tasks/  …        #   11 copied from skills-source/
 │
 ├── scripts/
 │   ├── build-skills.ps1         # Windows builder

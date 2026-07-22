@@ -10,6 +10,10 @@ Drive OpenAI's Codex CLI from a script or another agent: fire a prompt, capture 
 context-lean. `codex exec` is the non-interactive entry point (alias `codex e`) — it runs the agent to
 completion and exits, no TUI.
 
+> **Making images?** Codex's built-in `image_gen` tool (gpt-image-2, no API key) generates *and* edits
+> images headlessly — a capability of its own with its own recipe. See the **`image-gen`** skill; it builds
+> on the generic CLI mechanics documented here (stdin trap, `-o` capture, sandbox, model flags).
+
 **Verified against `codex-cli 0.144.6`** (default model `gpt-5.6-sol`). Flags and models drift between versions —
 confirm with `codex exec --help` on the target machine. The honesty line matters because this is a skill another
 agent will trust: re-check, don't assume.

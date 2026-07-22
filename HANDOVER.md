@@ -1,83 +1,79 @@
 # Handover — human-training
 
-**Session date:** 2026-07-20
-**State:** Plugin at **1.15.5**, both manifests aligned. Working tree clean. **CI is green** and
-**`main` is now branch-protected** (see items 3–4). No skill graduated this session — content
-refreshes only, to the `codex-cli`, `antigravity-cli`, and `start` skills (all Track 2,
-`skills-source/`). Prior ships (`antigravity-cli` 1.14.0, `codex-cli` 1.15.0) remain committed,
-pushed, tagged, and released on GitHub.
+**Session date:** 2026-07-22
+**State:** Plugin bumped to **1.16.0**, both manifests aligned. **New skill `image-gen`
+graduated and built** (5 generated + 11 session-authored). `diff -r` byte-identical,
+`verify-plugin-manifests.py` green — **CI will pass**. **NOT yet committed or pushed** —
+working tree has the changes staged for review. This was workflow #2 (build a skill in
+`skills-drafts/`) → graduate to `skills-source/` → workflow #1 (wire + version bump).
 
 ---
 
-## Recent work (most recent first)
+## Recent work (this session)
 
-1. **`antigravity-cli` quiet-failure frame + version-drift check → 1.15.5** (`5f88720`, "Radio
-   Silence"): ported the two transferable ideas from the codex field-notes pass, *adapted* not
-   copied — a TL;DR "agy degrades quietly → assume-degraded-until-verified" meta-rule (cross-linked
-   to codex-cli), and a version check *inverted* for agy's silent self-update (not "go update" but
-   "re-test the version-pinned empty-stdout bug, it may have been silently fixed"). Finer field-notes
-   items skipped — already present in agy-specific form.
-2. **`codex-cli` field notes folded in → 1.15.4** (`8afd89c`, "Trust but Verify"): integrated items
-   A–E from the (now-deleted) `codex-cli-field-notes.md` staging doc around one frame — Codex fails
-   *quietly*. TL;DR meta-rule; §4 `-o`-not-always-pristine (read-only apology preamble) + one-`-o`-
-   path-per-run + model-identity added to the unreliable-narrator lesson; §6 banner-as-model-of-record
-   + effort-per-leg-class; four new §8 troubleshooting rows.
-3. **Branch protection enabled on `main`** (2026-07-20): required checks (`verify-bash` +
-   `verify-powershell`) + require-PR (0 approvals), but **`enforce_admins=false`** so admins push
-   directly — because the `gh` token here **cannot create/merge PRs** (see delta + auto-memory
-   [[gh-token-cannot-do-prs]]). Also dropped the PR paths filter so required checks always report.
-4. **Fixed chronically-red CI** (`5215a06` + `5b4b2dd`): `verify-powershell` had failed on *every*
-   push since ~1.14.0 while `verify-bash` passed — unnoticed on then-unprotected main. Cause: shipped
-   `.py` assets under `* text=auto` checked out **CRLF** on the Windows runner vs the builders' **LF**.
-   Fix: pin `.py/.txt/.js/.ts/.css/.html` to `eol=lf` in `.gitattributes` (index blobs already LF, no
-   content change) + add `.gitattributes` to the workflow paths. Both jobs green.
-5. **`codex-cli` GPT-5.6 refresh + version nudge → 1.15.2 / 1.15.3**: model-forward "Picking the
-   model" section (**Sol/Terra/Luna → Opus/Sonnet/Haiku**, default Terra); `--ignore-user-config`
-   discards the model default (pair with `-m`); reasoning enum `minimal|low|medium|high|xhigh` (+`max`
-   for 5.6); a first-use version-mismatch nudge; local CLI bumped to **0.144.6**. **Excluded** the
-   subscription-economics angle (personal-workflow, not a repo concern — Brad deciding where it lives).
-6. Earlier this session: **`start` hardened → 1.15.1** (glob-first + role-based bridging); drafts
-   residue-vs-genuine note (`6f417dc`). Prior: `codex-cli` 1.15.0 ("Exec Order"), `antigravity-cli`
-   1.14.0 ("Defying Gravity").
+1. **New capability skill `image-gen` (1.16.0).** Claude can now **generate *and* edit
+   photorealistic images** by driving Codex's built-in `image_gen` tool (model
+   **`gpt-image-2`**) — **on a ChatGPT sub, no `OPENAI_API_KEY`**. Verified end-to-end
+   this session with four real `codex exec` runs (generate apple → recolor edit;
+   generate synthetic portrait → identity-preserve add-glasses edit). Fidelity was
+   excellent (recolor held every invariant; identity edit held the face, minor hair
+   micro-drift).
+2. **Framed as a *capability* skill, not a CLI skill** — deliberately. Image intent
+   ("make me an image", "edit this photo") never says "codex", so burying it in
+   `codex-cli` would make it fire on the wrong surface. Its frontmatter description
+   advertises the capability so Claude discovers it from image-shaped asks.
+3. **Thick-on-delta, not a mirror of OpenAI's skill.** The official `imagegen` skill is
+   installed at `$CODEX_HOME/skills/.system/imagegen/SKILL.md` and the model **reads it
+   at runtime** on every image call — so `image-gen` does NOT copy its prompt taxonomy/
+   size tables (staleness trap). It owns the *headless-driving* delta: `-i` to attach edit
+   targets, session-id harvest, the Windows blocked-copy gotcha, `-s read-only` default,
+   the no-API-key clarification, the denial nudge. Thin pointer to `codex-cli` for the
+   generic CLI mechanics; `codex-cli` got a one-line cross-ref back.
+4. **Triggering validated** — blind subagent judges (harness eval 401s on Windows), 3×20
+   queries, **unanimous 10/10 both directions**, zero collisions with `canvas-design` /
+   `algorithmic-art` / `dataviz` / `frontend-design`. Caveat: queries were clean-cut;
+   borderline "logo/icon/illustration" phrasings weren't stressed.
+5. **README skills table de-drifted** — it had silently dropped `codex-cli` and
+   `antigravity-cli` (shipped in prior sessions). Added those two + `image-gen`; count
+   12→16; tree counts fixed (8→11 session-authored).
 
 ## The delta (not in the files)
 
-- **Codex CLI research is current as of 2026-07-20** (from OpenAI's `learn.chatgpt.com` docs):
-  live frontier family is **GPT-5.6** (Sol/Terra/Luna, added CLI `0.143.0` on Jul 8). Brad's
-  machine is now on **`0.144.6`** (upgraded this session from `0.144.1`); the non-fatal
-  `models cache: missing field supports_reasoning_summaries` startup error was a stale cache from
-  the old CLI and is **gone** after the upgrade + one refresh run. Codex usage is metered as
-  **messages per rolling 5h window, weighted by model** — the honest shape behind the (excluded)
-  economics angle.
-- **Trigger evals can't use the real harness in this environment.** Nested `claude -p`
-  **401s** here (confirmed by probe), so `run_trigger_eval_win.py` would report every query
-  as a false negative. The working method is **blind subagent judges**: spawn N general-purpose
-  agents, give each the unlabeled queries + a realistic skill menu (the skill under test +
-  its real confusables + "none"), have them classify, then tally majority vote vs the gold
-  labels yourself. 3 judges × 20 queries was fast and unanimous. (Reinforces auto-memory
-  `project_skill-creator-optimizer-broken-on-windows`.)
-- **`skills-drafts/` is now clean:** `ollama/` (live, low-priority draft — keep), plus
-  residue from shipped skills (`antigravity-cli-workspace/` re-runnable eval harness,
-  `gemini-api/research/`, `pdf-toc-splitter/test_pdf_splitter.py`), plus `README.md`.
-- **`.gitignore` excludes `*.log`** (skill-dev run artifacts).
+- **Full image field notes live in `skills-drafts/image-gen/field-notes.md`** (the
+  renamed `CODEX_IMAGE_GEN_WISDOM.md` Brad had dropped at repo root — moved into the
+  draft folder as research residue). Read it for the VERIFIED/HYPOTHESIS/DOC-marked
+  details behind the skill. `skills-drafts/image-gen/README.md` records the design
+  decisions + a graduation checklist.
+- **The API-key confusion is resolved (Brad's original caveat):** the built-in path needs
+  **no key**; a key is only for the **CLI fallback** (`scripts/image_gen.py`, true native
+  transparency via `gpt-image-1.5`, masks). That fallback path is what the "need an API
+  key" docs describe. Don't wire a key for normal image work.
+- **Windows harvest reality (verified):** the image tool writes to
+  `$CODEX_HOME/generated_images/<session-id>/exec-*.png` regardless of `-s`, and Codex
+  **cannot** copy it into the workspace ("blocked by policy" every time; banner reads
+  `sandbox: read-only` even under `-s workspace-write`). Harvest it yourself via the
+  `session id:` from the stderr banner. `-o` is unreliable for the path (sometimes just a
+  preamble). `-s read-only` still generates fine — it's the clean default.
+- **Test images** from this session live only in the session scratchpad (not committed —
+  repo shouldn't carry test PNGs).
 
 ## Parked / carried
 
-- **Confining `agy` to its cwd** — agy agents must not bash their way to places they should
-  never be. No verified flag-based cwd jail yet (`--sandbox` + auto-approving `toolPermission`
-  is the untested candidate); only **tool-free deprivation** (don't give agy file tools;
-  inline content yourself — the consultant pattern) reliably scopes it today. Settle in a
-  throwaway isolated dir.
-- **`ollama`** — live but low priority; graduate when it earns it.
-- Branch protection on `main` is **enabled** (2026-07-20): PRs required (0 approvals — solo
-  self-merge), `verify-bash` + `verify-powershell` must be green, enforced for admins too. **Direct
-  pushes to main are blocked** — work on a branch and open a PR (`gh pr create` → wait for CI →
-  `gh pr merge`). To relax if the friction bites: set `enforce_admins=false` (admin override) or
-  lift protection in repo settings. The verify workflow runs on *all* PRs to main (no paths filter)
-  so required checks always report.
+- **PUSH IS PENDING.** Nothing committed. Brad pushes (admin → direct to `main`;
+  `enforce_admins=false`, and the `gh` token here can't do PRs — see
+  [[gh-token-cannot-do-prs]]). After push: `update-plugin.bat` + full relaunch per machine.
+- **Open empirical gaps** (from field-notes §6, flagged HYPOTHESIS/UNKNOWN in the skill):
+  - Real-photo identity fidelity on a *known* face — only synthetic tested (Brad offered a photo).
+  - Multi-image compositing via multiple `-i` — flag is variadic; untested.
+  - macOS/Linux copy-out — the Windows blocked-copy may be OS-specific execpolicy.
+  - Adversarial triggering round on borderline "logo/icon/illustration" queries.
+- **`ollama`** — still a live, low-priority draft; graduate when it earns it.
+- Branch protection on `main` remains enabled (required checks `verify-bash` +
+  `verify-powershell`, PR required with 0 approvals, `enforce_admins=false` so admins push
+  directly).
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the shipped skills, the GitHub
-releases, `skills-source/codex-cli/SKILL.md` (the 1.15.2 GPT-5.6 refresh),
-`skills-source/start/SKILL.md` (the 1.15.1 fix), `skills-drafts/README.md`, and auto-memory.*
+*Ephemeral bridge — prune once absorbed. Durable record: the shipped `image-gen` skill
+(`skills-source/image-gen/SKILL.md`), its field notes + README in
+`skills-drafts/image-gen/`, the `codex-cli` cross-ref, and the 1.16.0 manifests.*
