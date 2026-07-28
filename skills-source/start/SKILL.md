@@ -13,6 +13,10 @@ handover and tell me where we are." One command runs the orient sequence.
 This skill is **read-only and docs-only**. It does not run tests, build the
 project, or write any file. It reads, summarizes, and proposes — nothing else.
 
+The one command it runs is `git status -sb`, which is strictly a read. The
+docs-only contract exists to prevent *writes and side effects*; inspecting git
+state has neither. See step 2b.
+
 ## When to invoke
 
 Explicit invocation via `/start`, typically as the first thing in a new session
@@ -48,11 +52,20 @@ Run these (cheap, read-only):
 - `**/onboarding.md`
 - `**/CONTEXT.md`
 - `**/DEVLOG.md` (and `**/devlog.md` on case-sensitive trees)
-- `**/*handover*.md` — **match the substring, not a fixed name.** The handover
-  role shows up as `HANDOVER.md`, `current-handover.md`, *or* `latest_handover.md`,
-  and is often a small **pointer** to the real per-project copy. A `**/HANDOVER.md`
-  glob misses `latest_handover.md` — same list-brittleness one level down.
+- `**/*handover*.md` **and** `**/*HANDOVER*.md` — **match the substring, and run
+  both cases.** The handover role shows up as `HANDOVER.md`, `current-handover.md`,
+  *or* `latest_handover.md`, and is often a small **pointer** to the real
+  per-project copy. A `**/HANDOVER.md` glob misses `latest_handover.md` — same
+  list-brittleness one level down. And **glob matching is case-sensitive even on
+  case-insensitive filesystems**: a lowercase `*handover*` pattern silently misses
+  a root `HANDOVER.md`. That is not hypothetical — it is the exact miss this
+  bullet was written after.
 - `**/TASKS.md`
+
+**Belt and braces: list the project root.** One directory listing of the repo
+root cannot miss on case, and the root is where `HANDOVER.md`, `DEVLOG.md`, and
+`TASKS.md` most often live. Run it alongside the globs, not instead of them —
+the globs reach into `docs/` and `.agents/` where a listing won't.
 
 These globs are a **fast net for the common names, not a guarantee.** A project's
 chronicle can be a state doc (`writing-state.md`) and its queue can be absent
@@ -122,6 +135,25 @@ even when the file is named something else and lives behind a pointer:
 Don't read the spec, source files, or full DEVLOG unless a specific question
 requires it. Reference files are for lookup, not required reading.
 
+### 2b. Check durability (one command)
+
+```bash
+git status -sb
+```
+
+Read the **first line** — specifically the `[ahead N]` marker. `ahead N` means N
+commits exist only on this disk: a previous session's work that was committed,
+believed safe, and never pushed. Surfacing it at orient costs one command and
+catches the drift a whole session earlier than the next handover would.
+
+- `[ahead N]` → report it and **offer** to push.
+- No upstream / not a git repo → say nothing. Not every project has a remote,
+  and a missing remote is not news at orient.
+- Clean and in sync → **say nothing.** Silence is the signal.
+
+**Never push here.** `/start` reports; the user decides. Offering is in contract,
+acting is not.
+
 ### 3. Surface the orientation + propose the next move
 
 A concise summary, then the next move at the top of mind (Teflon Mode):
@@ -131,6 +163,7 @@ A concise summary, then the next move at the top of mind (Teflon Mode):
 **In flight (from handover):** <what was mid-stream or unresolved, or "nothing — clean stop">
 **Last chronicle entry:** <date + one-line summary — from DEVLOG or the project's equivalent>
 **Active tasks:** <top 1–3 from TASKS.md Active — omit this line entirely if there's no TASKS.md>
+**Durability:** <N commits unpushed on <branch> — want me to push? — omit this line entirely when in sync>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
@@ -164,7 +197,11 @@ untrusted (fresh clone, lockfile drift mentioned in handover).
   map, not the whole file. From TASKS, the **Active** section only — never
   surface Someday or Done at orient. Temporal context only.
 - **Running tests or writing files.** Docs-only, read-only. Verification is
-  offered as a next move, never executed by this skill.
+  offered as a next move, never executed by this skill. (Reading git state via
+  `git status -sb` is not running the project — it writes nothing. See 2b.)
+- **Pushing, or nagging about a clean repo.** `/start` reports unpushed work and
+  offers; it never pushes. And when everything is in sync it says *nothing* about
+  durability — a line that always appears stops being read.
 - **Burying the next move.** It's the lead, not a footnote. Propose, don't ask
   "what now?".
 - **Firing in this repo's own workflow.** This skill ships to downstream hobby

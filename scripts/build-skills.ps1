@@ -53,7 +53,7 @@ $skillDefinitions = @{
     "handover-guide.md" = @{
         name = "handover-manager"
         description = "Use when the user requests a handover, the context window is getting full or laggy, at a natural pause point (end of sprint or milestone), or when stuck and a fresh perspective is needed. Creates a handover capturing the ephemeral conversation delta not already in the project files. Works with any AI agent."
-        allowedTools = @("Read", "Write", "Edit", "Grep", "Glob")
+        allowedTools = @("Read", "Write", "Edit", "Grep", "Glob", "Bash")
         assets = @("handover.md")
     }
     "onboarding-guide.md" = @{
@@ -88,6 +88,19 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 $builtCount = 0
 $errorCount = 0
+
+# Because of the Remove-Item above, a hand-placed README in skills/ would vanish
+# on the next build. Emit the "this is generated, edit the source" redirect as
+# part of the build instead. Source text is shared with the sh builder so they
+# can't drift.
+$skillsReadmeSource = Join-Path $TemplatesDir "skills-readme.md"
+if (Test-Path $skillsReadmeSource) {
+    $readmeText = [System.IO.File]::ReadAllText($skillsReadmeSource) -replace "`r`n", "`n"
+    [System.IO.File]::WriteAllText((Join-Path $OutputDir "README.md"), $readmeText, $utf8NoBom)
+} else {
+    Write-Warning "skills README source not found: $skillsReadmeSource"
+    $errorCount++
+}
 
 foreach ($sourceFile in $skillDefinitions.Keys) {
     $def = $skillDefinitions[$sourceFile]

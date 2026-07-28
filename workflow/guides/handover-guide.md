@@ -18,7 +18,56 @@ A handover is NOT a status report. It is a bridge.
 - **Bridge**: Handover (Temporary).
 
 **Rule**: If it is in a file, it does NOT belong in the handover.
-**Rule**: Once a decision is committed to a file, DELETE it from the handover.
+**Rule**: Once a decision is written to a file, DELETE it from the handover.
+
+> **Word warning**: "committed" in the sentence above is the *prose* sense —
+> written down to a doc. It is NOT `git commit`. The two senses collide, and the
+> collision is how a handover ends up asserting that work is safe when it is
+> sitting unpushed on one laptop. See Step 0.
+
+---
+
+### Step 0: Durability Check (do this before anything else)
+
+The Record/Bridge split above has an unstated axiom: **"in a file = safe."** On a
+local disk that is false. A file is one disk away from gone, and a commit that was
+never pushed is invisible to every other machine and every future session.
+
+So before you write a word of handover, establish whether the work is actually
+**durable**.
+
+**Which repos to check.** A session often spans more than one repo (sibling
+projects, a library plus its consumer). Check, in order:
+
+1. The repo you are working in.
+2. Any sibling repos named in `onboarding.md` or in the current handover.
+3. If you are not sure the session was confined to those, **ask the user** —
+   "did we touch any repo besides X today?" is one question and it closes the gap.
+
+**The check**, run in each repo:
+
+```bash
+git status -sb
+```
+
+Read the **first line**, and specifically the `[ahead N]` / `[behind N]` marker —
+not just the list of modified files. The file list tells you about *uncommitted*
+work. The marker tells you about *undurable* work. Those are different failures
+and only one of them is obvious.
+
+| First line shows | What it means | What to write |
+|---|---|---|
+| `## main...origin/main` (no marker) | Committed **and** pushed | Nothing — a clean stop is genuinely clean |
+| `## main...origin/main [ahead 4]` | 4 commits exist **only on this disk** | Say so, and **offer to push** |
+| `## main` (no upstream) | No remote or no tracking branch | Say it plainly — "committed" is the ceiling here |
+| Modified / untracked files listed | Uncommitted work in flight | Ordinary Delta material (§2) |
+
+**Never push on your own.** Report the state and offer; the user decides. Pushing
+unasked trades a visibility bug for a consent bug — and the remote may be shared.
+
+If you cannot run commands at all (no shell access in your environment), say so
+explicitly: *"Push state unverified — I can't run git here."* An honest unknown is
+useful. A confident wrong "all work committed" is what this step exists to prevent.
 
 ---
 
@@ -72,6 +121,14 @@ Use this lean template. If a section is already covered by a file, **delete the 
 
 ```markdown
 New AI: Oriented via onboarding.md. We are in Implementation Phase, Sprint 4.
+```
+
+**Durability line — include ONLY when something is not pushed.** Omit it entirely
+when every repo is committed and in sync; a clean stop needs no line, and the
+handover has a 200-token budget to protect.
+
+```markdown
+**Durability:** Blendy ahead 4, Blocky ahead 4 — committed but NOT pushed.
 ```
 
 ### 2. The Delta (Conversation Context)
@@ -136,6 +193,13 @@ If an outgoing agent left you a "novel" instead of a "delta", tell the user. "Th
 ❌ **The Novel** - Writing more than 3-4 paragraphs. Keep it a bridge, not a book.
 ❌ **Missing Failed Paths** - Not warning the next agent about what *didn't* work.
 
+**Durability (see Step 0):**
+
+❌ **Declaring work safe because it is committed** - Committed ≠ pushed. Verify with `git status -sb`, or say the state is unverified.
+❌ **Citing commit SHAs as evidence of safety** - A SHA proves a commit exists *on this disk*. It proves nothing about the remote, and its precision makes the claim more convincing, not more true.
+❌ **Checking only the current repo when the session spanned several** - A sibling repo strands work just as easily, and nobody thinks to look there.
+❌ **Pushing on your own initiative** - Surface and offer. The remote is usually shared; consent is not yours to assume.
+
 **For Outgoing AI:**
 
 ❌ **Assuming docs exist** - Check first
@@ -179,6 +243,32 @@ New AI: Oriented via onboarding.md. We are in Implementation, midway through Spr
 - Flags the decision that needs making
 - Specific next steps
 - Warns about known issue
+
+---
+
+## Example: The Handover That Looked Perfect And Wasn't
+
+This is a real one. It is the reason Step 0 exists.
+
+```markdown
+## 1. Orientation
+Clean stop - nothing in flight, all work committed in both repos
+(Blendy `22e36f1`, Blocky `6854e21` at time of writing).
+```
+
+Accurate. Precise. Cited SHAs. **Both SHAs were unpushed local tips.** Eight
+commits across two repos lived on a single disk for a day, and were found only
+because a later session happened to run `git push` for an unrelated reason and
+watched a four-commit range fly past.
+
+Note what went wrong: nothing was *false*. The work genuinely was committed. The
+failure is that a confident, specific claim of safety **stops the next agent from
+checking**. A vague handover would have prompted a look; this one guaranteed
+nobody would.
+
+The fix is one command before you write. If Step 0 had run, the line would have
+read `**Durability:** Blendy ahead 4, Blocky ahead 4 — NOT pushed.` and the work
+would have been safe within the minute.
 
 ---
 

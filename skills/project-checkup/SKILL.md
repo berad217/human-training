@@ -39,6 +39,7 @@ Collect:
 
 - Last commit date: `git log -1 --format=%cd`
 - Branch state: `git status -sb` (uncommitted? unstashed? not on main?)
+- **Unpushed work**: the same `git status -sb` first line carries an `[ahead N]` marker. **Read it.** `ahead N` means N commits live only on this disk — a previous session committed, called it done, and never pushed. On a dormant project that is the single most likely way real work has already been lost.
 - Activity over last 30 days: `git log --since="30 days ago" --oneline | wc -l`
 - Existence and last-edit date of canonical docs: `onboarding.md`, `DEVLOG.md`, handover doc (check canonical locations from CLAUDE.md's Document Hierarchy)
 - Build/run signal: lockfile-vs-manifest drift (`package-lock.json` older than `package.json`, etc.), CI status if `gh` is available
@@ -50,6 +51,7 @@ Present the pulse as a brief table:
 |------------------|--------------------------------------|
 | Last commit      | 2025-08-12 (9 months ago)            |
 | Branch           | main, clean                          |
+| Unpushed         | 4 commits ahead of origin/main       |
 | Activity (30d)   | 0 commits                            |
 | onboarding.md    | exists, edited 9 months ago          |
 | DEVLOG.md        | exists, last sprint 8 months ago     |
@@ -93,6 +95,7 @@ Route based on the pulse state. Default routing:
 Things `workflow-orientation` doesn't cover. Quick scan:
 
 - **Build/run friction.** Lockfile older than manifest. Deprecated config files. Removed peer deps in major-version-bumped packages. Existence of a working start command (don't run it — just check it's documented somewhere).
+- **Work stranded locally.** The `[ahead N]` count from the pulse. Unpushed commits on a project nobody has touched in months are the highest-severity friction item there is — everything else on this list costs time, this one costs work. Report the count and **offer** to push; never push unasked.
 - **Dead branches.** `git branch -a` — any stale feature branches that should be deleted or merged?
 - **Stashed work.** `git stash list` — was something left in flight?
 - **TODOs/FIXMEs.** `grep -rn "TODO\|FIXME"` on source dirs only. Count + sample 3-5.

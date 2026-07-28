@@ -87,4 +87,5 @@ If the conversation grows long and the IDE starts to lag or hallucinate:
 
 1. **Update the Handover**: Capture the current "in-flight" delta.
 2. **Commit Your Work**: Ensure code and DEVLOG are synced.
-3. **Ask for Reset**: "I've updated the handover. Should we reset the context to keep things fast?"
+3. **Make It Durable**: Committed is not the same as safe. Run `git status -sb` and read the `[ahead N]` marker on the first line — `ahead N` means N commits exist only on this disk. Offer to push (never push unasked), or state plainly that the work is unpushed. "Done" should mean durable, not merely recorded.
+4. **Ask for Reset**: "I've updated the handover. Should we reset the context to keep things fast?"

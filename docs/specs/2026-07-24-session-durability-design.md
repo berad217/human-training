@@ -1,12 +1,13 @@
 # session-durability — change-set spec
 
-**Status:** genuine draft (no `skills-source/session-durability/` — this is not a
-skill, it's a **cross-cutting change-set** for existing skills).
+**Status: IMPLEMENTED in 1.17.0** (2026-07-28). Archived from
+`skills-drafts/session-durability/` — kept as the incident record and the
+rationale for a non-obvious change, since this repo keeps no DEVLOG.
 **Filed:** 2026-07-24, from a real incident (below).
-**Target release:** 1.17.0.
 
-> This folder is a spec, not a skill. Nothing here ships. When the changes land in
-> `workflow/guides/` + the builders, delete this folder.
+This was never a skill — it is a **cross-cutting change-set** across existing
+skills. All four changes (§4.1–4.4) landed, plus the §3 `skills/README.md`
+redirect. Deviations from this spec as written are recorded in §9 at the bottom.
 
 ---
 
@@ -297,3 +298,51 @@ Regression guard:
    `project-checkup` all reference? *Rec: inline in handover-manager now (one
    place, real bug); extract only if it starts drifting between skills.*
 4. **`skills/README.md` redirect** (§3) — do it in this release or file separately?
+
+---
+
+## 9. Implementation notes — deviations from this spec
+
+Recorded 2026-07-28, at implementation. The spec above is preserved as written;
+these are the places the landed change differs from it and why.
+
+1. **`| head -1` dropped.** The spec's check was
+   `git -C <repo> status -sb | head -1`. Shipped as plain `git status -sb` with
+   the instruction to *read the first line*. `handover-guide.md` is a
+   model-agnostic Track 1 doc that ships to agents running under PowerShell and
+   other non-POSIX shells, where `head` does not exist. The branch line is the
+   first line of output regardless, so the pipe bought nothing and cost
+   portability.
+
+2. **`skills/README.md` is generated, not hand-placed.** The spec (§3) proposed
+   adding the file but did not reconcile that with its own finding that
+   `skills/` is `rm -rf`'d on every build — a hand-placed README would have been
+   destroyed by the very next build, reproducing the landmine it warns about.
+   The text lives in `workflow/templates/skills-readme.md` and **both** builders
+   copy it to `skills/README.md`. Single source, so the two builders cannot
+   drift and break the byte-parity invariant.
+
+3. **This folder was archived, not deleted.** §7 step 7 said delete
+   `skills-drafts/session-durability/`. Archived here instead, matching the
+   convention already visible in `docs/specs/` (workflow-orientation,
+   gemini-api, tasks-skill all kept dated design docs after graduating). The
+   incident narrative is the only record of *why* the durability check exists,
+   and this repo keeps no DEVLOG to hold it.
+
+4. **Bonus fix: `/start`'s handover glob was case-blind.** Not in this spec —
+   found by running `/start` on this repo during implementation and watching it
+   miss the root `HANDOVER.md`. The glob `**/*handover*.md` is case-sensitive
+   even on a case-insensitive filesystem. `start` now runs both cases and also
+   lists the project root. Same failure family as the durability bug: a check
+   that silently reports "absent" instead of erroring.
+
+5. **Added an anti-example to `handover-guide.md`.** §6's regression guard asked
+   that *"all work committed (SHA, SHA)"* be impossible to write unexamined. A
+   rule alone did not seem sufficient, so the actual Blendy/Blocky handover text
+   is quoted in the guide with an explanation of why its precision made it more
+   convincing rather than more true.
+
+6. **`start`'s frontmatter description left unchanged.** The "docs-only" wording
+   stays; the body explains that `git status -sb` is strictly a read and that
+   the contract targets writes and side effects. Brad's call — the alternative
+   was rewording the contract to "read-only, no writes".

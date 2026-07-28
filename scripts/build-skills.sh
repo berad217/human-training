@@ -32,6 +32,11 @@ echo ""
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
+# Because of that rm -rf, a hand-placed README in skills/ would vanish on the
+# next build. Emit the "this is generated, edit the source" redirect as part of
+# the build instead. Source text is shared with the PS builder so they can't drift.
+tr -d '\r' < "$TEMPLATES_DIR/skills-readme.md" > "$OUTPUT_DIR/README.md"
+
 # Function to build a single skill
 build_skill() {
     local source_file="$1"
@@ -91,7 +96,7 @@ build_skill "lifecycle.md" "lifecycle-manager" \
 
 build_skill "handover-guide.md" "handover-manager" \
     "Use when the user requests a handover, the context window is getting full or laggy, at a natural pause point (end of sprint or milestone), or when stuck and a fresh perspective is needed. Creates a handover capturing the ephemeral conversation delta not already in the project files. Works with any AI agent." \
-    "Read, Write, Edit, Grep, Glob" \
+    "Read, Write, Edit, Grep, Glob, Bash" \
     "handover.md"
 
 build_skill "onboarding-guide.md" "onboarding-creator" \
