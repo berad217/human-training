@@ -23,15 +23,17 @@ allowed-tools: [Read, Write, Edit, Grep, Glob]
 
 ---
 
-## Environment Detection
+## Write for an environment you can't predict
 
-**Know where you are.** Different tools have different strengths. Before you start, try to identify your "home":
+The agent reading your onboarding.md may be in a terminal, an IDE, or a web chat
+with file access — with wildly different tooling and no way for you to know which.
+That constraint shapes the whole document: describe *what* to find and *why* it
+matters, not the keystrokes to find it. "Look for spec.md, usually in docs/"
+survives any environment; "run `grep -r spec docs/`" is already wrong for half of
+them.
 
-- **Cursor/Windsurf**: High IDE integration. You can see many files, run terminal commands, and have a long-lived session.
-- **Claude Code (CLI)**: Fast, terminal-centric. Very good at search and bulk edits.
-- **Web App (Claude.ai/Gemini/GPT)**: Might have MCP access to files. Less terminal control, but often "smarter" about high-level design.
-
-**Tip:** If you're in a specialized environment (like Cursor), use its features (like codebase search) instead of just `grep`.
+(Guidance for an agent identifying its *own* environment lives in `lifecycle.md`
+§1 — that's the reader's problem, not the author's.)
 
 ---
 
@@ -51,7 +53,7 @@ allowed-tools: [Read, Write, Edit, Grep, Glob]
 
 ## What Onboarding Is vs What It Isn't
 
-| Onboarding.md | Spec.md Section 11 |
+| Onboarding.md | Spec.md Section 9 |
 |---------------|-------------------|
 | Navigation + orientation | Technical constraints |
 | "Where to find things" | "What not to do" |
@@ -168,23 +170,18 @@ See `./docs/.agents/global-preferences.md` for detailed communication style and 
 
 ---
 
-## Context Hygiene
+## Working practice while you author
 
-**Don't drown in data.** Even with large context windows, focus is key:
+Context hygiene and mid-project orientation are the lifecycle guide's job, not
+this one's — see `lifecycle.md` §1 (Orientation & Context Hygiene, including
+"Joining a Moving Train"). Its version is the current one and covers steps this
+guide used to omit, so don't restate it here or in the onboarding.md you write.
+Point at it.
 
-1. **Be lazy**: Don't read a 1000-line file until you need to edit it.
-2. **Summaries first**: Prefer `view_file_outline` or `list_dir` to understand structure before deep-diving.
-3. **Reference, don't copy**: If you mention a doc, just name it. Don't dump its entire content back into the conversation unless requested.
-
----
-
-## Joining a "Moving Train"
-
-If you're joining mid-project (not Sprint 1):
-
-1. **Read the latest DEVLOG entry**: This tells you the most recent technical baggage.
-2. **Read the current Handover**: This tells you what's currently "breaking" or being debated.
-3. **Verify the build**: Run the tests. Don't trust that the project is in a working state until the terminal proves it.
+The one piece that *is* this guide's business: apply that hygiene to yourself
+while authoring. You are reading a project in order to describe it, which is
+exactly the situation where it's tempting to read everything first. Read enough
+to write each section accurately, and no more.
 
 ---
 
@@ -300,86 +297,42 @@ If documents don't exist yet, you may need to create them:
 -   Legacy accepted: `.agents/current-handover.md` or `.claude/current-handover.md`
 -   Or provide it to the user directly if they request it
 
-**What to include:**
+**What to include.** The handover guide is the authority on this; what you embed
+must not drift from it. Three sections, ~200 tokens total:
 
-### 1. Quick Start
-Tell the next agent what to read first:
 ```markdown
 # Handover - [Project Name]
 
-## Quick Start
-New agent:
-1. Read onboarding.md if you haven't already
-2. [Any other critical docs to read]
-3. Come back here for current context
-```
+## 1. Orientation
+Oriented via onboarding.md. [Phase / sprint, in one more sentence.]
 
-### 2. Project Context (Brief)
+**Durability:** [Only when something is NOT pushed — e.g. "ahead 4, committed
+but NOT pushed". Omit this line entirely when every repo is clean.]
 
-```markdown
-## Project Context
-Project: [name]
-Current phase: [Ideation/Spec writing/Implementation Sprint N]
-Current branch: [git branch name if relevant]
-```
+## 2. The Delta
+Strictly what is NOT already in the files:
+- **Active debates:** choosing between X and Y; leaning Z because [reason].
+- **Failed paths:** A didn't work because [reason] — don't retry it.
+- **In-flight:** [what is half-done or currently broken, and where.]
 
-### 3. What Was Accomplished
-
-```markdown
-## This Session's Accomplishments
-- [Concrete completed work]
-- [Key decisions made]
-- [Tests written: X new tests, Y total passing]
-```
-
-### 4. Conversation Context (MOST IMPORTANT)
-
-**This is what's NOT in other docs:**
-
-```markdown
-## Conversation Context
-
-**Active discussions:**
-- [Topic 1]: We discussed [X vs Y], leaning toward [X] because [reason]
-- [Topic 2]: User asked about [Z], no decision yet
-
-**Decisions in flight:**
-- [What's being decided, options considered, pros/cons discussed]
-
-**What was tried:**
-- Attempted [approach A], didn't work because [reason]
-- Switched to [approach B], seems promising
-
-**Current concerns:**
-- [Issue 1]: [Why it's a concern, potential impact]
-- [Issue 2]: [What needs to be figured out]
-```
-
-### 5. Next Steps
-
-```markdown
-## Next Steps
-
-**Immediate (next session):**
+## 3. Next Steps
 1. [Specific task]
 2. [Specific task]
-
-**Upcoming work:**
-- Sprint N+1: [Brief description]
 ```
 
-````markdown
-### 6. What NOT to Include
+**Before writing it, run `git status -sb`** and read the `[ahead N]` marker on the
+first line. Committed is not pushed, and a handover that says "all work committed"
+about unpushed commits is the failure this line exists to prevent. Report and offer
+to push; never push unasked.
 
-```markdown
-❌ Don't duplicate what's in spec, DEVLOG, or code
-❌ Don't copy/paste large code snippets
-❌ Don't write a novel - be concise
-✅ DO capture the ephemeral conversation context
-✅ DO reference other docs: "See DEVLOG Sprint 4 for details"
-✅ DO be honest about problems and unknowns
-```
-````
+**Two things NOT to embed**, both of which look helpful and aren't:
+
+- **A "what we accomplished" section.** That is a status report, and it belongs in
+  the DEVLOG. A handover carries only what has no home in a file yet — the moment
+  a decision lands in code or the DEVLOG, it leaves the handover.
+- **Anything already in the spec, DEVLOG, or code.** Reference it instead:
+  "See DEVLOG Sprint 4." Length should track the size of the unresolved delta, so
+  a clean stop produces a nearly empty handover — that is success, not an omission.
 
 **Tone for handover instructions:** More direct than the handover-guide itself, since this is embedded in the working doc, not a meta-guide.
 
@@ -431,6 +384,15 @@ npm run dev       # Start development server
 **Include personality:**
 - ✅ "This human appreciates direct feedback - don't sugarcoat"
 - ❌ "Provide objective assessments in professional manner"
+
+**Right-sized:**
+
+An office tour is short because the building is small, not because the guide was
+rationed. Match the length to what the project actually has: a two-file hobby
+project has less to show than a service with four deploy targets, and its
+onboarding should be visibly shorter. Cover every section that has real content,
+then stop — a section kept alive with "[TBD]" or a restatement of the section
+above it costs the next agent context and teaches them the doc is padding.
 
 **Remember:** This is the office tour, not the employee handbook. Write like you're showing someone around, not writing a legal document.
 
@@ -494,10 +456,10 @@ Welcome! You're here to help build [one sentence description].
 **Where:** `./docs/.agents/current-handover.md` or `HANDOVER.md`
 
 **Include:**
-- Quick start (what to read)
-- This session's accomplishments
-- **Conversation context** (discussions, decisions in flight, what was tried)
+- Orientation (one or two sentences) + a **Durability** line if anything is unpushed
+- **The Delta** (active debates, failed paths, what's in flight) — the whole point
 - Next steps
+- Not accomplishments; those go in the DEVLOG
 
 ---
 
@@ -510,7 +472,7 @@ Welcome! You're here to help build [one sentence description].
 
 ## Checklist: Is Your Onboarding Good?
 
-**Test:** Could a GPT-5 agent in Cursor, starting from zero context, find what they need and start working?
+**Test:** Could an agent you've never met, in an IDE you didn't anticipate, starting from zero context, find what they need and start working?
 
 - [ ] Purpose stated clearly in one sentence
 - [ ] Document locations listed with common variations
@@ -546,7 +508,7 @@ Welcome! You're here to help build [one sentence description].
 - **Global preferences** - Who the human is (reusable across projects)
 - **Onboarding** - How to work on THIS project (project-specific entry point)
 - **Context** - What the project's words mean (the shared glossary/language)
-- **Spec Section 11** - Technical implementation constraints (engineering rules)
+- **Spec Section 9** - Technical implementation constraints (engineering rules)
 - **Handover** - Current conversation state (ephemeral, constantly changing)
 
 They're all different jobs. Don't try to make one doc do everything.

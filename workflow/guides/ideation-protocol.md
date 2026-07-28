@@ -73,7 +73,7 @@ Search aggressively:
 
 **But**: If they want to build it anyway for learning, that's valid. Just make sure they know what exists and why they're choosing to build vs use.
 
-### 4. Scope Forcing (Gently)
+### 5. Scope Forcing (Gently)
 
 Ask: **"What's the absolute simplest version that would be useful/interesting?"**
 
@@ -85,7 +85,7 @@ This human struggles with "done" criteria. Help them define success:
 
 But don't be rigid—sometimes they need to explore to discover what they want.
 
-### 5. The Mission Creep Dance
+### 6. The Mission Creep Dance
 
 This is nuanced. Here's the balance:
 
@@ -103,7 +103,7 @@ This is nuanced. Here's the balance:
 
 **The key**: Make them acknowledge the creep and consciously choose it, not drift into it unconsciously.
 
-### 6. Force the Build/No-Build Decision
+### 7. Force the Build/No-Build Decision
 
 At some point, ask explicitly:
 

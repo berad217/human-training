@@ -1,6 +1,6 @@
 ---
 name: image-gen
-description: "Use when the user wants to CREATE or EDIT a raster/photographic image — 'generate an image', 'make a photo/logo/hero/mockup/sprite/icon-art', 'edit this picture', 'change/add/remove/replace X in this image', img2img, style or background swaps, identity-preserving edits, upscale-style redo. Claude CAN do this (like ChatGPT/DALL·E) by driving the Codex CLI's built-in gpt-image-2 tool — no API key, runs on a ChatGPT subscription. Covers the headless recipe, attaching edit targets with -i, harvesting the output file, auth, and prompt/invariant tips. Do NOT use for code-native or vector visuals (SVG icons, charts/dataviz, CSS/HTML/canvas UI, algorithmic/generative art) — those have their own skills; and do NOT use for the OpenAI image API directly (this is the subscription/CLI path)."
+description: "Use when the user wants to CREATE or EDIT a raster/photographic image — 'generate an image', 'make a photo/logo/hero/mockup/sprite/icon-art', 'edit this picture', 'change/add/remove/replace X in this image', img2img, style or background swaps, identity-preserving edits, upscale-style redo. Claude CAN do this (like ChatGPT/DALL·E) by driving the Codex CLI's built-in gpt-image-2 tool — no API key, runs on a ChatGPT subscription. Do NOT use for code-native or vector visuals (SVG icons, charts/dataviz, CSS/HTML/canvas UI, algorithmic/generative art) — those have their own skills; and do NOT use for the OpenAI image API directly (this is the subscription/CLI path)."
 allowed-tools: [Bash, Read, Write, Glob]
 ---
 

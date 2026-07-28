@@ -65,6 +65,7 @@ Testing in an AI-human loop requires efficiency. High-volume output kills the co
 - **Rule**: NEVER paste raw test logs or full coverage tables into the DEVLOG.
 - **Do**: Summarize passes/fails, coverage percentages, and critical technical decisions.
 - **rationale**: The DEVLOG is a permanent record of *intent* and *progress*, not a terminal dump.
+- **Length**: Let the sprint set it. A sprint with one real decision is a short entry, and that is the correct entry — the reader is a future agent scanning for *why*, so an entry earns its length from decisions and their rationale, not from restating what the diff already shows. Write the substance, then stop; skip the recap sections and the closing summary that repeats the entry above it.
 
 ### The Handover (The Bridge)
 

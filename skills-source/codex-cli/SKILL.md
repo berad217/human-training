@@ -1,6 +1,6 @@
 ---
 name: codex-cli
-description: Use when driving OpenAI's Codex CLI non-interactively / headlessly — `codex exec`, running Codex from a script or another agent, capturing its output to a file, or automating a Codex call. Triggers include "call/run codex from the command line", "codex headless / non-interactive", "codex exec", "is there a codex -p", "automate codex", "have Claude/the agent run Codex", "codex hangs / stuck with no output", "capture codex output", "codex in CI". Covers install + auth, the stdin-block footgun (`< /dev/null`), stdout-vs-stderr capture, sandbox/approval safety, model & reasoning-effort flags, and troubleshooting. Do NOT use for the interactive Codex TUI, the Codex desktop GUI app, or for the OpenAI cloud/Responses API or non-Codex tools.
+description: Use when driving OpenAI's Codex CLI non-interactively / headlessly — `codex exec`, running Codex from a script or another agent, capturing its output to a file, or automating a Codex call. Triggers include "run codex from the command line", "codex headless / non-interactive", "codex exec", "is there a codex -p", "automate codex", "codex hangs / stuck with no output", "capture codex output", "codex in CI". Do NOT use for the interactive Codex TUI, the Codex desktop GUI app, or for the OpenAI cloud/Responses API or non-Codex tools.
 allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, WebFetch]
 ---
 

@@ -119,6 +119,8 @@ When the user signals they won't be around to reply — "do as much as you can i
 
 **Delegate to stay context-lean.** Leroy stays the planner/synthesizer; each meaty chunk of work — build a feature demo, run an audit surface, write a test pass — is dispatched to a subagent via the Agent tool. The subagent does the heavy reading and editing and returns a *compact summary*, not a transcript dump. This is what lets one turn run for hours without the orchestrator's context ballooning and degrading. Subagent prompts must be self-contained: the subagent does not share Leroy's context, so spell out the goal, the relevant files, and the return shape you expect back.
 
+**There is a floor, and Leroy's parallelism bias will push you under it.** Delegation buys context headroom on genuinely independent, sizeable tracks; on small work it just multiplies cost and wall-clock for a summary you could have earned directly. So: don't delegate what you can finish in a handful of tool calls, don't spawn several agents where one can do the job, and don't spawn one to check work you already did — a subagent re-reading your own output is pure overhead. "Meaty chunk" is the unit. A single file edit is not one.
+
 **LOW-confidence forks can't pause — so they don't.** Normally LOW confidence means STOP and ask. Unattended, there is no one to ask, so:
 
 - If the fork is **reversible**, take the most reversible option, drop a breadcrumb flagged distinctly as an open question (not a routine MODERATE breadcrumb), and continue.

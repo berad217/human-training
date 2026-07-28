@@ -114,11 +114,11 @@ Check these signals:
 
 1. **Path resolution.** Every file path referenced in `onboarding.md`'s "Getting Oriented" section resolves to a real file. Use a Bash check for each path.
 2. **DEVLOG freshness.** Read the last DEVLOG entry. Compare its referenced sprint number and date against `git log --since=<last-devlog-date> --oneline | wc -l`. Significant commit volume without a new DEVLOG entry → flag.
-3. **Handover staleness.** If a current-handover doc exists, parse its "Project Context" section for the sprint/branch reference. Compare against `git rev-parse --abbrev-ref HEAD` and recent commits. Mismatch → flag.
+3. **Handover staleness.** If a current-handover doc exists, parse its "Orientation" section for the sprint/branch reference. Compare against `git rev-parse --abbrev-ref HEAD` and recent commits. Mismatch → flag. Also check its Durability line against `git status -sb`: a handover claiming a clean stop while the branch reads `[ahead N]` is stale in the way that costs work, not just accuracy.
 4. **Template completeness.** Each canonical workflow doc has its expected sections:
    - `onboarding.md` should contain: a top-level project heading, a "Getting Oriented" section with doc-location pointers, an "About This Human" section (or reference to `global-preferences.md`), and a "How We Work" / workflow section.
    - `DEVLOG.md` should contain at least one sprint entry with Summary, Decisions, Testing, Concerns/Risks, Next Sprint subsections.
-   - The current-handover doc (if used) should contain at minimum: Quick Start, Project Context, This Session's Accomplishments, Conversation Context, Next Steps.
+   - The current-handover doc (if used) should contain: Orientation, The Delta, Next Steps — plus a Durability line whenever work is unpushed. Note what is *not* required: a "what we accomplished" section is a status report, belongs in the DEVLOG, and its absence is correct rather than a gap. A short handover is a healthy one; flag a handover for duplicating the DEVLOG, not for being brief.
 
    Missing required sections → flag.
 5. **Spec divergence.** If `spec.md` exists, check `git log -- spec.md` for commits since the last DEVLOG mention of "spec". Untracked spec edits → flag.

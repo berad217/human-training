@@ -162,6 +162,8 @@ One unified report. **Next move at the top.** Findings follow.
 
 The "next move" at the top is non-negotiable. The whole point of this skill is to remove the inertia of "what do I do?", and burying that under audit findings defeats it.
 
+**Size the report to what the pulse actually found.** A healthy project checks out in a handful of lines, and that brevity is the finding — it says "nothing is in your way, go." Sections with nothing in them get one line ("Friction: none") or get dropped, not filled. This report competes for attention with the work it's trying to send the user back to, so every line past the next move has to earn its place.
+
 ---
 
 ## Composition with other skills

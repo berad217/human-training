@@ -166,7 +166,7 @@ handover has a 200-token budget to protect.
 As soon as a task is done and the DEVLOG is updated:
 
 1. **Wipe the handover clean** or reduce it to the next immediate "in-flight" thought.
-2. The goal is to keep the handover under 200 tokens whenever possible.
+2. **The budget is ~200 tokens.** That is the single length target for a handover — roughly 150 words, one screen, no scrolling. It is the number every other length note in this guide defers to. Write to what the delta actually contains: a session with one live debate needs a few lines, and a clean stop needs almost nothing. Length comes from unresolved context, never from padding with sections that have nothing in them.
 3. **Draft the Handover**: Tell the user you've prepared it, summarize the "Delta", and save/overwrite the file.
 4. **Flush the glossary**: If any domain terms got sharpened or coined this session, land them in `CONTEXT.md` now (if the project keeps one). Terms are Record, not Delta — they belong in the glossary, not the handover.
 
@@ -197,7 +197,7 @@ If an outgoing agent left you a "novel" instead of a "delta", tell the user. "Th
 ❌ **Duplicating the Spec/DEVLOG** - If it's in a permanent doc, keep it out of the handover.
 ❌ **Keeping "Zombie" Context** - Leaving a "Decision in Flight" in the handover after the decision was made.
 ❌ **Delete-then-Create** - Deleting the handover file instead of overwriting it (breaks IDE toolchains).
-❌ **The Novel** - Writing more than 3-4 paragraphs. Keep it a bridge, not a book.
+❌ **The Novel** - Running past the ~200-token budget (Step 5). Keep it a bridge, not a book.
 ❌ **Missing Failed Paths** - Not warning the next agent about what *didn't* work.
 
 **Durability (see Step 0):**

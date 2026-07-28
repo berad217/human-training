@@ -361,43 +361,18 @@ This spec is **not frozen**. Implementation is a discovery process.
 
 ---
 
-### 12. Meta-Feedback (Continuous Improvement)
+### 12. Where you had to guess
 
-**This section is for YOU (the AI writing the spec) to provide feedback on this spec-writing process.**
+The one piece of process feedback worth capturing, because it has a reader and a
+use: **anywhere you filled a gap the ideation conversation never closed.** Say so
+in conversation when you hand over the spec — "sections 4 and 6 are solid; I
+guessed at the storage format in 5, you should check it." That points the user at
+the parts most likely to be wrong while they still have the context to correct it.
 
-After writing the spec, reflect:
-
-**What worked well:**
-
-- Which sections of this guide were helpful?
-- What made the spec clear and actionable?
-- What from ideation conversation translated smoothly?
-
-**What was difficult:**
-
-- Which sections were unclear or hard to write?
-- What guidance was missing from this template?
-- Where did you have to guess or make assumptions?
-
-**Suggestions for improvement:**
-
-- How could this guide be better?
-- What sections should be added/removed/changed?
-- What examples would help future AIs write better specs?
-
-**Format this feedback two ways:**
-
-1. **In conversation** (as you finish writing spec):
-   - "I've written the spec. Here's what worked well and what was tricky about the process: [feedback]"
-   - Give user chance to discuss and refine
-
-2. **In spec document** (at the very end):
-   - Add a "## Process Notes" section
-   - Document what was easy/hard about writing THIS spec
-   - Note any ambiguities that needed clarifying questions
-   - Suggest improvements for next time
-
-**This feedback loop improves the templates over time.**
+Don't add a "Process Notes" section to the spec itself. The spec is read by a
+coding agent looking for what to build, and a retrospective on how the spec was
+written is a section it must skip. Keep the feedback in the conversation, where
+the person who can act on it is.
 
 ---
 
@@ -430,11 +405,10 @@ After writing the spec, reflect:
 - **Create DEVLOG.md skeleton** - Initial structure for sprint documentation
 - Confirm user is ready to start implementation
 
-### Step 5: Provide Meta-Feedback
+### Step 5: Flag Where You Guessed
 
-- Tell user what worked/what was tricky in writing this spec
-- Document process notes in spec itself
-- This helps improve templates for future projects
+- Name the sections you had to fill in without a clear answer from ideation (see Section 12)
+- Keep it to a sentence or two, in conversation — not in the spec
 
 ---
 
@@ -496,7 +470,7 @@ When you write the spec, you're also creating the foundation for the entire proj
 
 **Why create skeleton now**: Signals to implementation agent that DEVLOG updates are part of "done", not optional.
 
-**Format**: See sprint deliverables in spec Section 10 for what each DEVLOG entry should contain.
+**Format**: See sprint deliverables in spec Section 7 (Sprint Breakdown) for what each DEVLOG entry should contain.
 
 ---
 
@@ -560,6 +534,11 @@ You're writing this spec for **another AI with zero context**. Make it:
 
 The spec is a **communication tool**, not a contract. It should enable great implementation, not constrain it unnecessarily.
 
----
-
-**After writing a spec, provide feedback on this process so we can improve it.**
+**Complete does not mean long.** "Enough detail to implement without guessing" is a
+bar to clear, not a direction to keep going in — and the two failure modes are not
+symmetric. A missing data model gets discovered on the first run; forty pages of
+prose gets skimmed, and the one constraint that mattered gets skimmed with it. So
+spend the words where ambiguity actually costs something — data models, success
+criteria, tech stack — and let the rest be short. A small project's spec should
+look small. If a section has nothing decided in it yet, write one line saying that
+and move on; a placeholder is honest, a page of hedging is not.

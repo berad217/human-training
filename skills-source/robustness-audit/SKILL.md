@@ -1,6 +1,6 @@
 ---
 name: robustness-audit
-description: Surface real runtime failure modes in existing code by reading it carefully — crashes, error-path lies, edge-case mishandling, resource leaks, concurrency hazards, and security boundary holes that pass tests but fail in production. Dispatches parallel subagents per code surface, each using a fixed defect-class taxonomy and a confidence-filtered output format, then verifies each loud finding against the actual code before reporting (audits routinely fabricate "critical" claims). Make sure to use this skill whenever the user asks for a robustness audit, hardening pass, defect-class audit, FMEA-style review of code, wants to find runtime bugs without live testing, asks "what could go wrong" or "what's likely broken", asks to audit code for errors before deployment, or wants to assess a codebase after returning to it from a long absence. Also trigger when the user describes silent failures, "mysteriously not working" features, features that work in tests but not in production, or wants to find bugs that pass CI.
+description: Find latent runtime bugs in existing code by close reading, without executing it — crashes, swallowed errors, edge cases, resource leaks, races, and auth gaps that pass tests but fail in production. Triggers include robustness audit, hardening pass, defect-class or FMEA-style review, "what could go wrong", "what's likely broken", "this feels brittle", silent or mysterious failures, bugs that pass CI, features that work in tests but not in production, auditing before a release, and assessing a codebase after time away.
 ---
 
 # Robustness audit
@@ -45,17 +45,18 @@ Use the Agent tool with `general-purpose` or a domain reviewer agent, model `son
 
 - **The taxonomy below**, spelled out — don't say "find bugs"; the categories prime distinct mental models.
 - **Files in priority order**, with one-line ownership descriptions.
-- **Confidence filtering**: "Only include issues you're at least moderately confident are real. No nits, no style notes, no 'consider doing X.' Demand a concrete failure mode — if you can't say what breaks, it's a nit."
-- **Output format**: file:line, what breaks (in user-visible terms), one-line fix, severity-as-phrase, confidence 0-100.
-- **Cap on findings** (10-20 typical) to force prioritization.
+- **A quality bar, not a quantity cap**: "Demand a concrete failure mode — if you can't say what breaks, it's a nit." That defines what counts as a finding. Do **not** add "only report what you're confident about", "be conservative", or a severity floor: current models follow suppression instructions literally and report less, and the finding they drop is as likely to be real as the one they keep. Ask for everything that clears the quality bar, scored, and filter in step 3.
+- **Output format**: file:line, what breaks (in user-visible terms), one-line fix, severity-as-phrase, confidence 0-100. The confidence number is what makes a separate filter pass possible — it is for sorting, not for self-censoring.
 
 While agents work, the main thread can begin verifying any prior known issues or read surrounding context.
 
-### 3. Verify every loud claim against the actual code
+### 3. Verify the loud claims, and filter here
 
-**This is the single biggest failure mode of this workflow. Skipping it is how an audit becomes net-negative.**
+**This is the single biggest failure mode of this workflow. Skipping it is how an audit becomes net-negative.** It is also where filtering happens — step 2 deliberately doesn't filter, so this step is what stands between a raw list and a punch list.
 
-Audit agents fabricate findings at a non-trivial rate — typically 1 in 3-5 "Critical" claims is wrong on close reading. Common fabrication patterns:
+> **Don't mistake this for self-verification and delete it.** Current guidance says not to instruct a model to double-check its own work or spawn subagents to verify itself — that's real, and it's not this. Here the main thread checks *another agent's* claims against the source: a writer-verifier split, where the verifier has something the writer didn't (the actual file, and no stake in the finding). Keep it.
+
+Audit agents fabricate findings at a rate worth planning for — on the models this skill was written against, roughly 1 in 3-5 "Critical" claims failed close reading. Newer models fabricate less, so treat that ratio as a reason to check rather than a quota of falsehoods to find. Common fabrication patterns:
 
 - *"Method X doesn't exist"* — agent grepped the wrong file or missed an alias.
 - *"This produces NaN forever"* — agent traced control flow incorrectly; the branch they think runs doesn't.
@@ -212,13 +213,14 @@ permanently stuck after any error", "tab leaks N MB per export")
 Confidence: **NN** (0-100)
 
 **Rules of the road:**
-- Confidence-filter: only findings you're at least moderately confident
-  are real. No nits, no style notes, no "consider doing X".
-- Demand a concrete failure mode. If you can't say what breaks, it's a
-  nit — drop it.
-- Aim for 10-20 findings. Don't pad; if there are fewer real bugs, that's
-  the answer.
-- Cap at <WORD LIMIT> words.
+- Report every issue that clears the bar below, including ones you are
+  unsure about — score them low rather than dropping them. A separate
+  pass filters this list; you are not the filter.
+- The bar is a concrete failure mode. If you can't say what breaks, it's
+  a nit — drop it. No style notes, no "consider doing X".
+- There is no target count. However many real bugs you find is the
+  answer; don't pad to reach a number and don't stop early to stay under
+  one.
 
 Close with a summary table sorted by severity × confidence (highest
 first):
@@ -231,7 +233,7 @@ first):
 
 ## Synthesis output to the user
 
-Use this template — the user reads it as a punch list:
+Use this template — the user reads it as a punch list. Match its length to the findings: one line per finding, and let the count of real bugs set the size of the report. A punch list earns its keep by being scannable, so cover every finding but skip the framing paragraphs, restated methodology, and closing summaries that repeat the table above them.
 
 ```markdown
 ## Robustness audit synthesis — <N> parallel agents
@@ -301,4 +303,4 @@ Include 2-3 of these in the agent prompt when the surface matches, as anchoring 
 
 ## Trust calibration
 
-The audit's credibility with the user depends on the "verified to be wrong" section being non-empty when applicable. If every claim from every agent was verified true, either the agents got lucky or the verification wasn't rigorous enough. Show the false-positive trace — it's the calibration that earns trust for the findings you act on.
+The audit's credibility depends on the "verified to be wrong" section being honest, not on it being full. Report the false positives you actually found — that trace is what earns trust for the findings you act on. If a run genuinely produced none, say that; a clean run is a real outcome, and manufacturing a doubt to fill the section is worse than an empty one.
