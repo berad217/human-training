@@ -39,7 +39,9 @@ Classify the project into exactly one of five states. Run checks in this order; 
   - `DEVLOG.md`: project root, `./docs/devlog.md`, `./docs/DEVLOG.md`
   - Handover: `./HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, legacy `.claude/current-handover.md`
   - Global preferences: `./docs/.agents/global-preferences.md`, legacy `.agents/global-preferences.md`
-- Folder existence: `docs/.agents/`, `docs/`, `.claude/`.
+  - Project memory: `./memory/MEMORY.md`, `./docs/memory/MEMORY.md`
+- Folder existence: `docs/.agents/`, `docs/`, `.claude/`, `memory/`.
+- **Out-of-repo memory:** does a global memory directory exist for this project? See §6.
 - Source-code heuristic: count source files outside boilerplate. <3 → empty; >0 → has code.
 - Git history: `git log --pretty=format:"%an" | sort -u | wc -l` for committer count; >1 unique committer suggests external project.
 - Doc structure cues: presence of `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `.github/ISSUE_TEMPLATE/`, or a substantial `docs/` tree without canonical names.
@@ -186,9 +188,108 @@ For bridge mode (State 5), `onboarding.md`'s "Getting Oriented" section points a
 
 ---
 
+## 6. Project memory belongs in the repo
+
+Some agent harnesses keep per-project memory **outside the project**, in a
+home-directory path derived from the working directory — Claude Code uses
+`~/.claude/projects/<slugified-cwd>/memory/`. That default is right for a repo
+with several contributors, where "how this human and this agent work together"
+shouldn't be committed for everyone else to carry.
+
+**It is wrong for a solo developer working across more than one machine**, and
+it fails silently: memory written there travels with no push and no handover, so
+the other machine simply doesn't know. Nobody gets an error. The usual way it
+surfaces is a human noticing an agent has forgotten something they're certain
+they said.
+
+### The rule
+
+> **If the repo is not public, project memory lives in the repo** — `memory/`,
+> indexed by `memory/MEMORY.md`. If the repo is public, leave memory at the
+> harness default.
+
+Public is the multi-contributor case the default was designed for, and in-repo
+memory gets *pushed* — memory records how a human works, what they've corrected,
+sometimes their frustrations. Fine in private, a deliberate choice in public.
+
+**Determining visibility** — cheap, in order:
+
+1. `gh repo view --json visibility -q .visibility` → `PUBLIC` / `PRIVATE`.
+2. No remote, or not a git repo → nothing can be published → **treat as
+   private**, in-repo is safe.
+3. `gh` missing or unauthenticated → **unknown. Ask once, then record the answer
+   in the repo** (a line in `memory/MEMORY.md` or `CLAUDE.md`) so it is decided
+   once per project rather than re-derived every session. Never guess: guessing
+   "private" on a public repo publishes the memory.
+
+### Finding the out-of-repo directory
+
+The Claude Code path is `~/.claude/projects/<slug>/memory/`, where `<slug>` is
+the working directory with `:`, `\`, `/` and `_` each replaced by `-`. So
+`P:\software_projects\Blendy_McBlendface` becomes
+`P--software-projects-Blendy-McBlendface`.
+
+**The slug is case-sensitive to how the path was typed.** Launching from
+`p:\...` instead of `P:\...` produces a *different* directory and therefore a
+*second, empty* memory, with no warning. If the derived slug finds nothing, list
+`~/.claude/projects/` and match case-insensitively before concluding there is no
+memory — and if two case-variants both exist, that is a fork: surface it, don't
+merge unilaterally.
+
+### Migrating (only after the discussion phase, only on a private repo)
+
+1. **Copy** every `*.md` from the global memory directory into `<repo>/memory/`.
+   If the repo already has entries, **merge by filename and surface any
+   collision** rather than overwriting — a name in both places means two
+   canonicals, which is itself the finding.
+2. **Verify** the copies are byte-identical before touching anything else.
+3. **Rebuild `memory/MEMORY.md`** as the index: one line per entry. If the
+   global copy had an index, its content is a starting point, not the answer —
+   entries may have been added or dropped.
+4. **Plant the pointer in `CLAUDE.md`** at project root, creating the file if it
+   doesn't exist. This is the step that makes the whole thing work: **`CLAUDE.md`
+   is the only project-local file most harnesses auto-load every session.**
+   `onboarding.md` is not; skills are not. Without this line, in-repo memory is
+   invisible to any session that doesn't happen to run an orientation skill.
+   ```markdown
+   ## Memory is repo-local
+   Project memory lives in `memory/`, indexed in `memory/MEMORY.md`. Never write
+   memory to `~/.claude/` — it does not travel between machines. If your harness
+   hands you a global memory directory, override it and write here instead.
+   ```
+5. **Tombstone the global index.** Replace the global `MEMORY.md` with a pointer
+   at the repo. Do **not** delete the global directory — deletion is not this
+   skill's power (§4), and the harness may re-create the folder anyway. A
+   tombstone is better than a deletion here regardless: that file gets read
+   automatically every session, so it is the one place a redirect is guaranteed
+   to be seen.
+   ```markdown
+   # Moved
+   This project's memory now lives in `<repo path>/memory/`, indexed in
+   `memory/MEMORY.md`. Read it there. Do not write memory here — it does not
+   travel between machines.
+   ```
+6. **Tell the user the global folder is still on disk** and that removing it is
+   theirs to do.
+
+### Writing memory from then on
+
+New memory goes to `<repo>/memory/` with a pointer line appended to
+`memory/MEMORY.md`. **Never write to the harness's global path**, even when it
+is the documented default and even when it already exists — a tombstoned
+directory that starts accumulating fresh entries is the duplicate-canonical
+problem wearing a hat.
+
+---
+
 ## Anti-Patterns
 
 - **Writing during audit.** Don't write a single byte during the audit phase.
+- **Migrating memory out of a public repo's default.** The rule is private-only.
+  On a public repo the harness default is correct — don't "fix" it.
+- **Migrating without planting the `CLAUDE.md` pointer.** The move succeeds, the
+  memory becomes invisible, and it looks like the memory was lost. Worse than
+  not migrating.
 - **Bulk auto-fix.** Each non-empty-project change gets its own confirmation. No "fix everything" button.
 - **Overwriting user-authored files.** Never modify a file the user authored outside this workflow without explicit per-file confirmation.
 - **Inventing convention.** When the project has its own structure, bridge to it. Don't impose human-training canonical names.

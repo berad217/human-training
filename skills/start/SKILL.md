@@ -1,6 +1,6 @@
 ---
 name: start
-description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover), then surfaces a concise orientation and proposes the next move. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
+description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover, in-repo memory index), then surfaces a concise orientation and proposes the next move. Also flags unpushed commits and project memory stranded outside the repo, offering both without acting. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
 allowed-tools: [Read, Glob, Bash]
 ---
 
@@ -61,6 +61,8 @@ Run these (cheap, read-only):
   a root `HANDOVER.md`. That is not hypothetical — it is the exact miss this
   bullet was written after.
 - `**/TASKS.md`
+- `**/memory/MEMORY.md` — the project's own memory index, if it keeps one
+  in-repo. See 2c for why this matters more than its size suggests.
 
 **Belt and braces: list the project root.** One directory listing of the repo
 root cannot miss on case, and the root is where `HANDOVER.md`, `DEVLOG.md`, and
@@ -87,6 +89,7 @@ archived, vendored, or `node_modules`-buried one) — they are not the search:
 - **DEVLOG.md**: project root → `./docs/devlog.md` → `./docs/DEVLOG.md`
 - **Handover**: `./HANDOVER.md` → `./docs/.agents/current-handover.md` → `.agents/current-handover.md` → legacy `.claude/current-handover.md`
 - **TASKS.md**: project root → `./docs/TASKS.md`
+- **Memory index**: `./memory/MEMORY.md` → `./docs/memory/MEMORY.md`
 
 **Non-canonical layouts — follow onboarding's map; don't force the schema.**
 When `onboarding.md` exists, its "Getting Oriented" / "Where everything lives"
@@ -131,6 +134,10 @@ even when the file is named something else and lives behind a pointer:
 - **TASKS.md — Active section only, if present** — the forward queue. Read the
   **Active** items (not Someday, the parking lot; not Done). Skip silently if
   there's no TASKS.md.
+- **`memory/MEMORY.md` in full, if present** — durable behaviour corrections the
+  project has accumulated. It is an index of one-line pointers and costs almost
+  nothing. Read the individual entries only when one is relevant to the work in
+  hand. Skip silently if absent.
 
 Don't read the spec, source files, or full DEVLOG unless a specific question
 requires it. Reference files are for lookup, not required reading.
@@ -154,6 +161,39 @@ catches the drift a whole session earlier than the next handover would.
 **Never push here.** `/start` reports; the user decides. Offering is in contract,
 acting is not.
 
+### 2c. Check whether memory is stranded outside the repo
+
+Same shape as 2b, and the same discipline: **detect, report, offer, never act.**
+
+Some harnesses keep per-project memory in a home-directory path derived from the
+cwd — Claude Code uses `~/.claude/projects/<slug>/memory/`, where `<slug>` is the
+working directory with `:`, `\`, `/` and `_` each replaced by `-`. So
+`P:\software_projects\Blendy_McBlendface` →
+`P--software-projects-Blendy-McBlendface`.
+
+That location **does not travel between machines.** For a solo developer with a
+desktop and a laptop it fails silently — no error, just an agent that has
+forgotten something the human is sure they said.
+
+Check for it. Then:
+
+- **In-repo `memory/` exists and no global directory does** → say nothing. This
+  is the resolved state.
+- **A global directory exists for this cwd** → report the entry count and
+  **offer** to migrate, which is `human-training:workflow-orientation` §6's job,
+  not this skill's. One line is enough: *"N memory entries are stranded at the
+  global path for this project — want them moved into the repo?"*
+- **Both exist** → that is a duplicate canonical and a probable fork. Surface it
+  and stop; do not guess which is authoritative.
+- **Neither exists** → say nothing. Not every project keeps memory.
+- **Derived slug finds nothing** → list `~/.claude/projects/` and match
+  case-insensitively before concluding. **The slug is case-sensitive to how the
+  path was typed**, so a session launched from `p:\...` rather than `P:\...`
+  gets a different directory. Two case-variants both present is a fork.
+
+**Never migrate from `/start`.** Copying files, rewriting an index and planting a
+`CLAUDE.md` pointer are all writes, and this skill writes nothing. Hand off.
+
 ### 3. Surface the orientation + propose the next move
 
 A concise summary, then the next move at the top of mind (Teflon Mode):
@@ -164,6 +204,7 @@ A concise summary, then the next move at the top of mind (Teflon Mode):
 **Last chronicle entry:** <date + one-line summary — from DEVLOG or the project's equivalent>
 **Active tasks:** <top 1–3 from TASKS.md Active — omit this line entirely if there's no TASKS.md>
 **Durability:** <N commits unpushed on <branch> — want me to push? — omit this line entirely when in sync>
+**Memory:** <N entries stranded at the global path — want them moved in-repo? — omit this line entirely when resolved or absent>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
@@ -202,6 +243,12 @@ untrusted (fresh clone, lockfile drift mentioned in handover).
 - **Pushing, or nagging about a clean repo.** `/start` reports unpushed work and
   offers; it never pushes. And when everything is in sync it says *nothing* about
   durability — a line that always appears stops being read.
+- **Migrating memory, or nagging about a resolved one.** 2c reports and offers;
+  `workflow-orientation` §6 does the moving. And when memory is already in-repo,
+  say *nothing* — same rule as durability.
+- **Writing new memory to the global path because it is the harness default.**
+  If the project keeps `memory/` in-repo, that is where memory goes for the rest
+  of the session, not just at orient.
 - **Burying the next move.** It's the lead, not a footnote. Propose, don't ask
   "what now?".
 - **Firing in this repo's own workflow.** This skill ships to downstream hobby
