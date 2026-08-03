@@ -139,7 +139,8 @@ human-training/
 │   ├── build-skills.ps1         # Windows builder
 │   ├── build-skills.sh          # Linux/Mac builder (and what CI runs)
 │   ├── verify-plugin-manifests.py
-│   └── setup-machine.ps1        # Link the global CLAUDE.md
+│   ├── setup-machine.ps1        # Link the global CLAUDE.md
+│   └── check-plugin-state.ps1   # Why is this machine on an old version?
 │
 ├── update-plugin.bat            # One-click "pull the latest plugin on this machine"
 │

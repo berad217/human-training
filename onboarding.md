@@ -259,11 +259,33 @@ machine, not the repo directly:
 
 1. **Source of truth** — the GitHub repo. Bumping `version` in both manifests
    is the signal that an update exists.
-2. **Marketplace catalog** — a local clone Claude Code keeps. The "is there an
-   update?" check compares against *this*, not GitHub. `autoUpdate` is on, so it
-   refreshes at Claude Code **startup** — but a long-running session or a failed
-   pull leaves it stale. That is exactly how a machine sits many versions behind
-   while reporting "you're on the latest."
+2. **Marketplace catalog** — a local shallow clone Claude Code keeps. The "is
+   there an update?" check compares against *this*, not GitHub. It refreshes
+   only when the marketplace has **`autoUpdate: true`** — a per-marketplace
+   opt-in that is **not set for you when you add a marketplace**. With it
+   absent, nothing refreshes the catalog, ever. And because the clone's
+   `origin/main` is a remote-tracking ref that only moves on fetch, `git status`
+   inside it reports "in sync" no matter how far GitHub has actually moved. That
+   is exactly how a machine sits many versions behind while reporting "you're on
+   the latest."
+
+   The flag is per-marketplace and lives in `~/.claude/settings.json`:
+
+   ```json
+   "extraKnownMarketplaces": {
+     "human-training": {
+       "source": { "source": "github", "repo": "berad217/human-training" },
+       "autoUpdate": true
+     }
+   }
+   ```
+
+   **This is the one-time per-machine step that actually matters.** Set it and
+   the catalog keeps itself current; leave it unset and you are refreshing by
+   hand forever — which is indistinguishable from being up to date until you go
+   looking. There is no flag for it on `claude plugin marketplace add`, so set it
+   in `settings.json` or through the interactive `/plugin` UI in a terminal
+   session.
 3. **Installed plugin** — the actual loaded skills. Refreshing the catalog does
    **not** install the new version; that is a separate step.
 
@@ -275,14 +297,28 @@ claude plugin update human-training@human-training   # install the new version
 # then FULLY quit and relaunch Claude Code — a new thread/session is not enough
 ```
 
-The marketplace-refresh line is the one people forget. Without it, `plugin
-update` checks a stale catalog and says you're already current — the #1 source
-of "I bumped the version but Claude doesn't see it." `autoUpdate` is meant to do
-that refresh automatically at startup, but force it explicitly whenever a push
-isn't showing up.
+The marketplace-refresh line is the one people forget, and on a machine without
+`autoUpdate: true` it is the *only* thing that refreshes the catalog. Without it,
+`plugin update` checks a stale catalog and honestly reports you're already
+current: the #1 source of "I bumped the version but Claude doesn't see it."
+Prefer fixing the cause — set `autoUpdate` — over running this by hand.
 
 **Shortcut:** [`update-plugin.bat`](update-plugin.bat) at the repo root runs both
 lines in one step — run it on any machine, then relaunch.
+
+**To check rather than guess**, run
+[`scripts/check-plugin-state.ps1`](scripts/check-plugin-state.ps1). It reports
+installed vs catalog vs GitHub — asking GitHub directly via `git ls-remote`,
+because the clone's own refs can't be trusted for this — plus which plugins are
+actually being loaded. It prints `Catalog fetched: NEVER` when the clone has no
+`.git/FETCH_HEAD`, which proves the catalog has not refreshed since it was
+created.
+
+**The Claude Desktop app is not on this chain at all.** It unpacks its own bundle
+per session under `%APPDATA%\Claude\local-agent-mode-sessions\<id>\rpm\`, which
+`plugin update` never touches and `check-plugin-state.ps1` cannot see. One machine
+can therefore run two different versions at once — one in the terminal, another in
+Desktop. Desktop moves only on a full quit and relaunch.
 
 **Fast local iteration (no commit/push):** launch `claude --plugin-dir .` from
 the repo root to load the plugin straight from the working copy.
@@ -331,6 +367,9 @@ python scripts/verify-plugin-manifests.py
 
 # Local dev install (test plugin from working copy, no commit needed)
 claude --plugin-dir .
+
+# Why is this machine on an old version? (read-only diagnosis)
+./scripts/check-plugin-state.ps1
 
 # After commit + push, per machine:
 # /plugin update human-training@human-training
