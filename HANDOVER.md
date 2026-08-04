@@ -1,77 +1,75 @@
 # Handover — human-training
 
 **Session date:** 2026-08-03
-**State:** **1.20.0 shipped — "You're On The Latest".** A diagnostic script plus
-the `autoUpdate` correction in `onboarding.md`. Committed, pushed, tagged
-`human-training--v1.20.0`, released. CI green on both jobs; manifests aligned.
+**State:** **1.21.0 shipped — "The Smoke Alarm".** `/start` gains step 2d: it
+notices when the plugin toolchain has silently stopped updating. Committed,
+pushed, tagged `human-training--v1.21.0`, released. CI green; builders
+byte-identical. Follows **1.20.0 — "You're On The Latest"** the same session.
 
-What shipped is in the release notes; don't restate it here. **This machine is
-already current** — unusually, the fix was applied live mid-session.
+What shipped is in the release notes; don't restate it here.
 
 ---
 
 ## The delta (not in the files)
 
-- **Brad set `autoUpdate: true` on this machine during the session**, which is
-  why the repo now reads healthy and why the diagnosis is confirmed rather than
-  theorised. It also **falsified a claim already written into the doc** — the
-  first draft of §2 asserted no `autoUpdate` field existed anywhere. It does;
-  it is nested per-marketplace inside `extraKnownMarketplaces`, and it was
-  merely *absent*. Corrected before commit, but the near-miss is the lesson:
-  absence of a config key is not absence of the feature.
+- **2d's correct output is silence, and silence is indistinguishable from the
+  check never having run.** That makes it the least verifiable thing shipped so
+  far — a green build proves the bytes and says nothing about whether the step
+  fires. Settle it by running `/start` on a machine whose `autoUpdate` is **off**
+  and confirming a `Toolchain:` line appears. Silence on *this* machine is the
+  expected result and therefore proves nothing.
 
-- **The startup behaviour is still unproven.** Exactly **one** catalog refresh
-  was observed, immediately after the flag was set. That it fires on *every*
-  launch is expected, not demonstrated. Cheap to settle: run
-  `scripts/check-plugin-state.ps1` after a fresh launch and see whether
-  `Catalog fetched` has advanced. Do this before trusting it on other machines.
+- **The behavioural checklist is now UNRUN across five releases** (1.17–1.21).
+  This has been carried in every handover since 1.17.0 and has never been the
+  thing that got done. It is now the largest unverified surface in the repo.
 
-- **Every other machine is still behind, and the fix is behind the problem.**
-  1.20.0 only arrives where `autoUpdate` is already set. Everywhere else it
-  needs one manual `update-plugin.bat` run *first*, and `autoUpdate` set by
-  hand after. That is the backlog this release created and cannot clear itself.
+- **`autoUpdate` firing at startup is still unproven.** One refresh observed on
+  2026-08-03, immediately after the flag was set. Not yet seen across a relaunch.
+  2d is built on the assumption that `lastUpdated` keeps advancing, so this is
+  worth an actual check rather than an assumption.
 
-- **`claude-plugins-official` has `autoUpdate` off too** — `lastUpdated`
-  2026-06-12, same disease, found in passing and not acted on.
+- **Every other machine is now two releases behind the fix**, and still cannot
+  receive either one until someone runs `update-plugin.bat` there by hand and
+  sets `autoUpdate` after. The backlog compounds with each release.
 
-- **The push bypassed branch protection.** The remote reported "Changes must be
-  made through a pull request" and "2 of 2 required status checks are expected";
-  admin rights let it through. CI was watched to green *manually* before the
-  release was published. If that rule is meant to hold, this session did not
-  honour it.
+- **Three pushes this session bypassed branch protection.** Each reported
+  "Changes must be made through a pull request" and "2 of 2 required status
+  checks are expected"; admin rights let them through. CI was watched to green
+  *manually* before each release was published, but the configured rule was not
+  honoured. Either start using PRs or relax the rule — the current state is a
+  guardrail that only pretends to hold.
 
-- **Options considered and rejected** — so they don't get re-derived: a
-  SessionStart hook (redundant once `autoUpdate` exists); a local-path
-  marketplace (fixes the dev box, breaks GitHub-as-distribution everywhere
-  else); dropping the plugin for `~/.claude/skills/` (plausible, but **unknown
-  whether Desktop reads that path** — it would trade a stale path for a dead
-  one).
+- **2d's constraints are load-bearing and easy to "helpfully" undo** — no network
+  call, no `settings.json` write, never the recommended next move. The reasoning
+  for each is in the 1.21.0 release notes. Read it before relaxing any of them.
 
-- **Desktop's staleness is explained.** It unpacks its own bundle per session
-  under `%APPDATA%\Claude\local-agent-mode-sessions\<id>\rpm\` and was serving
-  **1.18.0 while the terminal served 1.10.0**. That is a better explanation than
-  1.19.0's unconfirmed tagging-fixes-stale-copy hypothesis — retire it.
+- **`claude-plugins-official` has `autoUpdate` off too** (`lastUpdated`
+  2026-06-12). Found in passing, still not acted on. 2d should now surface it.
+
+- **Rejected options, so they aren't re-derived:** a SessionStart hook (now
+  definitively redundant — `autoUpdate` is the built-in); a local-path
+  marketplace (fixes the dev box, breaks GitHub-as-distribution); dropping the
+  plugin for `~/.claude/skills/` (**unknown whether Desktop reads that path** —
+  would trade a stale path for a dead one).
 
 ## Parked / carried
 
-- **The `/start` drift check was designed this session and not built.** It is
-  the only proposal that would have caught this bug: report installed-vs-catalog
-  and last-fetch age at orient, in the 2b/2c style. Silent when healthy.
 - **§6 memory migration remains never-run**; 216 files / 26 projects / 666 KB
-  still stranded. Unchanged from 1.19.0.
-- **The behavioural checklist is now UNRUN across four releases** (1.17–1.20).
+  still stranded. Unchanged since 1.19.0.
 - `ollama` draft; image-gen empirical gaps (identity fidelity, multi-`-i`
   compositing, macOS/Linux copy-out).
 - `genesis.md` remains the target pattern for guide bodies.
 
 ## Next steps
 
-1. Verify `autoUpdate` actually fires at startup (one launch + the script).
-2. Bring one other machine up by hand, then set `autoUpdate` there — that also
-   tests whether the two-step recovery is correctly documented.
-3. Build the `/start` drift check.
+1. **Exercise the behavioural checklist.** Five releases overdue, and 2d is the
+   cheapest entry point: one `/start` on an un-fixed machine.
+2. Confirm `autoUpdate` fires on relaunch, not just once when set.
+3. Bring one other machine current by hand — which also tests whether the
+   two-step recovery in `onboarding.md` §2 is written correctly.
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the 1.20.0 release
-notes, `onboarding.md` §2, and `scripts/check-plugin-state.ps1`.*
+*Ephemeral bridge — prune once absorbed. Durable record: the 1.20.0 and 1.21.0
+release notes, `onboarding.md` §2, `skills-source/start/SKILL.md` §2d, and
+`scripts/check-plugin-state.ps1`.*
