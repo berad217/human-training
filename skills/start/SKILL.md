@@ -1,6 +1,6 @@
 ---
 name: start
-description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover, in-repo memory index), then surfaces a concise orientation and proposes the next move. Also flags unpushed commits and project memory stranded outside the repo, offering both without acting. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
+description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover, in-repo memory index), then surfaces a concise orientation and proposes the next move. Also flags unpushed commits, project memory stranded outside the repo, and a plugin toolchain that has silently stopped updating — offering each without acting. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
 allowed-tools: [Read, Glob, Bash]
 ---
 
@@ -194,6 +194,55 @@ Check for it. Then:
 **Never migrate from `/start`.** Copying files, rewriting an index and planting a
 `CLAUDE.md` pointer are all writes, and this skill writes nothing. Hand off.
 
+### 2d. Check whether the toolchain itself has stopped updating
+
+Same shape again — **detect, report, offer, never act.** Unlike 2b and 2c, this
+one is not about the project. It is about *your own tooling*: a plugin that
+quietly stopped updating months ago changes what you are able to do here, and
+nothing in the project's files can tell you.
+
+Claude Code installs plugins through a local marketplace catalog, and that
+catalog refreshes **only** when the marketplace has `autoUpdate: true`. That
+field is a per-marketplace opt-in nested inside the marketplace entry, and it is
+**not set for you when a marketplace is added**. While it is absent, nothing
+refreshes the catalog — ever — and `claude plugin update` keeps answering
+"you're already current." That answer is *correct*: it compares against the
+catalog, which has not moved. The install can sit many versions behind for
+months without a single error.
+
+Read `~/.claude/plugins/known_marketplaces.json` — one entry per marketplace,
+each carrying `autoUpdate` and `lastUpdated`. **Those two fields are the whole
+check.** Do not reach for the network: a fresh session is the wrong place to
+wait on `git ls-remote`, and the local fields already identify the failure.
+
+- **`autoUpdate: true` and `lastUpdated` within the last month** → say nothing.
+  Resolved state.
+- **`autoUpdate` absent or `false`** → report it. This is the root cause rather
+  than a symptom — the catalog will never refresh on its own. One line is
+  enough: *"the `<name>` marketplace has autoUpdate off, so its plugins haven't
+  updated since `<date>` — want the fix?"*
+- **`autoUpdate: true` but `lastUpdated` is months old** → report it too. The
+  flag is set and the refresh still isn't happening, which is a different
+  failure and worth knowing about.
+- **File absent, or no marketplaces registered** → say nothing. Plenty of
+  environments run no plugins at all.
+
+The fix, *when asked for*, is two commands and a setting — **offer, don't run**:
+
+```bash
+claude plugin marketplace update <name>
+claude plugin update <plugin>@<name>
+```
+
+The first line is the one everyone skips, and without it the second consults the
+same stale catalog and reports success. Then set `"autoUpdate": true` on that
+marketplace in `~/.claude/settings.json` so it stops recurring. Applying an
+update needs a **full quit and relaunch** — a new thread is not enough.
+
+**Never edit `settings.json` here**, and never run the update. Both are writes,
+and one of them is a write to the user's harness configuration. Report, hand
+over the change, and let them make it.
+
 ### 3. Surface the orientation + propose the next move
 
 A concise summary, then the next move at the top of mind (Teflon Mode):
@@ -205,6 +254,7 @@ A concise summary, then the next move at the top of mind (Teflon Mode):
 **Active tasks:** <top 1–3 from TASKS.md Active — omit this line entirely if there's no TASKS.md>
 **Durability:** <N commits unpushed on <branch> — want me to push? — omit this line entirely when in sync>
 **Memory:** <N entries stranded at the global path — want them moved in-repo? — omit this line entirely when resolved or absent>
+**Toolchain:** <marketplace <name> has autoUpdate off; plugins last refreshed <date> — want the fix? — omit this line entirely when current>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
@@ -246,6 +296,11 @@ untrusted (fresh clone, lockfile drift mentioned in handover).
 - **Migrating memory, or nagging about a resolved one.** 2c reports and offers;
   `workflow-orientation` §6 does the moving. And when memory is already in-repo,
   say *nothing* — same rule as durability.
+- **Nagging about the toolchain, or fixing it.** 2d reports and offers; it never
+  edits `settings.json` and never runs an update. When `autoUpdate` is on and the
+  catalog is fresh, say *nothing* — same rule as durability and memory. And a
+  stale plugin is never the recommended next move on its own: mention it, then
+  get on with the project's actual work.
 - **Writing new memory to the global path because it is the harness default.**
   If the project keeps `memory/` in-repo, that is where memory goes for the rest
   of the session, not just at orient.
