@@ -89,6 +89,25 @@ codex doctor                # diagnose install / config / auth / runtime health
 - **Windows PATH gotcha:** npm's global bin (`%APPDATA%\npm`) is often missing from a non-interactive shell's
   PATH. If `codex` "isn't found," call it by full path (`"$HOME/AppData/Roaming/npm/codex"`) or add that dir.
 
+### Detecting whether the CLI is actually installed
+
+**Test with `codex --version`. Never infer it from `~/.codex` existing** — that directory is the *app's* too, and
+auth reuse (above) is exactly what makes it misleading. On a box with only the desktop app, `~/.codex` is present
+and fully populated — a valid `auth.json` reading `"auth_mode": "chatgpt"`, plus `skills/`, `plugins/`, `sessions/`,
+`config.toml` — with **no CLI anywhere**, nothing on PATH, and `npm root -g` pointing at a `node_modules` that
+doesn't exist. Every signal short of running the binary says "installed."
+
+Two traps follow from that:
+
+- **Don't reach for the bundled binary.** Hunting the filesystem turns up a real, working
+  `~/.codex/plugins/.plugin-appserver/codex.exe`. It runs and it honours the same flags — and it is an
+  **app-internal path that moves when the app updates**, on an alpha build (observed `0.146.0-alpha.9.2` while npm
+  shipped stable `0.146.0`). Fine for a one-off probe, wrong to script against or write into a doc.
+- **The fix is seconds, so just do it:** `npm i -g @openai/codex` — a ~6 s, two-package install that inherits the
+  app's existing login, so there is no `codex login` round-trip and nothing to re-authorize.
+
+`codex doctor` is the other honest check once the CLI exists.
+
 ## 3. The stdin trap
 
 `codex exec`'s prompt argument is documented as:
@@ -248,6 +267,7 @@ codex exec resume --last "..."    # continue the most recent session with a new 
 |---|---|
 | Hangs forever, no output | stdin trap — add `< /dev/null` (bash) or `'' \|` (PowerShell). §3. |
 | `command not found: codex` | Not on PATH — call by full path or add npm global bin. §2. |
+| `command not found: codex`, but `~/.codex` exists with valid auth | That's the desktop app's dir; the CLI was never installed. Don't use the bundled `.plugin-appserver` exe — `npm i -g @openai/codex`, which inherits the login. §2. |
 | Auth errors / login loop | `codex login`; `codex doctor`; confirm `$CODEX_HOME/auth.json` exists. |
 | Slow startup / errors loading skills or MCP | Heavy local `config.toml` — add `--ignore-user-config`. |
 | Reasoning effort seems wrong | Check the stderr banner; set `-c 'model_reasoning_effort="high"'`. |
