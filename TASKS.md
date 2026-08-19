@@ -78,6 +78,15 @@ ones unblock or inform later ones.
   skills indexed inline by its router, so other skills can cite a principle by
   name. Real architectural idea, but 21 files to maintain and the payoff shows up
   at team scale. Revisit only if a rule starts getting restated across skills.
+- [ ] **Drop the hardcoded skill list from `plugin.json`'s description** — it
+  enumerates every session-authored skill by hand and went stale twice on
+  2026-08-19 alone. `check-skill-refs.py` now guards it, but the guard treats the
+  symptom; a description that doesn't enumerate can't go stale. Needs a call on
+  whether the list earns its place for discoverability.
+- [ ] **Write the `--plugin-dir` probe technique down somewhere durable** — it is
+  currently only in `HANDOVER.md` and the 1.24.1 release notes, which means it
+  evaporates when the handover is pruned. Candidates: `onboarding.md`'s workflow
+  list, or a section in whatever skill ends up owning verification.
 - [ ] **`ollama` draft** — carried from earlier handovers.
 - [ ] **image-gen empirical gaps** — identity fidelity, multi-`-i` compositing,
   macOS/Linux copy-out.
