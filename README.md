@@ -92,7 +92,8 @@ distinction means is two sections down — for now, just grab the one you need.
 | **grill** | skills-source/ | Adversarial pre-build alignment — pokes holes in the plan against your own docs *before* you write code | Right before building, to find out why it won't work while it's still cheap |
 | **robustness-audit** | skills-source/ | Defect-class audit of existing code (reads it carefully, doesn't run it) | Back in a codebase after a while; a pre-release "what's likely broken?" pass |
 | **project-checkup** | skills-source/ | State-aware health check: orientation + robustness audit + next-move + friction inventory | Re-entering a dormant or half-abandoned hobby project |
-| **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to the DEVLOG | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
+| **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to a decision trail | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
+| **show-me-your-work** | skills-source/ | Owns the decision-trail format: one append-only TSV, a row per decision, written as they happen | Any run reviewed after the fact — composed by `leroy-jenkins`, invocable on its own |
 | **gemini-api** | skills-source/ | Current Gemini-API working reference so the agent stops defaulting to stale 3.x patterns | Writing, reviewing, or migrating Gemini code |
 | **pdf-toc-splitter** | skills-source/ | Splits large PDFs along an editable, structure-aware plan (TOC, inferred headings, fixed-page, or manual breaks), preserving bookmarks per chunk | A PDF too big to process; slicing a book/manual into chapters for reading or LLM ingestion |
 | **antigravity-cli** | skills-source/ | Working reference for driving Google's Antigravity CLI (`agy`) headlessly — the quiet-failure footguns and the tool-free consultant pattern | Automating `agy -p` / using Gemini as a cross-vendor consultant from the terminal |
@@ -123,7 +124,7 @@ human-training/
 ├── skills-source/               # Track 2: ready-to-ship session-authored skills
 │   ├── start/  tasks/  grill/   #   each a complete SKILL.md (+ assets/evals),
 │   ├── robustness-audit/        #   copied through to skills/ byte-for-byte
-│   ├── project-checkup/  leroy-jenkins/
+│   ├── project-checkup/  leroy-jenkins/  show-me-your-work/
 │   ├── gemini-api/  pdf-toc-splitter/
 │   ├── antigravity-cli/  codex-cli/
 │   └── image-gen/

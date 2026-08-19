@@ -12,11 +12,12 @@ ones unblock or inform later ones.
 
 <!-- pstack: new skills -->
 
-- [ ] **Extract the decision trail into its own skill** — the TSV format now lives
-  inline in `leroy-jenkins`. `project-checkup` and `robustness-audit` both want a
-  trail too, and three copies of a format is two too many. Pull it out as
-  `show-me-your-work`, have Leroy reference it by name, and don't restate the
-  columns anywhere else.
+- [ ] **Decide whether `project-checkup` and `robustness-audit` should keep a
+  trail** — `show-me-your-work` now exists and owns the format, so wiring either
+  in is a one-line reference. The open question is whether they *should*: both are
+  usually single interactive passes, and the skill's own rule says a trail nobody
+  reviews after the fact is bookkeeping. Probably yes for `project-checkup` in
+  force-all mode, probably no for a normal audit.
 - [ ] **Draft `blast-radius`** — what a specific diff breaks *elsewhere*, beyond
   the diff. No overlap with `robustness-audit` (that reads code for latent
   defects; this reads a change for reach). Core move: find the one fact the
@@ -32,8 +33,8 @@ ones unblock or inform later ones.
   with an `Attention` section written by a *different vendor's* model reading the
   trail and the diff, flagging what still deserves scrutiny. We can do this better
   than pstack can: `codex-cli` and `antigravity-cli` give genuine cross-vendor
-  eyes, not a second Claude. Depends on the trail existing (done) and ideally on
-  it being extracted (above).
+  eyes, not a second Claude. **Unblocked** — the trail exists and `show-me-your-work`
+  owns it, so this is the next natural step on that thread.
 - [ ] **Verification-skill generator** — a skill that generates a *project-local*
   verify skill plus a feature map: launch, doctor, drive, evidence, cleanup, one
   file per user-facing feature. This is the structural answer to the behavioural
@@ -118,6 +119,8 @@ ones unblock or inform later ones.
 
 ## Done
 
+- [x] ~~Extract the decision trail into `show-me-your-work`; Leroy references it~~ (2026-08-19)
+- [x] ~~Ship 1.22.0 — "Show Your Work"~~ (2026-08-19)
 - [x] ~~`robustness-audit`: evidence ladder + disposition buckets~~ (2026-08-19)
 - [x] ~~`leroy-jenkins`: TSV decision trail + pause protocol~~ (2026-08-19)
 - [x] ~~Audit cursor/plugins/pstack for adoptable skills and pearls~~ (2026-08-19)

@@ -80,69 +80,31 @@ Never open-ended. Match the Teflon prompt format.
 
 ## The decision trail
 
-Every MODERATE-confidence decision drops a breadcrumb **as it happens**, into an
-append-only TSV. Not at the end of the run — as it happens. A run that dies
-partway (context exhausted, quota hit, machine sleeps) must leave its reasoning
-on disk, not in a context window nobody will ever read again. One row costs one
-command; that is the whole argument for the format.
+Every MODERATE-confidence decision drops a row in a decision trail, written **as
+it happens** — not assembled at the end of the run. A Leroy run that dies partway
+(context exhausted, quota hit, machine slept) is exactly the one whose reasoning
+you need, and it is exactly the one an end-of-run write-up loses.
 
-### The file
+**The format belongs to `human-training:show-me-your-work`.** Read it for the
+columns, the append-only rule, and the end-of-run audit. Don't restate them here.
+What Leroy adds is the three things specific to an autonomy run:
 
-`docs/leroy/<run-id>.tsv` when the project keeps working docs under `docs/`,
-otherwise `leroy/<run-id>.tsv` at the project root. `<run-id>` is
-`YYYY-MM-DD-HHMM`, matching the Leroy branch. It is **committed** — unlike most
-decision logs, this one exists precisely so the user can review autonomous work
-they did not watch, and it renders as a sortable table on GitHub.
-
-Six columns, tab-separated, one row per decision:
-
-| Column | What goes in it |
-|-----------|-----------------|
-| `ts` | ISO8601 timestamp. The timeline axis. |
-| `phase` | Which chunk of the run this belongs to. |
-| `decision` | What you chose or did. One line. |
-| `why` | The reason in plain words, plus the alternative you rejected. |
-| `evidence` | A **pointer**, never prose: commit SHA, `file:line`, an artifact path. |
-| `result` | The outcome: `tests green`, `reverted`, `deferred`, `open question`. |
-
-Write rows the way you would tell a colleague what you did. Plain words,
-concrete actions. A reviewer should understand a row without decoding it.
-
-```bash
-printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$PHASE" "$DECISION" "$WHY" "$EVIDENCE" "$RESULT" >> docs/leroy/2026-08-19-1430.tsv
-```
-
-```powershell
-"{0}`t{1}`t{2}`t{3}`t{4}`t{5}" -f (Get-Date -Format s), $Phase, $Decision, $Why, $Evidence, $Result | Add-Content -Encoding utf8 docs/leroy/2026-08-19-1430.tsv
-```
-
-**Three rules the format depends on:**
-
-- **One row is one decision.** If it does not fit on one line, the decision is not
-  crisp yet. Cells stay single-line; strip stray tabs and newlines.
-- **Append-only.** A wrong call gets a *new* row that supersedes it. Never edit or
-  delete history — the reversals are the most useful rows in the file.
-- **Prefix any cell starting with `=`, `+`, `-`, or `@` with a single quote.**
-  Findings and file paths land in these cells verbatim, and a reviewer opening
-  the log in Excel should not execute one.
-
-Log decision points and checkpoints, not every action: a fork taken, a chunk
-completed with its verification result, a pivot or revert with what triggered it,
-a blocker parked, an open question flagged. Skip the trivial and self-evident.
-
-### Audit the trail before handing back
-
-At the end of the run, walk the trail against what actually happened. Every row
-maps to a real action — cut invented or aspirational entries. Every `evidence`
-pointer resolves and shows what its row claims. A fork or abandoned approach that
-shaped the run but never got logged is a gap; add it. **Fix the log, not the
-story:** where the work diverged from what a row claims, the row is wrong.
+- **The path.** `docs/leroy/<run-id>.tsv` when the project keeps working docs
+  under `docs/`, otherwise `leroy/<run-id>.tsv` at the project root. `<run-id>` is
+  `YYYY-MM-DD-HHMM`, matching the Leroy branch.
+- **It is committed**, overriding that skill's local-by-default. Reviewing work
+  nobody watched is the entire reason a Leroy run produces a trail, and it lands
+  on the Leroy branch alongside the diff it explains.
+- **What earns a row here:** every MODERATE-confidence decision the overlay let
+  you take without asking, plus every LOW-confidence fork you hit unattended —
+  those get a row flagged distinctly as an open question, not a routine one.
 
 ### The DEVLOG closing entry
 
 The trail is the detail. The DEVLOG gets one short entry that points at it —
 this is the durable chronicle, so it records that the run happened and what came
-out of it, not every decision inside it.
+out of it, not every decision inside it. Routing per-decision detail into the
+DEVLOG is what made the old prose breadcrumbs unreadable.
 
 ```markdown
 ## Leroy run YYYY-MM-DD (HH:MM)
@@ -179,7 +141,7 @@ When the user signals they won't be around to reply — "do as much as you can i
 - If the fork is **reversible**, take the most reversible option, drop a breadcrumb flagged distinctly as an open question (not a routine MODERATE breadcrumb), and continue.
 - If the fork is **irreversible or destructive**, do **not** guess. Skip that branch, park it as an open question for review, and move on to work that isn't blocked on it.
 
-The Leroy branch plus the breadcrumbs make both outcomes cheap to review and selectively undo later.
+The Leroy branch plus the trail make both outcomes cheap to review and selectively undo later.
 
 **Stop cleanly at the budget.** As you approach the time or quota limit, stop deliberately rather than getting cut off mid-write. Run the pause protocol below.
 
@@ -224,12 +186,13 @@ If the user provided minutes-until-reset, scale accordingly:
 | 15-30 min      | Audit Blitz       | pick one surface set, ship the report            |
 | < 15 min       | Decline           | not worth the setup overhead — note this back to the user |
 
-With a **stated goal**, don't decline on time alone — scope the goal to the window (fewer features, one playtest instead of three) and note in the breadcrumbs what you deferred. The table above governs the canned modes.
+With a **stated goal**, don't decline on time alone — scope the goal to the window (fewer features, one playtest instead of three) and note in the trail what you deferred. The table above governs the canned modes.
 
 ## Anti-patterns
 
 - **Treating Leroy as "do whatever *Leroy* wants."** Leroy is autonomy bias, not chaos. The work is either the goal the user stated at invocation or a canned mode — never tasks Leroy picks up for itself. "Don't freelance" means don't take on work the user didn't ask for; faithfully executing the user's stated goal is the *opposite* of freelancing.
 - **Skipping the decision trail, or deferring it to the end of the run.** The trail is what makes autonomy safe, and a trail assembled at the end is exactly the one a crash destroys. No log, no Leroy.
+- **Reinventing the trail format.** `show-me-your-work` owns the columns. Restating them here is how two copies drift apart.
 - **Stopping without the pause protocol.** A run that ends mid-edit with the plan only in context is unresumable, which costs more than the work it saved.
 - **Pausing for confirmation on MODERATE decisions.** That defeats the purpose. Log and proceed.
 - **Touching the user's main branch by default.** Use a Leroy branch unless the user explicitly says otherwise.
