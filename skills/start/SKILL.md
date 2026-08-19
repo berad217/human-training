@@ -1,6 +1,6 @@
 ---
 name: start
-description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover, in-repo memory index), then surfaces a concise orientation and proposes the next move. Also flags unpushed commits and project memory stranded outside the repo — offering each without acting. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
+description: One-keystroke session opener. Orients to the current project by verifying the workflow docs exist and reading the temporal context (onboarding map, latest DEVLOG entry, current handover, in-repo memory index), then surfaces a concise orientation and proposes the next move. Also flags unpushed commits, project memory stranded outside the repo, and a plugin toolchain that has silently stopped updating — offering each without acting. Docs-only and read-only — no tests run, no files written. Explicit invocation via /start at the top of a fresh session.
 allowed-tools: [Read, Glob, Bash]
 ---
 
@@ -40,26 +40,6 @@ read sequence and hands off when something is missing:
 ---
 
 ## The sequence
-
-### 0. Two state checks — do these first, before you look at the project
-
-Two reads that ask about state **no file in the project can tell you**: the
-repository's, and the project memory's.
-
-```bash
-git status -sb                                   # 0a  durability
-ls ~/.claude/projects/<slug>/memory/             # 0b  stranded memory
-```
-
-**They go first because last is where they get dropped.** Each is silent when
-healthy, so an unrun check and a clean one produce identical output and nothing
-ever surfaces the difference. Doing them before the project work removes the
-choice.
-
-Run both now; interpret them in 2b and 2c below once you have the output. **A
-check you deliberately skip gets a `skip: <reason>` line in the orientation** —
-skipping silently is not allowed, because that is indistinguishable from a clean
-result.
 
 ### 1. Locate the docs (glob first — never assume a path)
 
@@ -162,7 +142,7 @@ even when the file is named something else and lives behind a pointer:
 Don't read the spec, source files, or full DEVLOG unless a specific question
 requires it. Reference files are for lookup, not required reading.
 
-### 2b. Check durability
+### 2b. Check durability (one command)
 
 ```bash
 git status -sb
@@ -214,6 +194,63 @@ Check for it. Then:
 **Never migrate from `/start`.** Copying files, rewriting an index and planting a
 `CLAUDE.md` pointer are all writes, and this skill writes nothing. Hand off.
 
+### 2d. Check whether the toolchain itself has stopped updating
+
+Same shape again — **detect, report, offer, never act.** Unlike 2b and 2c, this
+one is not about the project. It is about *your own tooling*: a plugin that
+quietly stopped updating months ago changes what you are able to do here, and
+nothing in the project's files can tell you.
+
+Claude Code installs plugins through a local marketplace catalog. Refresh is
+guaranteed only when the marketplace has `autoUpdate: true` — a per-marketplace
+opt-in nested inside the marketplace entry, **not set for you when a marketplace
+is added**.
+
+While it is absent the catalog *may* still refresh, but nothing keeps it current,
+and in practice it can sit untouched for months. Meanwhile `claude plugin update`
+keeps answering "you're already current." That answer is *correct*: it compares
+against the catalog, which has not moved. The install can sit many versions
+behind without a single error.
+
+**Report on the fields, not on a theory of the mechanism.** A stale `lastUpdated`
+is the finding whether or not you can explain why it stalled. An absent
+`autoUpdate` is worth flagging because it removes the guarantee — a catalog was
+observed refreshing on 2026-08-19 with the flag still absent, so "absent means
+never" is too strong to put in front of the user.
+
+Read `~/.claude/plugins/known_marketplaces.json` — one entry per marketplace,
+each carrying `autoUpdate` and `lastUpdated`. **Those two fields are the whole
+check.** Do not reach for the network: a fresh session is the wrong place to
+wait on `git ls-remote`, and the local fields already identify the failure.
+
+- **`autoUpdate: true` and `lastUpdated` within the last month** → say nothing.
+  Resolved state.
+- **`autoUpdate` absent or `false`** → report it. This is the root cause rather
+  than a symptom — the catalog will never refresh on its own. One line is
+  enough: *"the `<name>` marketplace has autoUpdate off, so its plugins haven't
+  updated since `<date>` — want the fix?"*
+- **`autoUpdate: true` but `lastUpdated` is months old** → report it too. The
+  flag is set and the refresh still isn't happening, which is a different
+  failure and worth knowing about.
+- **File absent, or no marketplaces registered** → say nothing. Plenty of
+  environments run no plugins at all.
+
+The fix, *when asked for*, is two commands and a setting — **offer, don't run**:
+
+```bash
+claude plugin marketplace update <name>
+claude plugin update <plugin>@<name>
+```
+
+The first line is the one everyone skips, and without it the second consults the
+same stale catalog and reports success. Then set `"autoUpdate": true` on that
+marketplace in `~/.claude/settings.json` so it stops recurring. Applying an
+update needs a **full quit and relaunch** — a new thread is not enough.
+
+**Never edit `settings.json` here**, and never run the update. Both are writes,
+and one of them is a write to the user's harness configuration. Report, hand
+over the change, and let them make it.
+
 ### 3. Surface the orientation + propose the next move
 
 A concise summary, then the next move at the top of mind (Teflon Mode):
@@ -225,6 +262,7 @@ A concise summary, then the next move at the top of mind (Teflon Mode):
 **Active tasks:** <top 1–3 from TASKS.md Active — omit this line entirely if there's no TASKS.md>
 **Durability:** <N commits unpushed on <branch> — want me to push? — omit this line entirely when in sync>
 **Memory:** <N entries stranded at the global path — want them moved in-repo? — omit this line entirely when resolved or absent>
+**Toolchain:** <marketplace <name> has autoUpdate off; plugins last refreshed <date> — want the fix? — omit this line entirely when current>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
@@ -266,17 +304,11 @@ untrusted (fresh clone, lockfile drift mentioned in handover).
 - **Migrating memory, or nagging about a resolved one.** 2c reports and offers;
   `workflow-orientation` §6 does the moving. And when memory is already in-repo,
   say *nothing* — same rule as durability.
-- **Writing the orientation without having run all three state checks.** The
-  observed failure: 2d silently never runs, and its output is indistinguishable
-  from a healthy result, so nothing ever surfaces the gap. Run all three, then
-  interpret. A deliberate skip gets a `skip: <reason>` line.
-- **Checking the plugin toolchain here.** `/start` used to do this and no longer
-  does. It was cut in 1.25.0 after three probe runs showed it never fired: two of
-  the three state checks in the same block ran and this one did not, at every
-  position tried, because it is the only one that leaves the project. Orientation
-  reliably will not do it, so the skill no longer claims to. It lives in
-  `human-training:project-checkup`'s friction audit, which is periodic and
-  deliberate — the right cadence for it anyway.
+- **Nagging about the toolchain, or fixing it.** 2d reports and offers; it never
+  edits `settings.json` and never runs an update. When `autoUpdate` is on and the
+  catalog is fresh, say *nothing* — same rule as durability and memory. And a
+  stale plugin is never the recommended next move on its own: mention it, then
+  get on with the project's actual work.
 - **Writing new memory to the global path because it is the harness default.**
   If the project keeps `memory/` in-repo, that is where memory goes for the rest
   of the session, not just at orient.

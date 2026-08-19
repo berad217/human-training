@@ -83,10 +83,21 @@ ones unblock or inform later ones.
   2026-08-19 alone. `check-skill-refs.py` now guards it, but the guard treats the
   symptom; a description that doesn't enumerate can't go stale. Needs a call on
   whether the list earns its place for discoverability.
-- [ ] **Write the `--plugin-dir` probe technique down somewhere durable** — it is
-  currently only in `HANDOVER.md` and the 1.24.1 release notes, which means it
-  evaporates when the handover is pruned. Candidates: `onboarding.md`'s workflow
-  list, or a section in whatever skill ends up owning verification.
+- [ ] **Write the `--plugin-dir` probe technique down properly, with its safety
+  rules** — currently only in release notes and the handover, so it evaporates
+  when the handover is pruned. **It must not be used again without both rules**,
+  which cost one release to learn: pass `--allowedTools Skill Read Glob Grep Bash`
+  so the permission posture is explicit rather than variable, and read outcomes
+  from `tool_result` (checking for `has been denied`) rather than `tool_use`
+  requests. Without those, a denied `Skill` call looks like a skill that ran and
+  chose not to act. Candidates: `onboarding.md`'s workflow list, or a section in
+  whatever skill ends up owning verification.
+- [ ] **Re-probe `project-checkup` with `Skill` permitted** — its only probe was
+  invalid (Skill denied), so nothing is known about whether it invokes
+  `workflow-orientation` and `robustness-audit` as its Component Invocations
+  section specifies. Note the synthetic project classified as Active healthy,
+  where the routing table says to skip both, so the test needs a dormant fixture
+  to mean anything.
 - [ ] **`ollama` draft** — carried from earlier handovers.
 - [ ] **image-gen empirical gaps** — identity fidelity, multi-`-i` compositing,
   macOS/Linux copy-out.

@@ -87,7 +87,7 @@ distinction means is two sections down — for now, just grab the one you need.
 | **handover-manager** | workflow/guides/ | Captures the ephemeral delta before a context reset | The context window's filling up, or you're switching sessions |
 | **onboarding-creator** | workflow/guides/ | Writes a project's onboarding.md — the office tour, not the policy manual | Setting up a new project |
 | **workflow-orientation** | workflow/guides/ | Retrofits this whole workflow onto a project that doesn't have it yet | Adopting the sprint scaffold in an existing repo |
-| **start** | skills-source/ | One-keystroke session opener: reads the temporal docs + TASKS Active, flags unpushed work and stranded memory, proposes the next move. Read-only, never touches code | The very first prompt of a fresh session |
+| **start** | skills-source/ | One-keystroke session opener: reads the temporal docs + TASKS Active, proposes the next move. Read-only, never touches code | The very first prompt of a fresh session |
 | **tasks** | skills-source/ | Per-project `TASKS.md` (Active / Someday / Done) plus a guardrail that offers to park tangents in Someday | Tracking todos; stopping a shiny tangent from hijacking the task in hand |
 | **grill** | skills-source/ | Adversarial pre-build alignment — pokes holes in the plan against your own docs *before* you write code | Right before building, to find out why it won't work while it's still cheap |
 | **robustness-audit** | skills-source/ | Defect-class audit of existing code (reads it carefully, doesn't run it) | Back in a codebase after a while; a pre-release "what's likely broken?" pass |
