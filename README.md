@@ -91,6 +91,7 @@ distinction means is two sections down — for now, just grab the one you need.
 | **tasks** | skills-source/ | Per-project `TASKS.md` (Active / Someday / Done) plus a guardrail that offers to park tangents in Someday | Tracking todos; stopping a shiny tangent from hijacking the task in hand |
 | **grill** | skills-source/ | Adversarial pre-build alignment — pokes holes in the plan against your own docs *before* you write code | Right before building, to find out why it won't work while it's still cheap |
 | **robustness-audit** | skills-source/ | Defect-class audit of existing code (reads it carefully, doesn't run it) | Back in a codebase after a while; a pre-release "what's likely broken?" pass |
+| **blast-radius** | skills-source/ | What one specific change breaks *elsewhere* — finds the single fact its safety rests on and proves that fact by running code | A small diff you don't trust; before a change that's hard to undo |
 | **project-checkup** | skills-source/ | State-aware health check: orientation + robustness audit + next-move + friction inventory | Re-entering a dormant or half-abandoned hobby project |
 | **leroy-jenkins** | skills-source/ | Autonomy-biased mode that turns about-to-expire token quota into useful work, logging its calls to a decision trail | You've got quota about to reset — point it at a goal, or let it pick. *(Name is a warning, not an accident.)* |
 | **show-me-your-work** | skills-source/ | Owns the decision-trail format: one append-only TSV, a row per decision, written as they happen | Any run reviewed after the fact — composed by `leroy-jenkins`, invocable on its own |
@@ -125,6 +126,7 @@ human-training/
 │   ├── start/  tasks/  grill/   #   each a complete SKILL.md (+ assets/evals),
 │   ├── robustness-audit/        #   copied through to skills/ byte-for-byte
 │   ├── project-checkup/  leroy-jenkins/  show-me-your-work/
+│   ├── blast-radius/
 │   ├── gemini-api/  pdf-toc-splitter/
 │   ├── antigravity-cli/  codex-cli/
 │   └── image-gen/

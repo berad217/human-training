@@ -18,12 +18,10 @@ ones unblock or inform later ones.
   usually single interactive passes, and the skill's own rule says a trail nobody
   reviews after the fact is bookkeeping. Probably yes for `project-checkup` in
   force-all mode, probably no for a normal audit.
-- [ ] **Graduate `blast-radius`** — drafted in `skills-drafts/blast-radius/`.
-  One blocker left: **it has never been run against a real change.** The whole
-  skill turns on step 5 (write the script, run it, paste the result), and whether
-  that happens or gets skipped for a confident writeup is exactly what it claims
-  to prevent. Exercise it on a diff touching a serialized shape, then graduate.
-  (Ladder ownership is settled — see `NOTES.md`; the rungs stay local per skill.)
+- [ ] **Verify a by-name skill reference actually resolves at runtime** — the one
+  fact the extraction rests on that is still only at rung 3. Six cross-references
+  depend on the mechanism and Leroy's schema now does. One `/leroy-jenkins` run on
+  an install at 1.23.x, checking the trail comes out with the right six columns.
 - [ ] **Fork `unslop` into a house style guide** — take pstack's rules 1–12 and
   20–31 (the abstract-metaphor→plain-word table and "say what it does, not how it
   feels" are the valuable parts). Drop or invert 13–19: pstack bans em dashes,
@@ -120,6 +118,9 @@ ones unblock or inform later ones.
 
 ## Done
 
+- [x] ~~Graduate `blast-radius` to `skills-source/`~~ (2026-08-19)
+- [x] ~~Wire `check-skill-refs.py` into CI, negative-tested both ways~~ (2026-08-19)
+- [x] ~~Exercise `blast-radius` against a real diff; two fixes fed back~~ (2026-08-19)
 - [x] ~~Settle evidence-ladder ownership: names shared, definitions local~~ (2026-08-19)
 - [x] ~~Extract the decision trail into `show-me-your-work`; Leroy references it~~ (2026-08-19)
 - [x] ~~Ship 1.22.0 — "Show Your Work"~~ (2026-08-19)

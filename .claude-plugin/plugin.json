@@ -1,7 +1,7 @@
 {
   "name": "human-training",
-  "description": "Sprint-based AI-collaboration workflow skills (project genesis, lifecycle, handovers, onboarding, workflow alignment) plus session-authored skills (start, grill, robustness-audit, gemini-api, project-checkup, leroy-jenkins, tasks, pdf-toc-splitter, antigravity-cli, codex-cli, image-gen).",
-  "version": "1.23.1",
+  "description": "Sprint-based AI-collaboration workflow skills (project genesis, lifecycle, handovers, onboarding, workflow alignment) plus session-authored skills (start, grill, robustness-audit, blast-radius, gemini-api, project-checkup, leroy-jenkins, show-me-your-work, tasks, pdf-toc-splitter, antigravity-cli, codex-cli, image-gen).",
+  "version": "1.24.0",
   "author": {
     "name": "berad217"
   }

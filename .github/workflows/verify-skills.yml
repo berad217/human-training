@@ -1,6 +1,7 @@
 # Verifies that the committed skills/ directory matches what
-# build-skills.sh would produce from the current workflow/ docs, and
-# that Claude/Codex plugin manifests remain valid and version-aligned.
+# build-skills.sh would produce from the current workflow/ docs, that
+# Claude/Codex plugin manifests remain valid and version-aligned, and
+# that cross-skill references and the manifest's skill list are current.
 #
 # Catches silent staleness: workflow source edited without rebuilding
 # the generated skills/ tree.
@@ -24,6 +25,7 @@ on:
       - 'scripts/build-skills.sh'
       - 'scripts/build-skills.ps1'
       - 'scripts/verify-plugin-manifests.py'
+      - 'scripts/check-skill-refs.py'
       - '.github/workflows/verify-skills.yml'
       - '.gitattributes'
   # No paths filter on PRs: these jobs are required status checks for merging
@@ -42,6 +44,9 @@ jobs:
 
       - name: Verify plugin manifests
         run: python scripts/verify-plugin-manifests.py
+
+      - name: Verify cross-skill references resolve
+        run: python scripts/check-skill-refs.py
 
       - name: Rebuild skills from source into a temp output dir
         run: |
@@ -71,6 +76,10 @@ jobs:
       - name: Verify plugin manifests
         shell: powershell
         run: python scripts/verify-plugin-manifests.py
+
+      - name: Verify cross-skill references resolve
+        shell: powershell
+        run: python scripts/check-skill-refs.py
 
       - name: Rebuild skills via build-skills.ps1 (Windows PowerShell 5.1)
         shell: powershell
