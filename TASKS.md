@@ -18,11 +18,13 @@ ones unblock or inform later ones.
   usually single interactive passes, and the skill's own rule says a trail nobody
   reviews after the fact is bookkeeping. Probably yes for `project-checkup` in
   force-all mode, probably no for a normal audit.
-- [ ] **Draft `blast-radius`** — what a specific diff breaks *elsewhere*, beyond
-  the diff. No overlap with `robustness-audit` (that reads code for latent
-  defects; this reads a change for reach). Core move: find the one fact the
-  change is safe because of, then prove that one fact by running code. Lands in
-  `skills-drafts/blast-radius/` first.
+- [ ] **Graduate `blast-radius`** — drafted in `skills-drafts/blast-radius/`.
+  Two blockers before it can ship, both in that folder's `NOTES.md`: the evidence
+  ladder now has two consumers and no owner (same trigger that produced
+  `show-me-your-work`, and the current cross-reference into `robustness-audit` is
+  the one option that's definitely wrong), and the skill has never been run
+  against a real change. A skill about proving things that was itself never
+  proven is a poor look — exercise it on a diff touching a serialized shape.
 - [ ] **Fork `unslop` into a house style guide** — take pstack's rules 1–12 and
   20–31 (the abstract-metaphor→plain-word table and "say what it does, not how it
   feels" are the valuable parts). Drop or invert 13–19: pstack bans em dashes,

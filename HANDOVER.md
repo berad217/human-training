@@ -1,86 +1,102 @@
 # Handover — human-training
 
-**Session date:** 2026-08-03
-**State:** **1.21.0 shipped — "The Smoke Alarm".** `/start` gains step 2d: it
-notices when the plugin toolchain has silently stopped updating. Committed,
-pushed, tagged `human-training--v1.21.0`, released. CI green; builders
-byte-identical. Follows **1.20.0 — "You're On The Latest"** the same session.
+**Session date:** 2026-08-19
+**State:** **1.22.0 and 1.23.0 both shipped.** Committed, pushed, tagged,
+released; CI green on both; builders byte-identical; tree clean and in sync.
+Nothing in flight.
 
 What shipped is in the release notes; don't restate it here.
 
 ---
 
-## The delta (not in the files)
+## First: this repo now has a TASKS.md
 
-- **2d's correct output is silence, and silence is indistinguishable from the
-  check never having run.** That makes it the least verifiable thing shipped so
-  far — a green build proves the bytes and says nothing about whether the step
-  fires. Settle it by running `/start` on a machine whose `autoUpdate` is **off**
-  and confirming a `Toolchain:` line appears. Silence on *this* machine is the
-  expected result and therefore proves nothing.
+New this session, and it changes what a handover is for. The split:
 
-- **The behavioural checklist is now UNRUN across five releases** (1.17–1.21).
-  This has been carried in every handover since 1.17.0 and has never been the
-  thing that got done. It is now the largest unverified surface in the repo.
+- **`TASKS.md` is the queue.** Everything with a next action. It absorbed the
+  carried items that used to live in this file's "Parked / carried" section.
+- **This file is the delta.** What is contested, unproven, or decided-but-not-
+  written-down. Things a fresh session would get *wrong*, not things it should
+  get *around to*.
 
-- **`autoUpdate` firing at startup is still unproven.** One refresh observed on
-  2026-08-03, immediately after the flag was set. Not yet seen across a relaunch.
-  2d is built on the assumption that `lastUpdated` keeps advancing, so this is
-  worth an actual check rather than an assumption.
-
-- **Every other machine is now two releases behind the fix**, and still cannot
-  receive either one until someone runs `update-plugin.bat` there by hand and
-  sets `autoUpdate` after. The backlog compounds with each release.
-
-- **Branch protection: reviewed and deliberately left as-is.** Three pushes this
-  session printed "Bypassed rule violations". That is the rule *working*, not
-  failing — `enforce_admins` is `false`, which is GitHub's default and the normal
-  gate-the-team-trust-the-owner pattern. Required checks are `verify-bash` and
-  `verify-powershell`; `required_approving_review_count` is **0**, so a PR here
-  is a process gate, not a review gate. **Do not "fix" this by tightening it** —
-  it was considered on 2026-08-03 and kept.
-
-- **`nikkinotyou-dotcom`'s write access was removed** the same day. It predated
-  the repo going public and had become redundant: public read is universal, and
-  she can still fork and open PRs, which is the path protection was built for.
-  Zero PRs have ever been opened against this repo. `berad217` is now the only
-  write path — no other collaborators, no pending invitations, no deploy keys.
-  **The rule therefore now gates nobody**; it is kept as free insurance for the
-  next collaborator, not as an active control.
-
-- **2d's constraints are load-bearing and easy to "helpfully" undo** — no network
-  call, no `settings.json` write, never the recommended next move. The reasoning
-  for each is in the 1.21.0 release notes. Read it before relaxing any of them.
-
-- **`claude-plugins-official` has `autoUpdate` off too** (`lastUpdated`
-  2026-06-12). Found in passing, still not acted on. 2d should now surface it.
-
-- **Rejected options, so they aren't re-derived:** a SessionStart hook (now
-  definitively redundant — `autoUpdate` is the built-in); a local-path
-  marketplace (fixes the dev box, breaks GitHub-as-distribution); dropping the
-  plugin for `~/.claude/skills/` (**unknown whether Desktop reads that path** —
-  would trade a stale path for a dead one).
-
-## Parked / carried
-
-- **§6 memory migration remains never-run**; 216 files / 26 projects / 666 KB
-  still stranded. Unchanged since 1.19.0.
-- `ollama` draft; image-gen empirical gaps (identity fidelity, multi-`-i`
-  compositing, macOS/Linux copy-out).
-- `genesis.md` remains the target pattern for guide bodies.
-
-## Next steps
-
-1. **Exercise the behavioural checklist.** Five releases overdue, and 2d is the
-   cheapest entry point: one `/start` on an un-fixed machine.
-2. Confirm `autoUpdate` fires on relaunch, not just once when set.
-3. Bring one other machine current by hand — which also tests whether the
-   two-step recovery in `onboarding.md` §2 is written correctly.
-
-*Branch protection is settled; don't reopen it.*
+If you find yourself writing a to-do here, it belongs in `TASKS.md`. If you find
+yourself explaining why something is not what it looks like, it belongs here.
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the 1.20.0 and 1.21.0
-release notes, `onboarding.md` §2, `skills-source/start/SKILL.md` §2d, and
-`scripts/check-plugin-state.ps1`.*
+## The delta (not in the files)
+
+- **Both releases changed instruction surfaces with no scripted check behind
+  them, and their failure modes are asymmetric.** A skipped decision trail is
+  loud (the file is absent or two rows long). An inflated evidence rung in
+  `robustness-audit` is silent, and is the same class of error the ladder was
+  written to catch. If you verify one thing, verify that — run an audit and see
+  whether findings actually come back labelled `Cited` when they were not traced.
+
+- **`show-me-your-work` introduced a failure mode 1.22.0 did not have.** The
+  trail format used to be inline in `leroy-jenkins`; it is now referenced by
+  name. If the composed skill fails to load, Leroy degrades to a vaguer
+  instruction rather than a wrong one — the safer direction, but still a real
+  regression against having it inline. Unverified either way.
+
+- **The evidence ladder deliberately does *not* fold into the confidence score.**
+  This is the obvious simplification and it is wrong. Confidence is how sure the
+  agent feels and was kept deliberately non-suppressive so agents report
+  low-confidence findings rather than dropping them. The rung is what was
+  actually checked. The finding worth catching is the one that is 95-confident at
+  rung 2, and collapsing the axes is precisely what hides it. **Don't "tidy" this
+  into one number.**
+
+- **`leroy-jenkins` commits its trail; `show-me-your-work` does not by default.**
+  That inversion is intentional and easy to "fix" wrongly. Most trails are
+  working artifacts; Leroy's case (review work nobody watched) is the unusual
+  one. A default encoding the unusual case is a default people ignore.
+
+- **The pstack audit's rejections are recorded, so they aren't re-derived.**
+  Roughly two-thirds of [pstack](https://github.com/cursor/plugins/tree/main/pstack)
+  does not transfer: it assumes a team, Graphite stacks, MCP-backed observability,
+  and subagents spawnable on named cross-vendor models that Claude Code's Agent
+  tool cannot address. Rejected on those grounds: `poteto-mode`'s 22-playbook
+  router, `swarm`, `arena`, `interrogate`, `architect`, `how`/`why`, `recall`
+  (overlaps `/start`, and ours reads files rather than mining transcripts),
+  `automate-me` (this whole plugin *is* Brad's mode skill), and the
+  Graphite/PR/babysit/shipping playbooks. The reasoning is in the
+  2026-08-19 audit; `TASKS.md` Someday holds the two that might come back.
+
+- **`unslop` would fight this repo's own prose, and that is a real blocker, not a
+  detail.** pstack bans em dashes outright, mid-sentence colons, and
+  "surface"/"scaffolding" as metaphors. Every skill body here uses all three
+  deliberately. The `TASKS.md` item says fork rules 1–12 and 20–31 and drop
+  13–19 — adopting it verbatim means either rewriting every skill or shipping a
+  rule we ignore.
+
+- **Branch protection is still settled; don't reopen it.** Both pushes this
+  session printed "Bypassed rule violations". That is the rule working, not
+  failing — `enforce_admins` is `false`, `required_approving_review_count` is 0,
+  and `berad217` is the only write path. Reviewed and kept on 2026-08-03.
+
+- **`skills-drafts/` was deliberately skipped for `show-me-your-work`.** The
+  convention is drafts-first and it exists for skills whose shape is unknown.
+  That one was written, reviewed, and shipped a release earlier. Not a precedent
+  for skipping drafts on genuinely new skills — `blast-radius` should go through
+  drafts.
+
+## Next steps
+
+The queue is `TASKS.md`. The three worth naming here because they are *stale*
+rather than merely queued:
+
+1. **The behavioural checklist is now unrun across seven releases** (1.17–1.23).
+   Carried in every handover since 1.17.0 and never the thing that got done. It
+   is the largest unverified surface in the repo and the gap widens per release.
+2. **`autoUpdate` firing at startup is still unproven** — one refresh observed on
+   2026-08-03, never across a relaunch. `/start` step 2d assumes `lastUpdated`
+   keeps advancing.
+3. **Every other machine is now four releases behind** (1.20–1.23) and cannot
+   receive any of them until someone runs `update-plugin.bat` there by hand and
+   sets `autoUpdate` after.
+
+---
+
+*Ephemeral bridge — prune once absorbed. Durable record: the 1.22.0 and 1.23.0
+release notes, `TASKS.md` for the queue, and the skill bodies themselves.*
