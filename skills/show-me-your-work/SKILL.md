@@ -47,7 +47,7 @@ spreadsheets read it, and a row appends with one command.
 
 | Column | What goes in it |
 |-----------|-----------------|
-| `ts` | ISO8601 timestamp. The timeline axis. |
+| `ts` | ISO8601 timestamp, **UTC**. The timeline axis. |
 | `phase` | Which chunk of the run this belongs to. |
 | `decision` | What you chose or did. One line. |
 | `why` | The reason in plain words, plus the alternative you rejected. |
@@ -59,10 +59,16 @@ printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$PHASE" "$DE
 ```
 
 ```powershell
-"{0}`t{1}`t{2}`t{3}`t{4}`t{5}" -f (Get-Date -Format s), $Phase, $Decision, $Why, $Evidence, $Result | Add-Content -Encoding utf8 docs/decisions/2026-08-19-1430.tsv
+"{0}`t{1}`t{2}`t{3}`t{4}`t{5}" -f (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"), $Phase, $Decision, $Why, $Evidence, $Result | Add-Content -Encoding utf8 docs/decisions/2026-08-19-1430.tsv
 ```
 
 Write the header row once, on first use.
+
+Both snippets emit **UTC**, and they have to agree. PowerShell's `-Format s`
+looks right and is not: it prints local time with no offset marker, so a trail
+written on Windows would carry a `ts` column hours off from every commit SHA it
+cites, with nothing in the file saying so. `.ToUniversalTime()` is the fix and
+works on Windows PowerShell 5.1; `-AsUTC` does not exist before PowerShell 7.
 
 ### Three rules the format depends on
 

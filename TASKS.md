@@ -18,39 +18,6 @@ ones unblock or inform later ones.
   usually single interactive passes, and the skill's own rule says a trail nobody
   reviews after the fact is bookkeeping. Probably yes for `project-checkup` in
   force-all mode, probably no for a normal audit.
-- [ ] **Verify a by-name skill reference actually resolves at runtime** — the one
-  fact the extraction rests on that is still only at rung 3. Six cross-references
-  depend on the mechanism and Leroy's schema now does. One `/leroy-jenkins` run on
-  an install at 1.23.x, checking the trail comes out with the right six columns.
-- [ ] **Fork `unslop` into a house style guide** — take pstack's rules 1–12 and
-  20–31 (the abstract-metaphor→plain-word table and "say what it does, not how it
-  feels" are the valuable parts). Drop or invert 13–19: pstack bans em dashes,
-  mid-sentence colons, and "surface"/"scaffolding" as metaphors, and this repo's
-  prose uses all three deliberately. Adopting it verbatim means either rewriting
-  every skill body or shipping a rule we ignore.
-- [ ] **Cross-vendor review of a Leroy trail** — end every trail-producing run
-  with an `Attention` section written by a *different vendor's* model reading the
-  trail and the diff, flagging what still deserves scrutiny. We can do this better
-  than pstack can: `codex-cli` and `antigravity-cli` give genuine cross-vendor
-  eyes, not a second Claude. **Unblocked** — the trail exists and `show-me-your-work`
-  owns it, so this is the next natural step on that thread.
-- [ ] **Verification-skill generator** — a skill that generates a *project-local*
-  verify skill plus a feature map: launch, doctor, drive, evidence, cleanup, one
-  file per user-facing feature. This is the structural answer to the behavioural
-  checklist being unrun for five releases — the checklist is unrun because it's
-  prose a human executes. Non-negotiable rule from pstack: the generator runs its
-  own output end to end once before handing it over, because a generated skill
-  that was never executed is a draft, not a deliverable. Biggest item here.
-- [ ] **Draft `teach`** — explain a subsystem so a person actually understands it.
-  The transferable rule: for anything with 3+ moving parts, never draw one
-  diagram; draw a short series where each redraws the last and adds exactly one
-  part. Plus the negative constraints (no pacing theater, no "here's the key
-  insight").
-- [ ] **Draft `reflect`** — mine the session transcript for durable learnings and
-  route each to a concrete skill edit. This is literally what this repo does by
-  hand. Steal the Accepted/Rejected/Backlog split and the structural-enforcement
-  check: before applying anything, ask whether a lint rule or script would enforce
-  it more reliably than more prose. Needs porting off Cursor transcript paths.
 
 <!-- pstack: pearls for existing skills -->
 
@@ -118,6 +85,7 @@ ones unblock or inform later ones.
 
 ## Done
 
+- [x] ~~Prove a by-name skill reference resolves at runtime (rung 5); found and fixed a UTC bug~~ (2026-08-19)
 - [x] ~~Graduate `blast-radius` to `skills-source/`~~ (2026-08-19)
 - [x] ~~Wire `check-skill-refs.py` into CI, negative-tested both ways~~ (2026-08-19)
 - [x] ~~Exercise `blast-radius` against a real diff; two fixes fed back~~ (2026-08-19)
