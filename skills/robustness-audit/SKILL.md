@@ -58,6 +58,13 @@ Two rules:
 - **Never round up.** If you could not trace it, it is Cited, not Traced. The
   audit's credibility comes from the rungs being honest, not from them being high.
 
+**The five names are a shared scale; the tests are local.** Other skills in this
+plugin grade evidence on the same five rungs in the same order, so a reader
+comparing two reports knows Traced means the same tier in both. What counts *as*
+Traced is defined per skill and is meant to differ — here it is reading caller
+and callee together, elsewhere it is walking a failure path across a boundary.
+Keep the names aligned. Don't try to share the definitions.
+
 Step 3 below is the rung-2 to rung-3 promotion, run by the main thread rather
 than the agent that made the claim. Rungs 4 and 5 are available only when the
 user *can* run the code — offer them for the reds in the action menu, since a

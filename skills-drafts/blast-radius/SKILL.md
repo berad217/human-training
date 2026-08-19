@@ -45,20 +45,30 @@ writeup around them. Words are where you start, not what you ship.
 
 ### How sure are you
 
-Use the **evidence ladder** — Asserted, Cited, Traced, Executed, Reproduced.
-It is written down in `human-training:robustness-audit`; read it there rather
-than working from memory.
+For each fact the change's safety depends on, grade the proof behind it:
 
-The difference here: **that skill ceilings at Traced because it never runs the
-code. This one does not.** You are allowed to run things, which means rungs 4
-and 5 are on the table, which means stopping at 3 is a *choice you have to
-justify* rather than a constraint you inherited.
+| Rung | Name | What it means here |
+|------|------|--------------------|
+| 1 | **Asserted** | You said so. Worthless on its own. |
+| 2 | **Cited** | A real `file:line` — in this repo or in the library's own source — that says what you claim. |
+| 3 | **Traced** | You walked the failure path step by step, across whatever boundary it crosses, and showed the bad case can't reach. No code run. |
+| 4 | **Executed** | A script or test that calls the real code and fails loud if you're wrong. |
+| 5 | **Reproduced** | You made it happen in the running app. |
 
-For the one or two facts the change's safety actually rests on, get to **rung 4**
-unless it is genuinely expensive. Rung 4 is usually one small script that imports
-the same library the app ships and calls the exact function you are worried
-about. If you cannot get there cheaply, say so out loud and mark the fact
-unproven. Never round up.
+**Rungs 4 and 5 are on the table here, and that is the difference that matters.**
+`robustness-audit` uses the same five names and ceilings at Traced, because it
+never runs the code — that constraint is *its*, not yours. Stopping at 3 in a
+blast-radius report is a choice you have to justify, not a limit you inherited.
+
+For the one or two facts the safety actually rests on, get to **rung 4** unless
+it is genuinely expensive. Rung 4 is usually one small script that imports the
+same library the app ships and calls the exact function you are worried about.
+If you cannot get there cheaply, say so out loud and mark the fact unproven.
+
+Two rules, same as everywhere in this plugin:
+
+- **Rung 1 never ships.** A claim with no `file:line` is not a finding.
+- **Never round up.** "I read it and it looked fine" is Cited, not Traced.
 
 ## Steps
 

@@ -19,12 +19,11 @@ ones unblock or inform later ones.
   reviews after the fact is bookkeeping. Probably yes for `project-checkup` in
   force-all mode, probably no for a normal audit.
 - [ ] **Graduate `blast-radius`** — drafted in `skills-drafts/blast-radius/`.
-  Two blockers before it can ship, both in that folder's `NOTES.md`: the evidence
-  ladder now has two consumers and no owner (same trigger that produced
-  `show-me-your-work`, and the current cross-reference into `robustness-audit` is
-  the one option that's definitely wrong), and the skill has never been run
-  against a real change. A skill about proving things that was itself never
-  proven is a poor look — exercise it on a diff touching a serialized shape.
+  One blocker left: **it has never been run against a real change.** The whole
+  skill turns on step 5 (write the script, run it, paste the result), and whether
+  that happens or gets skipped for a confident writeup is exactly what it claims
+  to prevent. Exercise it on a diff touching a serialized shape, then graduate.
+  (Ladder ownership is settled — see `NOTES.md`; the rungs stay local per skill.)
 - [ ] **Fork `unslop` into a house style guide** — take pstack's rules 1–12 and
   20–31 (the abstract-metaphor→plain-word table and "say what it does, not how it
   feels" are the valuable parts). Drop or invert 13–19: pstack bans em dashes,
@@ -121,6 +120,7 @@ ones unblock or inform later ones.
 
 ## Done
 
+- [x] ~~Settle evidence-ladder ownership: names shared, definitions local~~ (2026-08-19)
 - [x] ~~Extract the decision trail into `show-me-your-work`; Leroy references it~~ (2026-08-19)
 - [x] ~~Ship 1.22.0 — "Show Your Work"~~ (2026-08-19)
 - [x] ~~`robustness-audit`: evidence ladder + disposition buckets~~ (2026-08-19)

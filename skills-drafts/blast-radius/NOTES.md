@@ -11,27 +11,34 @@ exist here.
 
 ## Graduation blockers
 
-**1. The evidence ladder has two consumers and no owner.**
+**1. ~~The evidence ladder has two consumers and no owner.~~ Settled 2026-08-19:
+don't centralize it.**
 
-The draft references the ladder rather than restating it, and points at
-`human-training:robustness-audit` as where it's written down. That is the right
-call for a draft and the wrong shape to ship: `robustness-audit` is an odd owner
-for a concept two skills share, and pointing a second skill at a *third* skill's
-section is a cross-reference that will rot.
+The first instinct was to extract the ladder the way the TSV format became
+`show-me-your-work` in 1.23.0. Measuring it killed that. Of the 32 lines in
+`robustness-audit`, roughly 14 are portable and 18 are local, and the most
+load-bearing cell is one of the local ones: **rung 3 means "read caller and
+callee side by side" in an audit and "walk whether the bad case reaches across a
+boundary" in blast-radius.** Those are not the same test. A shared definition
+covering both collapses to "you reasoned about it carefully", which teaches
+nothing.
 
-This is the same trigger that produced `show-me-your-work` in 1.23.0 — a format
-with a second consumer either gets an owner or becomes two formats. Three options:
+The TSV and the ladder are different kinds of thing, and calling them the same
+trigger was the error:
 
-- Extract the ladder into its own small skill. Honest, but it would be one table
-  and a paragraph, which is thin for a skill.
-- Let `blast-radius` own it and have `robustness-audit` reference *it*. Cleaner
-  conceptually (the ladder's full range only matters where code can be run), but
-  it inverts the dependency between a shipped skill and a draft.
-- Keep the ladder in `robustness-audit` and accept the cross-reference. Cheapest,
-  and the option that drifts.
+- **The TSV is a data format.** Tools and humans read it across runs; drift
+  breaks compatibility; there is exactly one correct schema. It earned an owner.
+- **The ladder is a vocabulary.** The definitions are *supposed* to differ per
+  skill. The only real drift risk is the five names, and forcing uniformity below
+  the name costs accuracy.
 
-**Decide before graduating.** Shipping with the current cross-reference is the
-one choice that is definitely wrong.
+**Resolution.** Each skill defines the rungs in its own terms. Both use the same
+five names in the same order, and each states its own ceiling and why.
+`robustness-audit` carries a note saying the names are shared and the tests are
+local; this draft carries its own table plus the line that rungs 4 and 5 are
+available here, so a reader doesn't inherit the audit's rung-3 ceiling by
+association. Revisit only if a third consumer turns up with a genuinely identical
+test.
 
 **2. Never exercised.**
 
