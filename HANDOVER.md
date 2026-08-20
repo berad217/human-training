@@ -1,12 +1,12 @@
 # Handover — human-training
 
 **Session date:** 2026-08-19
-**State:** **Five releases shipped: 1.22.0, 1.23.0, 1.23.1, 1.24.0, 1.24.1.**
-All committed, pushed, tagged, released; CI green on each; builders
-byte-identical; tree clean and in sync. Nothing in flight.
+**State:** **Seven releases shipped: 1.22.0 → 1.26.0.** All committed, pushed,
+tagged, released; CI green on each; builders byte-identical; tree clean and in
+sync. Nothing in flight.
 
-All of it traces to an audit of [pstack](https://github.com/cursor/plugins/tree/main/pstack)
-(MIT) that opened the session. What shipped is in the release notes; don't
+The session began as an audit of [pstack](https://github.com/cursor/plugins/tree/main/pstack)
+(MIT) and ended in a retraction. What shipped is in the release notes; don't
 restate it here.
 
 ---
@@ -14,86 +14,110 @@ restate it here.
 ## The queue is `TASKS.md`
 
 Anything with a next action lives there. This file carries only what is
-contested, unproven, or decided-but-not-obvious — the things a fresh session
-would get *wrong*, not the things it should get *around to*.
+contested, unproven, or decided-but-not-obvious.
 
 ---
+
+## Read this before probing anything
+
+**The verification technique works and it will lie to you if you use it wrong.**
+`claude -p --plugin-dir <repo> "<organic prompt>"` loads the working tree, so a
+skill can be exercised before release and without touching the installed plugin.
+It found a real UTC bug and it proved skill-to-skill chaining. It also produced a
+false result that reached a release and deleted a working feature.
+
+**Two rules, both non-optional:**
+
+1. **Pass `--allowedTools Skill Read Glob Grep Bash`.** Without it the headless
+   session's permission posture is variable, and `Skill` gets denied on some runs
+   and not others. A denied `Skill` call means the skill never loaded and the
+   agent hand-rolls the task instead — while sounding completely authoritative.
+2. **Read outcomes, not requests.** A `tool_use` block in the stream is the model
+   *asking*. What happened is in the paired `tool_result`, which is where
+   `Permission to use Skill has been denied` sits. Parsing `tool_use` alone is
+   how three probe runs looked like a skill choosing not to act when the skill
+   had never run at all.
+
+Two further habits, learned the same way:
+
+- **Run probes from a scratch directory, never from this repo.** `onboarding.md`
+  tells agents not to invoke `human-training:*` skills here, which suppresses the
+  trigger and yields a false negative.
+- **Believe the subject.** Two runs stated in their own prose that Skill was
+  blocked. That was overridden on the strength of a trace that had not been fully
+  parsed. The subject was right.
+
+**Negative results are weak; positive results are strong.** A found bug is a
+found bug. "It didn't do X" from one run proves nothing — run-to-run variance is
+real, and one run leaked a DEVLOG entry two others correctly withheld.
 
 ## The delta (not in the files)
 
-- **There is now a cheap way to actually watch a skill run, and it is not
-  written down in any skill.** `claude -p --plugin-dir <repo> "<organic prompt>"`
-  loads the **working tree**, so a skill can be exercised before it is released
-  and without touching the installed plugin — which matters, since this machine's
-  install is still on 1.21.1 and could not have run today's tests. Two rules
-  learned the hard way:
-  - **Run it from a scratch directory, never from this repo.** `onboarding.md`
-    tells agents not to invoke `human-training:*` skills here, which suppresses
-    the trigger and produces a false negative.
-  - **Grade on a content discriminator, not self-report.** Pick something that
-    exists *only* in the skill under test (the spreadsheet-injection rule worked),
-    write an organic prompt, and never ask which files it read.
+- **`/start` step 2d works. Do not delete it again.** 1.25.0 removed it on the
+  evidence above and 1.26.0 put it back. Verified with `Skill` permitted: the
+  skill loads, reads `known_marketplaces.json`, and emits a correct `Toolchain:`
+  line. The tell that you are about to repeat the mistake is a probe where 2d
+  "silently didn't fire" — check for a denied `Skill` call before believing it.
 
-  This is the first tool that has ever dented the behavioural-checklist gap, and
-  it took minutes. It is the obvious lever for the rest of the backlog.
+- **The evidence ladder does not catch instrument failure, and that is a real
+  gap.** It grades *how much* evidence stands behind a claim. Both overclaims
+  this session were a different shape: the check ran, produced output, and the
+  output was misread. A rung-4 "I ran a script" is worthless if the script
+  measured the wrong thing. Unresolved; worth thinking about before the ladder is
+  cited as though it covers this.
 
-- **It found a real bug on first use.** `show-me-your-work`'s PowerShell snippet
-  used `Get-Date -Format s`, which is local time with no offset, against bash's
-  UTC. Shipped in 1.22.0, survived the 1.23.0 extraction and three readings
-  including one where the file was moved wholesale. An agent reading it cold
-  caught it in one pass. **The lesson is the ladder's whole thesis**: a claim at
-  rung 1 stays at rung 1 no matter how many times its author re-reads it.
-
-- **Don't fold the evidence ladder into the confidence score.** This is the
-  obvious tidy-up and it is wrong. Confidence is how sure the agent feels, and
-  was kept deliberately non-suppressive. The rung is what was actually checked.
+- **Don't fold the ladder into the confidence score.** The obvious tidy-up and
+  wrong. Confidence is how sure the agent feels; the rung is what was checked.
   The finding worth catching is the one that is 95-confident at rung 2.
 
-- **Don't centralize the ladder either.** Settled 1.23.1 after measuring it:
-  ~14 of 32 lines are portable and rung 3 means genuinely different things in
-  `robustness-audit` and `blast-radius`. Names and order are shared; definitions
-  are local and *meant* to differ. A data format earns an owner; a vocabulary
-  does not. Reasoning is in `skills-drafts/blast-radius/NOTES.md`.
+- **Don't centralize the ladder either.** Settled 1.23.1 after measuring: ~14 of
+  32 lines are portable, and rung 3 means genuinely different things in
+  `robustness-audit` and `blast-radius`. Names and order shared, definitions
+  local. A data format earns an owner; a vocabulary does not.
 
 - **`leroy-jenkins` commits its trail; `show-me-your-work` does not by default.**
-  Intentional and easy to "fix" wrongly. Most trails are working artifacts;
-  Leroy's case is the unusual one.
+  Deliberate. Most trails are working artifacts; Leroy's case is the unusual one.
 
-- **`plugin.json`'s description enumerates every session-authored skill by hand,
-  and went stale twice in one day.** `scripts/check-skill-refs.py` now catches it
-  in CI, which is a guard rather than a cure — the enumeration itself is the
-  defect and dropping it is parked in `TASKS.md` Someday.
+- **`autoUpdate` absent does not mean "never refreshes".** A catalog was observed
+  refreshing on 2026-08-19 with the flag absent. 2d's wording was corrected to
+  say the flag removes the *guarantee*; report on the two fields, not on a theory
+  of the mechanism.
 
-- **The pstack rejections are recorded so they aren't re-derived.** Roughly
-  two-thirds does not transfer: it assumes a team, Graphite stacks, MCP-backed
-  observability, and subagents spawnable on named cross-vendor models that the
-  Agent tool cannot address. Rejected on those grounds: `poteto-mode`'s
-  22-playbook router, `swarm`, `arena`, `interrogate`, `architect`, `how`/`why`,
-  `recall` (overlaps `/start`, and ours reads files rather than transcripts), and
-  `automate-me` (this plugin *is* the mode skill).
+- **The pstack rejections, so they aren't re-derived.** Roughly two-thirds does
+  not transfer: it assumes a team, Graphite stacks, MCP-backed observability, and
+  subagents on named cross-vendor models the Agent tool cannot address. Rejected:
+  `poteto-mode`'s router, `swarm`, `arena`, `interrogate`, `architect`,
+  `how`/`why`, `recall` (overlaps `/start`), `automate-me` (this plugin *is* the
+  mode skill).
 
-- **`unslop` would fight this repo's own prose**, which is a real blocker rather
-  than a detail. It bans em dashes, mid-sentence colons, and
-  "surface"/"scaffolding" as metaphors; every skill body here uses all three
-  deliberately. The `TASKS.md` item says fork it, not adopt it.
+- **`unslop` would fight this repo's own prose.** It bans em dashes,
+  mid-sentence colons, and "surface"/"scaffolding" as metaphors; every skill body
+  here uses all three deliberately. `TASKS.md` says fork it, not adopt it.
 
 - **Branch protection is settled; don't reopen it.** Every push this session
-  printed "Bypassed rule violations". That is the rule working — `enforce_admins`
-  is `false`, required reviews are 0, and `berad217` is the only write path.
-  Reviewed and kept 2026-08-03.
+  printed "Bypassed rule violations" — the rule working, not failing.
+  `enforce_admins` false, required reviews 0, `berad217` the only write path.
+
+## What is now actually verified
+
+First time anything in this plugin has been *watched running* rather than
+reviewed. Verified with a sound instrument: **`/start`** (doc globbing including
+uppercase `HANDOVER.md`, newest-DEVLOG-entry-only, TASKS Active without leaking
+Someday, unpushed-commit reporting, read-only contract, and step 2d), and
+**`leroy-jenkins` → `show-me-your-work`** chaining with every alternative path
+blocked.
+
+Everything else is still assumed, including all of `grill`, `tasks`,
+`handover-manager`, `project-checkup`, and `robustness-audit`.
 
 ## Stale, not merely queued
 
-1. **The behavioural checklist is unrun across eight releases** (1.17–1.24.1),
-   and today added two skills to the pile. It now has a cheap tool pointed at it
-   for the first time; `/start` is the obvious next target.
-2. **Every other machine is five releases behind** and cannot receive any of them
-   until someone runs `update-plugin.bat` there by hand and sets `autoUpdate`.
+1. **Every other machine is seven releases behind** (1.22–1.26) and cannot receive
+   any of them until someone runs `update-plugin.bat` there and sets `autoUpdate`.
    **This machine is too** — still on 1.21.1.
-3. **`autoUpdate` firing at startup remains unproven** across a relaunch. `/start`
-   step 2d assumes `lastUpdated` keeps advancing.
+2. **`autoUpdate` firing across a relaunch remains unproven.**
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the 1.22.0–1.24.1
+*Ephemeral bridge — prune once absorbed. Durable record: the 1.22.0–1.26.0
 release notes, `TASKS.md` for the queue, and the skill bodies themselves.*

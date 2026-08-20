@@ -92,6 +92,18 @@ ones unblock or inform later ones.
   requests. Without those, a denied `Skill` call looks like a skill that ran and
   chose not to act. Candidates: `onboarding.md`'s workflow list, or a section in
   whatever skill ends up owning verification.
+- [ ] **Probe the never-observed skills now the instrument is sound** — `grill`,
+  `tasks`, `handover-manager`, `robustness-audit` have never been watched running.
+  Each needs a fixture with planted discriminators (the widget-forge pattern
+  worked: plant something in a section the skill is told *not* to surface, and
+  check it doesn't leak). Follow the two probe rules in `HANDOVER.md` or the
+  results are worthless.
+- [ ] **Decide whether the evidence ladder should cover instrument failure** — it
+  grades how much evidence backs a claim, and both overclaims on 2026-08-19 were
+  a different shape: the check ran, produced output, and the output was misread.
+  A rung-4 "I ran a script" is worthless if the script measured the wrong thing.
+  Either the ladder gains a rung-0 "is the instrument sound?" gate, or it stays
+  scoped and something else covers this. Currently nothing does.
 - [ ] **Re-probe `project-checkup` with `Skill` permitted** — its only probe was
   invalid (Skill denied), so nothing is known about whether it invokes
   `workflow-orientation` and `robustness-audit` as its Component Invocations
