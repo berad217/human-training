@@ -118,7 +118,27 @@ Different docs serve different purposes:
 
 ### Step 3: Write the Handover
 
-Use this lean template. If a section is already covered by a file, **delete the section.**
+**First decide WHERE it goes. A handover follows the work, not the cwd.**
+
+The default is the repo the work happened in. That default breaks in one specific,
+recurring case: **a session that graduates or moves work into a different repo.** You
+started in the sandbox; the work now lives elsewhere; and the next session on that work
+will start *there*, where it will never see a handover left behind in the sandbox.
+
+- **Write the handover in the repo where the next session on that work will start.**
+  If a project just graduated into its own repo, its handover is written **there**, at
+  graduation — not in the folder it left.
+- **The origin repo keeps its own handover**, scoped to itself, and it should **cite the
+  departure**: what left, when, where it went, and what remains. That citation is the
+  breadcrumb for the next session in the origin repo, which will otherwise go hunting for
+  a folder that no longer exists.
+- **A session that touched several repos may owe several handovers.** Write one per repo
+  that has unfinished business, each scoped to that repo. Do not write one fat handover in
+  whichever directory you happened to be standing in — that is how a handover about
+  project B ends up unread inside project A.
+
+Then use this lean template. If a section is already covered by a file, **delete the
+section.**
 
 ---
 
