@@ -109,7 +109,43 @@ Once the spec is approved:
 1. Create `onboarding.md` from the onboarding template — the universal agent
    entry point.
 2. Create a `DEVLOG.md` skeleton.
-3. Confirm the human is satisfied with the spec.
-4. Sprint-0 scratch (this genesis conversation, rough notes) can be cleared
+3. **Set up in-repo memory — do this at genesis, not later.** See below; this is
+   the step that is easiest to skip and most expensive to skip.
+4. Confirm the human is satisfied with the spec.
+5. Sprint-0 scratch (this genesis conversation, rough notes) can be cleared
    once implementation begins — the spec, onboarding, and DEVLOG are the source
    of truth from here.
+
+### Memory at genesis (step 3, expanded)
+
+A harness that stores project memory in a path derived from the **working
+directory** — Claude Code uses `~/.claude/projects/<slug>/memory/` — gives a
+brand-new project **no memory at all**, and gives a project that *moved* none of
+what it had. Nothing errors. You simply get an agent that has forgotten
+something the human is certain they said.
+
+Genesis is the only moment where this is free to fix, so fix it here:
+
+- Create **`memory/`** in the new project, with a `MEMORY.md` index.
+- Write the memory rule into the project's **`CLAUDE.md`**: read and write
+  `memory/` in this repo; do not use the harness default path. Without that
+  instruction the default silently wins.
+- **If this project came from somewhere** — a spike graduating out of a sandbox,
+  a folder promoted to its own repo — **carry its memory across now.** That is
+  `workflow-orientation` §6's job; invoke it rather than reimplementing the
+  migration. Do not leave the entries behind "for now"; "for now" is how every
+  one of these ends up stranded.
+- **Scope what comes across.** The new repo takes facts about *itself* and about
+  the projects it directly serves or depends on. Cross-cutting facts — who the
+  human is, how they want agents to work, harness mechanics, OS gotchas — stay
+  canonical in **one** place and are not copied into every repo. Copying them is
+  how one fact becomes five drifting copies, and copies drift *fast*: a project
+  that graduated with a hand-seeded copy had three of twelve entries diverged
+  within twenty-four hours, one of them describing a shipped, playtested project
+  as "spec'd, nothing built."
+- Anything you *do* mirror gets labelled a **mirror**, with the date it was taken
+  and an instruction to re-copy. Visible drift beats silent drift.
+
+**Private repos only.** Memory holds working-style notes and project context that
+the human may not want public. If the new repo is or may become public, say so
+and leave memory out of it rather than migrating and hoping.
