@@ -75,4 +75,11 @@ When a draft is ready to ship:
    the skill actually needs at runtime should travel.
 3. Run `./scripts/build-skills.ps1`.
 4. Bump `version` in both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`.
-5. Commit, push, `/plugin update human-training@human-training`.
+5. Commit, push, **and cut a GitHub release** — the auto-update loop reads releases, not
+   tags or commits. Same cheeky title style as the rest:
+   ```bash
+   git tag -a human-training--vX.Y.Z -m "X.Y.Z - <title>" && git push origin human-training--vX.Y.Z
+   gh release create human-training--vX.Y.Z --title "vX.Y.Z — <Title>" --notes-file <notes.md> --latest
+   ```
+   1.27.0 was built, bumped, pushed, and sat unreleased for 23 days because this line was
+   missing. Then `/plugin update human-training@human-training`.

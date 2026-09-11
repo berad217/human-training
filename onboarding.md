@@ -180,9 +180,15 @@ lets Codex reinstall/cache-refresh flows detect a changed plugin.
 
 Bump convention: minor for additions, patch for tweaks, major for breaking.
 
-After commit + push, the user runs `/plugin update human-training@human-training`
-per Claude Code machine. Codex installs may need a plugin reinstall/cache
-refresh and a new thread.
+After commit + push, **cut a GitHub release** (`gh release create
+human-training--vX.Y.Z --title "vX.Y.Z — <Title>" --notes-file <notes> --latest`,
+on a pushed annotated tag of the same name). The auto-update loop keys on
+releases; a version bump that is pushed but never released is invisible to it —
+1.27.0 sat that way for 23 days. Titles follow the house style: a short cheeky
+phrase that names the lesson, and a body that says what broke and why. Then the
+user runs `/plugin update human-training@human-training` per Claude Code
+machine. Codex installs may need a plugin reinstall/cache refresh and a new
+thread.
 
 ---
 
