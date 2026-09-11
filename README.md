@@ -100,6 +100,7 @@ distinction means is two sections down — for now, just grab the one you need.
 | **antigravity-cli** | skills-source/ | Working reference for driving Google's Antigravity CLI (`agy`) headlessly — the quiet-failure footguns and the tool-free consultant pattern | Automating `agy -p` / using Gemini as a cross-vendor consultant from the terminal |
 | **codex-cli** | skills-source/ | Working reference for driving OpenAI's Codex CLI headlessly (`codex exec`) — stdin trap, output capture, sandbox, model tiers | Calling Codex from a script or another agent |
 | **image-gen** | skills-source/ | Generate *and* edit photorealistic images by driving Codex's built-in gpt-image-2 tool — no API key, on a ChatGPT sub | "Make me an image / edit this photo" — the ChatGPT-style capability, from the CLI |
+| **critic-loop** | skills-source/ | Iterate an artifact whose quality has no test against fresh, blind critic agents — proposes a harness for *this* artifact (rubric, gate, budget in rounds, walls for what the critic can't see) and waits for approval before spending a round | "Does this read as X?" / "am I too close to this?" — a LEGO build, a doc, a screen, anything only a stranger can judge |
 
 ---
 

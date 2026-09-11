@@ -1,6 +1,7 @@
 # critic-loop — draft
 
-**Status: genuine draft** (no `skills-source/critic-loop/` exists). Started 2026-09-11.
+**Status: residue — graduated 2026-09-11 to `skills-source/critic-loop/` (1.28.0).** This folder
+keeps the prose evidence (`rounds/`), the trigger candidates, and this history. Started 2026-09-11.
 
 ## What it is
 
@@ -54,10 +55,9 @@ do after reading it?"* Round zero + one round.
    lines) without putting the hypotheses back. v4 also takes the safe list (cost and run
    counts at Budget, read-type contrast, own-table refiled, §8 hedged) and a compressed
    *real* §0 — the Refinery's — as the worked example both critics asked for. 469 lines.
-7. **Graduate.** The criterion (one run off images, row rewritten) is met twice over. Ritual
-   per `skills-drafts/README.md`: move to `skills-source/critic-loop/` with `SKILL.md` +
-   `reference.md` (leave `rounds/`, `eval-queries.md`, this README here as residue), build,
-   bump version, commit.
+7. ~~Graduate.~~ Done 2026-09-11 — `SKILL.md` + `reference.md` moved to `skills-source/critic-loop/`,
+   build byte-identical, manifests 1.28.0, both repo checks pass. `rounds/`, `eval-queries.md`
+   and this README stay as residue.
 
 ## What the run answered
 
@@ -103,8 +103,8 @@ do after reading it?"* Round zero + one round.
 ```
 critic-loop/
 ├── README.md        this file
-├── SKILL.md         the draft, iterated in place — operational: invariants, harness design, protocol, templates, failure table
-├── reference.md     the harnesses that have run, the untested rows, and every [ref: key] story
+├── SKILL.md         → moved to skills-source/critic-loop/ on graduation
+├── reference.md     → moved to skills-source/critic-loop/ on graduation
 ├── eval-queries.md  candidate triggers for the eventual trigger-eval
-└── rounds/          round-zero and round logs, when run
+└── rounds/          00-precommit, 01-round-1, 02-round-2 — the prose evidence reference.md points at
 ```

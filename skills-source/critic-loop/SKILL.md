@@ -20,7 +20,7 @@ What it produces first, on every invocation, is a **harness** for the artifact
 in hand — and it does not spend a round until the human has approved it.
 
 **Evidence.** Brad's design. Three image subjects over fifteen rounds and one
-prose subject over one round, every rule tagged with the round that earned it
+prose subject over two rounds, every rule tagged with the round that earned it
 or the `n=0` that says it has not. The stories behind each rule, the harnesses
 that have run, and the untested classes are in [reference.md](reference.md);
 `[ref: key]` below points into it.
@@ -363,7 +363,7 @@ Be blunt. Do not soften. Where you claim something about the reference or
 the text, say where you are looking.
 ```
 
-**Round log** — one file per round (`rounds/01-round-1.md` here is a filled
+**Round log** — one file per round (`skills-drafts/critic-loop/rounds/01-round-1.md` in `berad217/human-training` is a filled
 one):
 
 ```

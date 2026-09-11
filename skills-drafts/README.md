@@ -26,7 +26,8 @@ half-finished stuff still here?" — run the check above before assuming anythin
 is broken or abandoned.
 
 *Current residue (skills that shipped): `antigravity-cli-workspace/`,
-`gemini-api/research/`, `pdf-toc-splitter/`. Current genuine draft: `ollama/`.*
+`gemini-api/research/`, `pdf-toc-splitter/`, `critic-loop/` (its `rounds/` are the
+prose evidence the shipped `reference.md` points at). Current genuine draft: `ollama/`.*
 
 ## What goes here
 

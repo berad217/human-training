@@ -3,7 +3,7 @@
 The evidence behind [SKILL.md](SKILL.md). Two parts: **the harnesses that have run**
 (starting points for §3, with what each run taught), and **the stories** each `[ref: key]`
 in the skill points at. Primary record: `Shapey_McShapeface/docs/CRITIC_LOOP.md` v3 and
-`docs/reviews/` there; `rounds/` here for the prose run.
+`docs/reviews/` there; `skills-drafts/critic-loop/rounds/` in `berad217/human-training` for the prose runs.
 
 The sibling loop — a **measured pass**, the same skeleton with an instrument where the
 critic would be — is described in `CRITIC_LOOP.md` v3 §1. Not a skill yet.
@@ -35,10 +35,10 @@ reference (two rounds); rounds plateau at the toolkit's ceiling and the critic n
 take unreviewed (one protocol, followed exactly); a read that runs long loses its head (one
 re-run).
 
-### Prose — n=1 round, one subject
+### Prose — n=2 rounds, one subject
 
-**Subject.** This skill's own first draft, judged by its own protocol (`rounds/00-precommit.md`,
-`rounds/01-round-1.md`).
+**Subject.** This skill's own first draft, judged by its own protocol (`skills-drafts/critic-loop/rounds/00-precommit.md`,
+`01-round-1.md`, `02-round-2.md` in the same folder).
 
 | Parameter | What the harness was |
 |---|---|
@@ -59,6 +59,15 @@ reads independently named the draft's per-class table as the section that underm
 untested rows formatted like the measured one, with a warning *above* the table. A prose
 guard, in the document that says prose guards do not hold. Four critics, ~80k tokens each,
 under two minutes.
+
+**Round 2, on the rewrite** (stories out behind `[ref:]` pointers; §0 approval gate; §3a
+sort; §3c template): two informed reads, **91/91 with zero spread on every line**, `want`
+16/16 at the ceiling. Both said the one-clause whys carry — "the ref supplies
+corroboration, not the instruction" — and both quoted "approve to run. Then wait." as
+what would stop them on a LEGO-from-concept invocation. Line 6 fell 14 → 12 on both for one
+reason: the untested-class rows had left the file. A six-line status index in §3b put the
+*status* back without the hypotheses. The total (94 → 91) would have read as regression; the
+vector read as one line up and one down, with the cause named.
 
 ### Untested classes — hypotheses, written before any run
 
@@ -98,11 +107,11 @@ tool written to serve that list wrote the design's name into its default output 
 path had told it. Two reads void. Now: content-addressed directory, and a test asserts the
 subject's name cannot reach the path. (09-08.)
 
-**`own-table`** — *§1; §6.* The first draft of this skill formatted four untested
+**`own-table`** — *Anti-patterns; §6.* The first draft of this skill formatted four untested
 per-class rows identically to the one measured row, with a bold "these are hypotheses"
 above the table. Both informed critics, independently, named it as the section that
 undermined the document — "exactly the failure the document itself names." The marker now
-goes in the row. (09-11; `rounds/01-round-1.md`.)
+goes in the row. (09-11; `skills-drafts/critic-loop/rounds/01-round-1.md`.)
 
 **`reference-misread`** — *§1 spend; §4 "poll two"; §6.* Refinery rounds 2/3 and 5/6 each
 contradicted the other about the reference image itself: round 2 read a braced member at
