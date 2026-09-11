@@ -31,23 +31,47 @@ do after reading it?"* Round zero + one round.
 ## Plan
 
 1. ~~Draft `SKILL.md` from CRITIC_LOOP v3.~~ Done 2026-09-11.
-2. Round zero on the draft: a known-good exemplar skill from `skills-source/` (e.g. `grill`),
-   read cold by a fresh agent with the same function question — sets the ceiling and proves
-   the critic can perceive a SKILL.md. Then the draft, blind: title, frontmatter and
-   filename stripped (those are the prose leak channels §4 hypothesises).
-3. Round 1: informed read against a rubric written *from the subject* (what a skill for this
-   method must make a reader able to do), not from this README. Log to `rounds/`.
-4. Rewrite §4's prose row from the run. Decide Track 1 (`workflow/guides/`) vs Track 2
-   (`skills-source/`) — the method is model-agnostic, the §9 mechanics are Claude's.
-5. Graduate per `skills-drafts/README.md`.
+2. ~~Round zero on the draft~~ Done 2026-09-11 — `rounds/00-precommit.md`, `rounds/01-round-1.md`.
+   Exemplar `grill` read cold: function/audience/first-action all correct, confident;
+   `want` ceiling 16/20.
+3. ~~Round 1~~ Done. Gate met 2/2 on the blind reads. Informed vector **92 / 96**, spread
+   ≤ 1 per line; `want` 16 / 14. v2 of the SKILL.md takes the critics' safe list and two
+   logged deviations; the open list is in the round log §5.
+4. ~~Rewrite §4's prose row from the run.~~ Done — it is n=1 and says what happened.
+   **Track decision still open.** The method is model-agnostic; §9 is now a record of what
+   one Claude Code run did, marked n=1.
+5. Graduate per `skills-drafts/README.md` — **not yet.** See the two open items below.
 
-## Open questions the run should answer
+## What the run answered
 
-- Does a fresh agent reading a SKILL.md cold identify its *function* without the frontmatter?
-- What leaks in prose that the §4 row did not list?
-- Is "what would you do after reading it" a gate a stranger can fail, or does every
-  competent reader pass it (recognition saturating on round zero)?
-- Is the second scale ("would you want this skill installed?") worth its line?
+- **Does a fresh agent identify a SKILL.md's function without its frontmatter?** Yes,
+  confidently, from voice and cross-references — for the exemplar *and* the draft. Which
+  means:
+- **The function gate saturates on prose.** A document that states its purpose passes
+  "what is this for" by construction. The discriminating question is *what would you do
+  first* — both critics answered "the pre-commit," which is the right answer; a doc that
+  produced "send it to critics" would fail. Recorded in §4's prose row and §7.
+- **What leaks in prose that the row did not list?** Nothing the strip missed — but the
+  body's own self-references ("Explicit `/critic-loop`") were the primary driver for both
+  critics, and those cannot be stripped. The row now says so.
+- **Is the second scale worth its line?** It produced the run's most useful disagreement
+  (14–17 around a ceiling of 16, both citing "personal research log / would trim before
+  trusting") — the finding that the *evidence-marking* the skill's own §6 rewards is what
+  makes it feel uninstallable. Yes, worth it.
+
+## Open, after round 1
+
+- **Length vs receipts.** Both critics gave a target (330 / 350) and said "fold, don't cut;
+  keep §3/§5/§6/§7." Those four are 262 lines. v2 is 459 — the folds were taken and the
+  run's own findings added ~40 lines back. A shipped skill wants to be shorter; an
+  evidence-tagged one wants its n's. **Brad's call**, not the author's.
+- **The critics' "not safe" list**, declined in v2: a default budget number (would be a
+  claim generalised past n=15); a worked trace stitched from other subjects' numbers
+  (`rounds/01-round-1.md` is the honest substitute — a real one).
+- **One method observation, n=1, not a rule:** two of the critics' "needs a second look"
+  rulings were conditional on a fact only the author held (does the sibling skill exist;
+  has §9 been run). Taken as one-line status notes, logged as deviations. Whether that is
+  a pattern or a rationalisation is a second-run question.
 
 ## Folder
 
