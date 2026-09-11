@@ -10,6 +10,14 @@ ones unblock or inform later ones.
 
 ## Active
 
+- [ ] **`critic-loop`: graduate the draft** — `skills-drafts/critic-loop/` holds
+  the general form of Brad's critic loop (evidence: `Shapey_McShapeface/docs/
+  CRITIC_LOOP.md` v3, three subjects, fifteen rounds). n=15 on images, n=0 on
+  prose/code/UI/schema, and §4 says so per row. **Does not graduate until one run
+  off images is logged** in its `rounds/` — candidate: the draft itself, read cold
+  with the function question. Then decide Track 1 vs Track 2 (method is
+  model-agnostic; §9 mechanics are Claude's). Added 2026-09-11.
+
 <!-- pstack: new skills -->
 
 - [ ] **Decide whether `project-checkup` and `robustness-audit` should keep a
