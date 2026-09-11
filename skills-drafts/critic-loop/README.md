@@ -46,9 +46,18 @@ do after reading it?"* Round zero + one round.
    back when you invoke this", §3 harness design with the sort (critic-visible → rubric;
    not → wall), the §0 proposal template ending in "approve to run"; per-class rows and all
    stories moved to `reference.md`, keyed by `[ref: …]`. 427 lines + 191.
-6. **Second round on v3** — same rubric, informed reads only (the gate is met and saturates
-   on prose; a blind stage would measure nothing new). Question: do the one-clause whys
-   carry the rules without the stories, and does §0 read as a checkpoint. Then graduate.
+6. ~~Second round on v3~~ Done — `rounds/02-round-2.md`. **Both answers yes, n=2:** the whys
+   carry (one critic checked fifteen refs: "corroboration, not the instruction"); §0 stops
+   the agent (both quote "approve to run. Then wait."). Vector **91 / 91, spread 0 on every
+   line**; `want` 16 / 16 = the ceiling. Line 6 fell 14→12 on both reads for one reason —
+   the untested-class rows had left the file — and v4 restores a status index in §3b (six
+   lines) without putting the hypotheses back. v4 also takes the safe list (cost and run
+   counts at Budget, read-type contrast, own-table refiled, §8 hedged) and a compressed
+   *real* §0 — the Refinery's — as the worked example both critics asked for. 469 lines.
+7. **Graduate.** The criterion (one run off images, row rewritten) is met twice over. Ritual
+   per `skills-drafts/README.md`: move to `skills-source/critic-loop/` with `SKILL.md` +
+   `reference.md` (leave `rounds/`, `eval-queries.md`, this README here as residue), build,
+   bump version, commit.
 
 ## What the run answered
 
@@ -76,10 +85,18 @@ do after reading it?"* Round zero + one round.
 - **The critics' "not safe" list**, declined in v2: a default budget number (would be a
   claim generalised past n=15); a worked trace stitched from other subjects' numbers
   (`rounds/01-round-1.md` is the honest substitute — a real one).
-- **One method observation, n=1, not a rule:** two of the critics' "needs a second look"
-  rulings were conditional on a fact only the author held (does the sibling skill exist;
-  has §9 been run). Taken as one-line status notes, logged as deviations. Whether that is
-  a pattern or a rationalisation is a second-run question.
+- **The sibling pointer** ("measured pass — not a skill yet") was flagged in both rounds as a
+  dead end. Write the skill or cut the paragraph. Brad's call.
+- **§6's failure table** is 25+ unranked rows; round 2 A named it as what undermines the
+  document. Grouping the rows under the three invariants would give it a start-here without
+  changing a row. Not taken — nobody was asked to rule on it.
+- **One method observation, now n=4, still not a rule:** across two rounds, four of the
+  critics' "needs a second look" rulings were conditional on a fact only the author held
+  (the sibling's existence; §9 had been run; a real gate exists in the record; the harness
+  *was* written before the artifact every time). Each taken and logged as a deviation. The
+  pattern: **a critic marks "not safe" when it cannot verify; the author can, from the
+  record.** Whether that stays honest under a less scrupulous author is the question a
+  rule would have to answer, and one author cannot answer it.
 
 ## Folder
 

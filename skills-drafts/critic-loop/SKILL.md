@@ -55,7 +55,8 @@ same skeleton with the instrument where the critic would be. Not a skill yet;
 
 The skill runs in three moves, and the first ends with a question to you.
 
-**1. Harness proposal.** The agent reads the artifact and its subject, then
+**1. Harness proposal.** The agent reads the subject — and the artifact, if
+one exists yet; on a build-from-concept there is only the concept — then
 comes back with a §0 document (§3 has the template): what the critic will see,
 what it must not see, what it scores and how, what ends the loop, how many
 rounds, and — separately — what the walls check because the critic cannot.
@@ -84,8 +85,8 @@ design a harness for a medium the skill has never seen.
    the blind question, the critic's memory of its last answer, the brief the
    artifact was generated from. A contaminated read returns a confident answer
    that measured nothing, and **nothing inside the loop can reveal it.** Guards
-   must be executable; prose guards were tested twice and held neither time
-   `[ref: path-leak]` `[ref: own-table]`.
+   must be executable; the prose version of a leak guard was tested and did not
+   hold `[ref: path-leak]`.
 2. **Gradient validity — is the signal the goal?** A scalar score is not a
    gradient. Recognition saturates. Rubric lines trade. A deficiency gives
    direction, not magnitude. A critic's read of a reference is a claim about
@@ -156,8 +157,19 @@ and both artifacts came out unable to stand `[ref: twelve-rounds]`.
 | **Rubric source** | The subject. Never the reference, the prompt, or the brief — a rubric from the brief scores prompt-adherence and returns a high number carrying no information. |
 | **Second scale** | A desirability line, if it matters — separate scale, never a re-weighting, reference scored on it every round as the ceiling. A line added mid-run is always a new scale `[ref: cool]`. |
 
-`reference.md` has the harnesses that have run — image (n=15) and prose (n=1)
-— as starting points, and hypothesised rows for code, UI and schema, marked.
+The three read types, by example: **identity** — *"what is this a model of?"*,
+the A-10; **function** — *"what is this, and what is it for?"*, an invented
+structure or this document; **fidelity** — reference beside the build, informed
+from the first question, the outposts built from concept images.
+
+**Starting points, by class.** `reference.md` Part 1 holds the harness each
+class has run with. Which rows to trust:
+
+| Class | Status | Starting point |
+|---|---|---|
+| Rendered model / image | **n=15 rounds, three subjects** | `reference.md` — the image harness |
+| Prose (doc, spec, README) | **n=1 round** | `reference.md` — the prose harness |
+| Code, UI, schema | **UNTESTED** — hypotheses written before any run | `reference.md` — the untested rows; the first run rewrites the row |
 
 ### 3c. Write §0 and propose it
 
@@ -173,6 +185,30 @@ error in the open, in this shape:
 ## Walls                        each with HOW it is checked, and when (inner loop / v1 before round 1)
 ## Read type + blind question   and the strip recipe for the blind copy
 ## Deliberate deviations        what the artifact will knowingly not match, decided now
+```
+
+On the budget line, price it in real units so the human is approving a cost:
+a round of two blind + two informed reads was ~80k tokens a critic and two
+minutes wall-clock on prose. Runs so far spent 3 of 5, 5 of 5, 7 of 7, 1 of 1.
+
+**A filled one, compressed** — the Refinery's, from the image record, two lines
+a heading:
+
+```
+# §0 — Refinery, pre-committed 2026-09-11, after inspecting the reference, before any placement
+## Rubric — fidelity/100   Tank cluster 25 · Tapered truss frame 20 · Hoppers and base works 15 ·
+                           Service annex 10 · Proportions 15 · Colour and detail 15
+## Second scale — cool/20  Would a stranger want this in their outpost, shown it alone; the
+                           reference scored on it too, as the ceiling
+## Gate                    The critic says STOP: side by side, a stranger would say the build is
+                           of that picture, and nothing on the deficiency list is priced above marginal
+## Budget                  7 rounds; a read that loses its measurement is re-run and is not a round;
+                           stop at 7, at the gate, or when stuck — a documented stop is a deliverable
+## Walls                   overlap 0, floating 0, pieces 1 (author tool); no wide mass on a narrow
+                           neck, no unsupported cantilever  <- prose; this is the list that failed
+## Read type               Fidelity — reference and build side by side, informed from the first question
+## Deviations              Hazard stripes → plain bands (no printed parts); X-bracing → posts and rails
+                           (no diagonal in the part table); bands as rings per tank, not pipes across
 ```
 
 **End with: approve to run.** Then wait.
@@ -387,20 +423,23 @@ On a DEVLOG / TASKS / CONTEXT.md project: §0 of the build doc,
 `CONTEXT.md`. No workflow docs? One file next to the artifact. The discipline
 is the point; the filing is the bonus.
 
-## 8. In Claude Code — what one run did (n=1)
+## 8. In Claude Code — what the prose runs did (n=2 rounds)
 
-- **A critic is one `Agent` call**, `general-purpose`, fresh — never a
-  `SendMessage` to a previous critic. Blind reads dispatched back-to-back in
-  the background so they run in parallel and cannot see each other; informed
-  reads likewise, as separate calls.
-- **Same model for the control and the reads**, so the round-zero ceiling is
-  comparable.
-- **The blind copy** is produced by a script (strip the label channels),
-  hashed, and written to `<session scratchpad>/<sha1>/doc.md`. The parent path
-  must not name the subject — check it.
-- **Walls run by script before the round.** A wall that cannot run is recorded
-  as a gap, not waived.
-- **Cost:** ~80k tokens a critic, four critics, under two minutes wall-clock.
+What was done, not what must be; a run on another medium may find otherwise.
+
+- Each critic was one `Agent` call, `general-purpose`, fresh — never a
+  `SendMessage` to a previous critic. Blind reads were dispatched back-to-back
+  in the background so they ran in parallel and could not see each other;
+  informed reads likewise, as separate calls.
+- The same model served the control and the reads, so the round-zero ceiling
+  was comparable.
+- The blind copy was produced by a script (strip the label channels), hashed,
+  and written to `<session scratchpad>/<sha1>/doc.md`; the parent path was
+  checked not to name the subject.
+- Walls ran by script before each round. The one that could not run was
+  recorded as a gap, not waived.
+- Cost was ~80–95k tokens a critic, under two and a half minutes wall-clock for
+  a round.
 
 ## Anti-patterns
 
@@ -418,7 +457,10 @@ The failure table is canonical; these are the behaviours that produce its rows.
 - **Treating "gate met" as "good."** Different states. It was never a quality
   bar.
 - **Writing confident rules for a medium you have not run.** A rule from zero
-  observations reads exactly like a tested one. Mark the n — in the row.
+  observations reads exactly like a tested one. Mark the n — *in the row*, not
+  in a warning above the table; the first draft of this skill did the latter
+  and both critics named it as the section that undermined the document
+  `[ref: own-table]`.
 
 ---
 
