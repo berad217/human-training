@@ -1,6 +1,6 @@
 ---
 name: critic-loop
-description: Iterate an artifact whose quality has no test — only a perceiver — against fresh, blind critic agents. Pre-commits a rubric, gate, budget and executable walls; runs a free inner loop and rationed critic rounds; logs a per-line vector, not a score; treats a documented stop as a deliverable. Triggers include "does this read as X", "would a stranger get this", "am I too close to this", "fresh eyes", "critic round", "review loop", "iterate with a reviewer", "is this recognisable / persuasive / clear / obvious what it's for". Explicit invocation via /critic-loop. Not for qualities that have a test — use the test.
+description: Iterate an artifact whose quality has no test — only a perceiver — against fresh, blind critic agents. On invocation, designs a harness for THIS artifact (rubric, gate, budget in rounds, walls for what the critic cannot see) and proposes it for approval before any round is spent; then runs a free inner loop and rationed critic rounds, logs a per-line vector, and treats a documented stop as a deliverable. Model- and artifact-agnostic. Triggers include "does this read as X", "would a stranger get this", "am I too close to this", "fresh eyes", "critic round", "review loop", "iterate with a reviewer", "is this recognisable / persuasive / clear / obvious what it's for". Explicit invocation via /critic-loop. Not for qualities that have a test — use the test.
 ---
 
 # /critic-loop — Iterating against a fresh pair of eyes
@@ -15,14 +15,15 @@ they know what they meant and read the intention back into the artifact.
 
 The critic loop is the other tool: **a fresh agent that sees the artifact and
 nothing else, judges it cold, and hands back deficiencies the author converts
-into changes.** Everything below keeps that agent actually fresh, keeps the
-signal it returns actually a gradient, and keeps the rounds — the scarce thing
-— spent on questions the author cannot answer alone.
+into changes.** This skill is the method, independent of model and artifact.
+What it produces first, on every invocation, is a **harness** for the artifact
+in hand — and it does not spend a round until the human has approved it.
 
-**Evidence.** Brad's design; the record is `Shapey_McShapeface/docs/CRITIC_LOOP.md`
-v3 — three image subjects, fifteen rounds, every rule tagged with the round
-that earned it or the `n=0` that says it has not. Off images the method has
-one run, on this document (`rounds/`). §4 marks which is which.
+**Evidence.** Brad's design. Three image subjects over fifteen rounds and one
+prose subject over one round, every rule tagged with the round that earned it
+or the `n=0` that says it has not. The stories behind each rule, the harnesses
+that have run, and the untested classes are in [reference.md](reference.md);
+`[ref: key]` below points into it.
 
 ## When to invoke
 
@@ -41,41 +42,61 @@ and its own tools.
   The critic will assert things about these that the test disproves.
 - **A quality the deliverable has but the critic cannot perceive.** A structure
   that must stand, a page that must load in 200 ms. The critic judges the
-  *picture* of the artifact; a quality it cannot see gets optimised away while
-  every round reports improvement. That quality needs a **wall** — §3.
+  *picture*; a quality it cannot see gets optimised away while every round
+  reports improvement `[ref: twelve-rounds]`. That quality needs a **wall** —
+  §3.
 
 **The sibling.** When the quality *does* have a test, the critic is the wrong
 instrument but the iteration discipline is not: a **measured pass** runs the
-same skeleton — pre-commit the question, one variable per version, measure by
-the verdict not the proxy, log the vector, documented stop — with the
-instrument where the critic would be. Not a skill yet; the paragraph is
-`CRITIC_LOOP.md` v3 §1.
+same skeleton with the instrument where the critic would be. Not a skill yet;
+`reference.md` has the pointer.
+
+## 0. What you get back when you invoke this
+
+The skill runs in three moves, and the first ends with a question to you.
+
+**1. Harness proposal.** The agent reads the artifact and its subject, then
+comes back with a §0 document (§3 has the template): what the critic will see,
+what it must not see, what it scores and how, what ends the loop, how many
+rounds, and — separately — what the walls check because the critic cannot.
+Everything the human said "matters" is sorted into one of those two bins,
+visibly. **The proposal ends in "approve to run."** Rubric lines are what every
+round optimises toward; they are the human's to ratify, not the agent's to
+assume.
+
+**2. Round zero.** Free. The instrument is proved on things that are not the
+artifact — an exemplar, an already-accepted piece, the pipeline itself — and
+version 1 is measured on every wall before a round is spent on its appearance.
+
+**3. Rounds, then a stop.** Inner loop unlimited; outer loop budgeted in
+*rounds* — one version judged, however many critics that takes. Every round
+logged as a per-line vector. The stop — gate met, budget spent, ceiling, or a
+wall found late — is written up as a deliverable with the open list priced.
 
 ## 1. The three things every rule guards
 
 Every rule below protects one of three properties. Knowing which lets you
-reason about a medium the skill has never seen.
+design a harness for a medium the skill has never seen.
 
-1. **Contamination — is the perceiver actually independent?** The author's
-   intent reaches the critic through channels the author does not notice: a
-   caption, a filename, the category named in the question, the rubric in the
-   same prompt as the blind question, the critic's memory of its last answer,
-   the brief the artifact was generated from. A contaminated read returns a
-   confident answer that measured nothing, and **nothing inside the loop can
-   reveal it.** Guards must be executable; prose guards were tested twice and
-   held neither time (§7).
+1. **Contamination — is the perceiver actually independent?** Intent reaches
+   the critic through channels the author does not notice: a caption, a
+   filename, the category in the question, the rubric in the same prompt as
+   the blind question, the critic's memory of its last answer, the brief the
+   artifact was generated from. A contaminated read returns a confident answer
+   that measured nothing, and **nothing inside the loop can reveal it.** Guards
+   must be executable; prose guards were tested twice and held neither time
+   `[ref: path-leak]` `[ref: own-table]`.
 2. **Gradient validity — is the signal the goal?** A scalar score is not a
-   gradient. Recognition saturates. Rubric lines trade against each other. A
-   deficiency gives direction, not magnitude. The critic's read of a reference
-   is a claim about the world and can be wrong. And the loop's gradient can run
-   directly against a constraint the critic cannot perceive. What survives: the
-   **per-line vector**, a **falsifiable gate**, and **walls** the inner loop
-   runs.
+   gradient. Recognition saturates. Rubric lines trade. A deficiency gives
+   direction, not magnitude. A critic's read of a reference is a claim about
+   the world and can be wrong. And the loop's gradient can run against a
+   constraint the critic cannot perceive. What survives: the **per-line
+   vector**, a **falsifiable gate**, and **walls** the inner loop runs.
 3. **Spend discipline — is a round bought for a question only a stranger can
-   answer?** Rounds are rationed to stop the author outsourcing judgement. A
-   round on a defect the author has already written down is wasted; a round
-   past the toolkit's ceiling measures the critic; a budget spent to
-   exhaustion is a number, not a plan.
+   answer?** Rounds are rationed to stop the author outsourcing judgement —
+   which is why the unit is a *round*, not a critic call: a version judged by
+   four agents is one measurement, and charging per call pushes toward the
+   single read that misreads the reference `[ref: reference-misread]`.
 
 ## 2. The two loops
 
@@ -84,114 +105,95 @@ OUTER: critic round        <- expensive, budgeted, each one a real judgement
   INNER: author iterates   <- cheap, unbudgeted, run until you stop finding things
 ```
 
-**The inner loop is free.** Build, look, judge, fix, look again. The walls (§3)
-run here, on every version, before anything is sent.
+**The inner loop is free.** Build, look, judge, fix, look again. The walls run
+here, on every version, before anything is sent.
 
 **The outer loop is rationed.** Send to the critic only when your honest answer
 to "what is wrong with this?" is *"I have stopped being able to tell."* If your
-own verdict names a defect, that is inner-loop work. "I'll send it early to see
-what the critic says" is a round spent on a question you can already answer —
-calibrate in round zero instead, where it is free.
+own verdict names a defect, that is inner-loop work `[ref: known-defect]`.
+"I'll send it early to see what the critic says" is a round spent on a
+question you can already answer — calibrate in round zero, where it is free.
 
 **The inner loop has a blind spot exactly where the last round's advice was
-applied.** Acting on a critic's list adds a second intention to read back in:
-you look at the change through the note, see "I made it not-a-staircase," and
-tick it off. Two guards: judge a changed feature against the *subject*, not
-the note; and name last round's changes at the top of the next round's
-questions, so a stranger checks your compliance — you cannot.
+applied.** You look at the change through the note, see "I made it
+not-a-staircase," and tick it off. Two guards: judge a changed feature against
+the *subject*, not the note; and name last round's changes at the top of the
+next round's questions, so a stranger checks your compliance — you cannot.
 
-## 3. Pre-commit, before anything is built
+## 3. Designing the harness
 
-Four things, fixed in writing before round 1, because each is something the
-author will otherwise tune to whatever they happened to achieve. Dated, and not
-edited after round 1 except for factual error, in the open.
+This is move 1 of §0, and it is the artifact-specific part. Everything after
+it is the same for a LEGO build, a README, a screen.
 
-**The rubric.** The recognisable features of the target, weighted by how much
-each carries. **Written from the subject, never from the reference material or
-the prompt that generated the artifact** — a rubric written from the brief
-scores prompt-adherence and returns a high number carrying no information.
-Five to seven lines; every line scored every round.
+### 3a. Sort what matters
 
-**The gate.** What ends the loop. A falsifiable claim by a stranger, never a
-score and never "does it look good." Three forms, by subject (§5): a *named*
-subject gates on identity; an *invented* one on function; an artifact built
-*from a reference* on fidelity.
+Take every quality the human named — *fidelity, practicality, coolness* — and
+ask of each: **can a fresh perceiver see this in what we will show it?**
 
-**The budget.** How many rounds, and what happens when they run out. A
-documented failure with the toolkit's gaps priced is a legitimate deliverable —
-often more useful than a pass.
+- **Yes** → a rubric line, or a second scale. The critic scores it.
+- **No** → a **wall.** An executable check the inner loop runs, or a downstream
+  measurement taken on version 1 before round 1. The critic never scores it.
 
-**The walls.** Everything the artifact must satisfy that **the critic cannot
-perceive and will not weigh.** The rule was bought at twelve rounds: two
-structures were iterated to 71 and 59 fidelity on a pre-committed list that
-said *no wide mass on a narrow neck, no unsupported cantilever* — and both came
-out holding an eighth of their own weight, because the list guarded shape and
-the failure was joint strength, and the number that would have shown it was
-in the file before round 1, filed as "investigate."
+Practicality — will it stand, will it load, will it compile — is almost always
+a *no*. The one time it was left as a note in the harness ("a useful
+measurement to investigate"), the loop optimised the picture for twelve rounds
+and both artifacts came out unable to stand `[ref: twelve-rounds]`.
 
-> **A constraint is a wall or it is not a constraint.** If the inner loop can
-> compute it, the inner loop computes it and rejects. A line in a pre-commit
+> **A constraint is a wall or it is not a constraint.** A line in a harness
 > that no tool checks is a prediction about what you will notice, and the
-> prediction is wrong. If it can only be measured downstream, **measure
-> version 1 before round 1** and re-measure whenever the structure changes.
-> An uncalibrated proxy is a wall at a conservative value, not a note.
+> prediction is wrong. An uncalibrated proxy is a wall at a conservative
+> value, not a note. If you catch yourself arguing that a wall violation
+> "reads better," that is the failure mode arriving.
 
-If you catch yourself arguing that a wall violation "reads better," that is
-the failure mode arriving, not an exception to it.
+### 3b. Answer the questionnaire
 
-**A second scale, if the rubric cannot say it.** Fidelity asks whether the
-artifact is *the* thing; desirability asks whether anyone would *want* it. If
-both matter, the second is a separate scale (`cool/20` beside `fidelity/100`),
-never a re-weighting of the first, so earlier rounds stay comparable — and a
-subjective line is scored on the reference or exemplar every round, as its
-ceiling. A line added mid-run is always a new scale.
-
-## 4. Parameterise the subject
-
-Fill this before round zero. It is the whole difference between media; the
-protocol in §5 does not change.
-
-| Parameter | Question to answer |
+| Parameter | Question |
 |---|---|
 | **Presentation** | What does the critic actually see — the artifact or a rendering? Which views, sections, states? What does the medium hide? |
-| **Leak channels** | Every path by which intent reaches the critic: title, caption, filename, path, metadata, comments, commit message, the brief. **Each guard executable.** |
-| **Read type + blind question** | Identity / function / fidelity (§5), and the exact stage-1 wording. Never names the category. |
+| **Leak channels** | Every path by which intent reaches the critic — title, caption, filename, path, metadata, comments, commit message, the brief. **Each guard executable**, and the strip recipe written down. |
+| **Read type** | Identity (the subject has a name), function (invented, no reference), or fidelity (built from a reference — informed from the first question, no blind stage). And the exact stage-1 wording, never naming the category. |
 | **Ground truth** | What tests, measurements or walls exist. The critic's remarks on these are re-filed as legibility notes. |
-| **Walls** | Qualities the critic cannot perceive, as executable checks. Run in the inner loop; version 1 measured before round 1. |
-| **Rubric source** | The subject. Not the reference, not the prompt, not the brief. |
-| **Second scale** | A desirability line, if it matters. Separate scale; reference scored as ceiling. |
+| **Rubric source** | The subject. Never the reference, the prompt, or the brief — a rubric from the brief scores prompt-adherence and returns a high number carrying no information. |
+| **Second scale** | A desirability line, if it matters — separate scale, never a re-weighting, reference scored on it every round as the ceiling. A line added mid-run is always a new scale `[ref: cool]`. |
 
-**Per-class instances.** Two rows are measured. The rest were written before
-any run; **the first run in that class rewrites the row from what happened.**
+`reference.md` has the harnesses that have run — image (n=15) and prose (n=1)
+— as starting points, and hypothesised rows for code, UI and schema, marked.
 
-| Class | Status | Presentation | Leak channels | Blind question | Ground truth / walls |
-|---|---|---|---|---|---|
-| **Rendered model / image** | **n=15 rounds** | Multi-view contact sheet; add the view critics keep asking for | Caption band; **output path** (the prose guard failed — content-addressed dir + a test); EXIF, legend, watermark | Identity: "what is this a model of, how confident, which features?" Fidelity: reference beside build, no blind stage | Overlap, floating, connectivity, joints-per-brick wall; downstream physics sweep |
-| **Prose** (doc, spec, README) | **n=1** — this document, `rounds/01-round-1.md` | The text as the reader gets it | Frontmatter, H1, filename strip cleanly. **A document's own self-references cannot be stripped and are the primary channel** — both blind critics named the body's "Explicit `/critic-loop`" as their driver | "What is this for, who is it for, what would you do first?" **A document that states its purpose passes the first two by construction — the gate's teeth are the third.** Both critics answered "the pre-commit," not "send it to critics" | Frontmatter validity; link check. Spread ≤1/line, as on images. Cheap: four critics in under two minutes |
-| **Code** (module, API surface, PR) | **UNTESTED** | The diff or file without its PR description | PR title/body, commit message, branch name, issue link, intent-stating docstrings. Identifiers are *part of the artifact* | "What does this do, and what would you expect calling it to do?" — the gap is the finding | Tests, types, lint |
-| **UI** (screen, flow) | **UNTESTED** | Screenshot or live page, one state at a time | Page title, route, placeholder copy, the ticket | "What is this screen for, what would you click first, what happens?" | Accessibility, load time, validation |
-| **Schema / data model** | **UNTESTED** | The schema alone, no migration notes | Field comments, migration name, the PR | "What does this store, what would you query, what can't you express?" | Constraints, migrations, integrity |
+### 3c. Write §0 and propose it
 
-## 5. The protocol
+The proposal is a dated document, unedited after round 1 except for factual
+error in the open, in this shape:
+
+```
+# §0 — <artifact>, pre-committed <date>
+## Rubric — <name>/100          five to seven lines, weights, written from the subject
+## Second scale — <name>/20     if any; reference scored as ceiling
+## Gate                         a falsifiable claim by a stranger — never a score, never "looks good"
+## Budget                       N rounds; what happens when they run out
+## Walls                        each with HOW it is checked, and when (inner loop / v1 before round 1)
+## Read type + blind question   and the strip recipe for the blind copy
+## Deliberate deviations        what the artifact will knowingly not match, decided now
+```
+
+**End with: approve to run.** Then wait.
+
+## 4. The protocol
 
 ### Round zero — the control arm
 
 Before trusting the instrument, run it on things that are not your work:
 
 - **A known-good exemplar of the target.** Tests whether the critic can reach
-  the answer at all — and sets the ceiling. An exemplar scored 84/100 once;
-  without that number a version in the seventies reads as failure. **Calibrate
-  the target against the control, never against the scale.**
-- **Something you have already accepted, in the same medium.** Tests whether
-  the critic can perceive *your* medium. (Skip when the exemplar already is
-  your medium.)
+  the answer at all — and sets the ceiling. **Calibrate the target against the
+  control, never against the scale** `[ref: ceiling-84]`.
+- **Something you have already accepted, in the same medium** — skip when the
+  exemplar already is your medium.
 - **Prove the pipeline is live.** Change something visible, re-export, confirm
-  the artifact you are about to send actually changed. A stale render was once
-  re-served under a new caption for twenty minutes.
-- **Measure version 1 on every wall and every downstream instrument you have**
-  before a round is spent on its appearance.
+  the artifact you are about to send changed `[ref: stale-render]`.
+- **Measure version 1 on every wall and downstream instrument** before a round
+  is spent on its appearance.
 
-Round zero also tends to find a bug in the rubric — which the author could not
+Round zero tends to find a bug in the rubric — which the author could not
 find, because the author wrote it.
 
 ### A round
@@ -203,101 +205,72 @@ file — is not a round and is re-run. Log which.
 **Fresh agent, every read.** No source, no brief, no intent, no prior rounds,
 no round number. An agent that remembers its last answer defends it.
 
-**Three read types.** The subject decides:
-
-| Read | Stage 1 | Then |
-|---|---|---|
-| **Blind identity** — subject has a name | Blind critic(s), *separate agent*: "what is this?" recorded before anything is revealed | Informed critic: rubric, per line |
-| **Blind function** — invented, no reference | Blind: "what is this, and what is it for?" | Informed critic: rubric, per line |
-| **Fidelity** — built from a reference | **None.** Informed from the first question, reference beside artifact | Same critic continues |
-
-Blinding measures whether the artifact declares itself. When the question is
-"is this a faithful build of that," a blind read spends a critic on something
-nobody asked.
-
 **Stage 1 and stage 2 are separate agents with no shared context.** A model
 reads the whole prompt before its first token; the rubric in the same prompt
-as the blind question has already named the target.
+as the blind question has already named the target `[ref: one-prompt]`.
 
-**Poll two, in parallel.** Two blind reads for stage 1 (the gate needs two
-independent identifications; this measures inter-rater spread for free). Two
-informed reads for stage 2 — not for the score, whose spread is about a point
-a line, but because **a single critic misreads the reference**: in one run
-round 2 read a braced member and domes above the ring, round 3 read neither;
-round 5 said push the feet out, round 6 said too squat. The author built to
-each before the next critic reversed it, and each cost its round.
+**Poll two, in parallel.** Two blind reads for stage 1 — the gate needs two
+independent identifications, and the spread comes free. Two informed reads for
+stage 2 — not for the score, whose spread is about a point a line on both
+media tried, but because a single critic misreads the reference and the
+author builds to it `[ref: reference-misread]`.
 
 **Tables first, and cap the length.** A read that returns prose before its
-numbers can lose the numbers — one did, ~134k tokens of work, the score tables
-never arrived. Scores, then the list, then the argument; answer capped.
+numbers can lose the numbers `[ref: lost-head]`.
 
-**The questions, in this order** (§6's templates carry them verbatim):
+**The questions, in this order** (§5's templates carry them):
 
 1. *Blind* — what is this, how confident, which features drove it, **and what
    in what you were given told you rather than the content.**
 2. *Informed* — here is the target; score every rubric line and justify each.
 3. *Last round's changes, by name* — matched, overshot, or fell short?
 4. *Deficiencies* — the N changes that would most improve it, in priority
-   order, **in the artifact's own language** ("the engines need twice the
-   diameter"), never the implementation's ("change line 40").
+   order, **in the artifact's own language**, never the implementation's.
 5. *Your hardest question, phrased so the answer has a number in it.* A
-   deficiency gives direction; a question gets magnitude. "Too high by roughly
-   a full nacelle diameter" was buildable where "stand the engines clear" had
-   produced two overcorrections.
+   deficiency gives direction; a question gets magnitude `[ref: nacelle]`.
 6. *Which view or section carries it, and which undermines it.*
 7. **Last round only:** *which of these can be taken without another look,
    and which must not be?* The author takes the safe list and nothing else;
-   the unsafe list, priced, is the stop's open list.
+   the unsafe list, priced, is the stop's open list `[ref: safe-list]`.
 
 **Ask for bluntness explicitly.** Agents default to soft.
 
 **Check the artifact for its own answer, then make something else check it.**
-Look at exactly what you are sending and confirm the answer is not in it. Then
-make the guard executable: the blind copy goes to a content-addressed path in
-its own directory, and a test asserts the subject's name cannot reach it. The
-prose version of this rule was written, and the tool built to serve it wrote
-the subject's name into its own output path anyway.
+Look at exactly what you are sending. Then make the guard executable: the blind
+copy goes to a content-addressed path in its own directory, and a test asserts
+the subject's name cannot reach it `[ref: path-leak]`.
 
 ### Reading the result
 
 Sort the critic's list into three bins **before** acting:
 
-1. **Ground truth wins.** The critic scored "reads as one solid body" 2/5 on a
-   model that was provably one connected component. Legitimate for a line
-   phrased "reads as"; not a structural defect. Re-file as legibility.
-2. **Claims about the reference — and about facts the author holds — are
-   checkable.** "The domes stop under the deck" is right or wrong; check it.
-   Treat one critic's claim as unconfirmed until a second read or your own
-   re-read agrees.
+1. **Ground truth wins.** A critic's "reads as broken" on a thing your test
+   proves connected is a legibility note, not a defect `[ref: solid-body]`.
+2. **Claims about the reference — or about facts the author holds — are
+   checkable.** Check them. One critic's claim is unconfirmed until a second
+   read or your own re-read agrees.
 3. **Everything else is the best instrument available.**
 
-Then **price every item against the whole rubric.** Lines trade: "stand the
-engines clear," executed exactly, cost 1/5 on "reads as one solid body" for
-the voids it opened. The critic cannot see the trade (it sees one version),
-cannot price an item, and cannot see what it is *not* failing on — the largest
-defect in one version was never named because the critic had used it to make
-its identification. Filtering is the author's job; its contamination risk is
-the price.
+Then **price every item against the whole rubric.** Lines trade; the critic
+sees one version and cannot see the trade, cannot price an item, and cannot
+see what it is *not* failing on `[ref: engines-voids]` `[ref: planform]`.
+Filtering is the author's job; its contamination risk is the price.
 
-**Log the per-line vector, never just the total.** One run logged "64/100";
-when the next came back 62, nothing could be decomposed. The vector later
-showed a 62 → 58 landing on exactly the two components the author had changed
-on advice and overshot — two regressions he was calling improvements.
+**Log the per-line vector, never just the total.** A total cannot be
+decomposed; a vector showed two regressions the author was calling
+improvements `[ref: vector]`.
 
 ### Stopping
 
 - **The gate is met.** Two independent strangers, confident, unaided. The gate
-  is pass/fail on recognisability and **will close on a mediocre artifact** —
-  it closed on round 1 of this document, at 92–96 capability and 14–17 on
-  wanting it. After it, a further round buys only the per-line reading, and is
-  bought on §2's rule.
+  is pass/fail on recognisability and **will close on a mediocre artifact**;
+  after it, a further round buys only the per-line reading, bought on §2's
+  rule.
 - **The budget is spent.** Take the last round's safe list; document the open
   list with the critic's price on each.
 - **Plateau at the toolkit's ceiling.** The deficiency list keeps asking for
-  what the medium cannot produce and the score walks ±1: seven rounds went
-  49 → 49 → 52 → 57 → 59 → 57 → 59 with the critic naming the missing part
-  from round 4. Stop; **the list of what the toolkit is missing is the
-  deliverable.**
+  what the medium cannot produce and the score walks ±1 `[ref: plateau]`.
+  Stop; **the list of what the toolkit is missing is the deliverable.**
 - **A wall is discovered late.** Pause. Run a measured pass until the artifact
   is over it. Resume with rounds spent on something that can exist.
 
@@ -305,9 +278,9 @@ on advice and overshot — two regressions he was calling improvements.
 ones I can see myself" is a better stop than a round bought to use the
 allowance.
 
-## 6. Prompt templates
+## 5. Prompt templates
 
-Adapt the wording; keep the order — it is §5's question list. Never include
+Adapt the wording; keep the order — it is §4's question list. Never include
 the subject's name, the brief, or the rubric in a blind prompt.
 
 **Blind read (stage 1, its own agent):**
@@ -354,13 +327,13 @@ Be blunt. Do not soften. Where you claim something about the reference or
 the text, say where you are looking.
 ```
 
-**Round log** — one file per round; `rounds/01-round-1.md` in this folder is a
-filled one:
+**Round log** — one file per round (`rounds/01-round-1.md` here is a filled
+one):
 
 ```
 # Critic round N — <version>
-Date. Critic(s): fresh <model>, <read type>. Author. Budget: N of M. Pre-commit: <where>.
-## 0. What was judged        <- table of paths + content hashes; walls run; leak check
+Date. Critic(s): fresh <model>, <read type>. Author. Budget: N of M. §0: <where>.
+## 0. What was judged        <- paths + content hashes; walls run; leak check
 ## 1. Stage 1                 <- both blind reads, side by side; gate verdict
 ## 2. The vector              <- R1 … RN columns, spread, critics' reasons per line
 ## 3. Deficiencies, merged    <- with each critic's safe / not-safe ruling
@@ -368,7 +341,10 @@ Date. Critic(s): fresh <model>, <read type>. Author. Budget: N of M. Pre-commit:
 ## 5. Author's response       <- taken, declined, deviations in the open
 ```
 
-## 7. Failure modes
+## 6. Failure modes
+
+The canonical table. `n` is how many times it has been seen; a dash is a rule
+that has not yet been caught failing.
 
 | Failure | Symptom | Guard | n |
 |---|---|---|---|
@@ -384,13 +360,13 @@ Date. Critic(s): fresh <model>, <read type>. Author. Budget: N of M. Pre-commit:
 | Fixed item costs points elsewhere | Score falls while the artifact plainly improved | Price against the whole rubric; log per line | 2 |
 | Overshooting a deficiency | Next round faults the same feature from the other side | Ask for the magnitude, not the direction | 2 |
 | Judging a stale render | The picture does not change when the artifact does | Export deletes its outputs first; prove live in round zero | 1 |
-| **Prose constraint** | Every version passes the pre-commit; the thing it named arrives anyway | A constraint is a wall or it is not one; measure v1 before round 1 | **2** |
-| **Gradient runs against a wall the critic can't see** | Each round more recognisable and less viable; every round reports improvement | Walls in the inner loop; the downstream measurement early | **2** |
+| **Prose constraint** | Every version passes the harness; the thing it named arrives anyway | A constraint is a wall or it is not one; measure v1 before round 1 | **2** |
+| **Gradient runs against a wall the critic can't see** | Each round more recognisable and less viable; every round reports improvement | Sort it into the walls at harness design (§3a) | **2** |
 | Blind read on a fidelity subject | Critic reports whether the build declares itself; nobody asked | Match the read type to the question | 2 |
 | **Critic misreads the reference** | Next round reverses last round's reference claim; author built to both | Two informed reads; a reference claim is unconfirmed until a second agrees | 2 |
 | Read loses its head | Numbers never arrive; transcript empty | Tables first, length cap; a lost read is re-run, not a round | 1 |
 | Toolkit ceiling | Same deficiency every round for a feature the medium can't make; score walks ±1 | Stop; the gap list is the deliverable | 1 |
-| **Prose guard over the skill's own hypotheses** | n=0 rows formatted like measured ones; a bold warning above the table | The marker goes *in the row* | 1 — this document, round 1 |
+| Prose guard over the skill's own hypotheses | Untested rows formatted like measured ones, warning *above* the table | The marker goes in the row | 1 |
 | Function gate saturates on prose | Any document that states its purpose passes "what is this for" | The gate's teeth are "what would you do first" | 1 |
 | Furniture read as the artifact | "Loose parts", "not fully assembled" | Anything in frame that isn't the subject must read as an instrument | 1 |
 | Medium hides the artifact | Critic can judge silhouette only, and says so | Contrast against the ground; check the reference isn't presented better than your work | 1 |
@@ -398,50 +374,42 @@ Date. Critic(s): fresh <model>, <read type>. Author. Budget: N of M. Pre-commit:
 | Rubric scored against the generating prompt | High scores, no information | Rubric from the subject | held, 2 |
 | Invented subject, no right answer | Gate slides to "does it look good" | Gate on function | 1 |
 
-## 8. Where the writing goes
+## 7. Where the writing goes
 
-- **Pre-commit** → wherever the project keeps state for the artifact, as a
-  dated §0, unedited after round 1.
-- **Round logs** → one file per round, next to the pre-commit, with the content
-  hashes of what was judged.
+- **§0** → wherever the project keeps state for the artifact, dated.
+- **Round logs** → one file per round, next to §0, with content hashes.
 - **The stop** → the project's chronicle, with the open list and the toolkit's
   gaps priced; sweep the queue in the same commit.
-- **Terms the run coins** (the gate's name, the second scale, "fidelity read")
-  → the project's glossary, as they resolve.
+- **Terms the run coins** → the project's glossary, as they resolve.
 
-On a DEVLOG / TASKS / CONTEXT.md project that is: §0 of the build doc,
-`docs/reviews/<subject>-round-N.md`, the DEVLOG entry plus the TASKS card, and
-`CONTEXT.md`. No workflow docs? One file next to the artifact holds §0 and the
-rounds. The discipline is the point; the filing is the bonus.
+On a DEVLOG / TASKS / CONTEXT.md project: §0 of the build doc,
+`docs/reviews/<subject>-round-N.md`, the DEVLOG entry plus the TASKS card,
+`CONTEXT.md`. No workflow docs? One file next to the artifact. The discipline
+is the point; the filing is the bonus.
 
-## 9. In Claude Code — what one run did (n=1)
-
-The prose run in `rounds/` used exactly this; nothing here is asserted beyond
-it.
+## 8. In Claude Code — what one run did (n=1)
 
 - **A critic is one `Agent` call**, `general-purpose`, fresh — never a
-  `SendMessage` to a previous critic. The two blind reads were dispatched
-  back-to-back in the background so they ran in parallel and could not see
-  each other; the two informed reads the same, as separate calls.
-- **Same model for the control and the reads** (Sonnet), so the round-zero
-  ceiling is comparable.
-- **The blind copy** was produced by a script from the source (strip the label
-  channels), hashed, and written to `<session scratchpad>/<sha1>/doc.md`. The
-  parent path must not name the subject — check it; the scratchpad path names
-  the *project*, which here was not the subject. The script's leak grep hit one
-  line; the log records the judgement and the blind prompt's Q5 asked the
-  critic anyway.
-- **Walls ran by script before the round** (frontmatter checks). The one wall
-  that could not run was recorded as a gap, not waived.
+  `SendMessage` to a previous critic. Blind reads dispatched back-to-back in
+  the background so they run in parallel and cannot see each other; informed
+  reads likewise, as separate calls.
+- **Same model for the control and the reads**, so the round-zero ceiling is
+  comparable.
+- **The blind copy** is produced by a script (strip the label channels),
+  hashed, and written to `<session scratchpad>/<sha1>/doc.md`. The parent path
+  must not name the subject — check it.
+- **Walls run by script before the round.** A wall that cannot run is recorded
+  as a gap, not waived.
 - **Cost:** ~80k tokens a critic, four critics, under two minutes wall-clock.
-  Cheap enough that the rationing argument is weaker on prose than on images;
-  the contamination argument is unchanged.
 
 ## Anti-patterns
 
-The failure table is canonical; these are the behaviours that produce its
-rows.
+The failure table is canonical; these are the behaviours that produce its rows.
 
+- **Running before the harness is approved.** The rubric is what every round
+  optimises toward. It is the human's to ratify.
+- **Leaving "practicality" in the rubric.** If the critic cannot see it, it is
+  a wall. Sort at harness design, not after round twelve.
 - **Sending early to "see what it says."** A round on a question you can
   already answer. Round zero is where calibration is free.
 - **Chasing the total.** It is not a gradient. Log the vector.
@@ -449,11 +417,11 @@ rows.
   the critic cannot see the trade.
 - **Treating "gate met" as "good."** Different states. It was never a quality
   bar.
-- **Writing confident rules for a medium you have not run.** §4's untested
-  rows say so *in the row*. A rule from zero observations reads exactly like a
-  tested one — the first draft of this table proved it on itself.
+- **Writing confident rules for a medium you have not run.** A rule from zero
+  observations reads exactly like a tested one. Mark the n — in the row.
 
 ---
 
-Brad's design. Evidence: `Shapey_McShapeface/docs/CRITIC_LOOP.md` v3 and its
-`docs/reviews/`; the prose run is `rounds/` here.
+Brad's design. Evidence and stories: [reference.md](reference.md);
+`Shapey_McShapeface/docs/CRITIC_LOOP.md` v3 and its `docs/reviews/` are the
+primary record.

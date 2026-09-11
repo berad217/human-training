@@ -37,10 +37,18 @@ do after reading it?"* Round zero + one round.
 3. ~~Round 1~~ Done. Gate met 2/2 on the blind reads. Informed vector **92 / 96**, spread
    ≤ 1 per line; `want` 16 / 14. v2 of the SKILL.md takes the critics' safe list and two
    logged deviations; the open list is in the round log §5.
-4. ~~Rewrite §4's prose row from the run.~~ Done — it is n=1 and says what happened.
-   **Track decision still open.** The method is model-agnostic; §9 is now a record of what
-   one Claude Code run did, marked n=1.
-5. Graduate per `skills-drafts/README.md` — **not yet.** See the two open items below.
+4. ~~Rewrite §4's prose row from the run.~~ Done.
+5. ~~Brad's rulings, 2026-09-11 (evening):~~ **(a) the skill is high-level, model- and
+   artifact-agnostic; on invocation its first move is to design the harness for *this*
+   artifact and propose it for approval before any round is spent. (b) Budget unit is
+   rounds, not critic calls. (c) Split: `SKILL.md` operational, `reference.md` carries the
+   harnesses that have run and the stories. (d) Track 2.** → v3 written: §0 "what you get
+   back when you invoke this", §3 harness design with the sort (critic-visible → rubric;
+   not → wall), the §0 proposal template ending in "approve to run"; per-class rows and all
+   stories moved to `reference.md`, keyed by `[ref: …]`. 427 lines + 191.
+6. **Second round on v3** — same rubric, informed reads only (the gate is met and saturates
+   on prose; a blind stage would measure nothing new). Question: do the one-clause whys
+   carry the rules without the stories, and does §0 read as a checkpoint. Then graduate.
 
 ## What the run answered
 
@@ -61,10 +69,10 @@ do after reading it?"* Round zero + one round.
 
 ## Open, after round 1
 
-- **Length vs receipts.** Both critics gave a target (330 / 350) and said "fold, don't cut;
-  keep §3/§5/§6/§7." Those four are 262 lines. v2 is 459 — the folds were taken and the
-  run's own findings added ~40 lines back. A shipped skill wants to be shorter; an
-  evidence-tagged one wants its n's. **Brad's call**, not the author's.
+- ~~**Length vs receipts.**~~ Ruled: split. The `n` stays in the skill's failure table; the
+  stories live in `reference.md`. v3 is 427 — the stories left (−60) and the harness-design
+  sections Brad asked for arrived (+45). Whether the one-clause whys carry is round 2's
+  question, not a line count's.
 - **The critics' "not safe" list**, declined in v2: a default budget number (would be a
   claim generalised past n=15); a worked trace stitched from other subjects' numbers
   (`rounds/01-round-1.md` is the honest substitute — a real one).
@@ -78,7 +86,8 @@ do after reading it?"* Round zero + one round.
 ```
 critic-loop/
 ├── README.md        this file
-├── SKILL.md         the draft, iterated in place
+├── SKILL.md         the draft, iterated in place — operational: invariants, harness design, protocol, templates, failure table
+├── reference.md     the harnesses that have run, the untested rows, and every [ref: key] story
 ├── eval-queries.md  candidate triggers for the eventual trigger-eval
 └── rounds/          round-zero and round logs, when run
 ```
