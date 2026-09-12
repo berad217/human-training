@@ -1,13 +1,12 @@
 # Handover — human-training
 
-**Session date:** 2026-08-19
-**State:** **Seven releases shipped: 1.22.0 → 1.26.0.** All committed, pushed,
-tagged, released; CI green on each; builders byte-identical; tree clean and in
-sync. Nothing in flight.
+**Session date:** 2026-09-12 (bookkeeping pass over the 2026-09-11 session)
+**State:** **1.28.0 shipped** (`critic-loop`), tagged and released. **1.27.0 cut
+retroactively** the same night — it had sat unreleased for 23 days because the
+version-bump ritual never said to cut a GitHub release; the ritual now does.
+Tree clean and in sync. Nothing in flight.
 
-The session began as an audit of [pstack](https://github.com/cursor/plugins/tree/main/pstack)
-(MIT) and ended in a retraction. What shipped is in the release notes; don't
-restate it here.
+What shipped is in the release notes; don't restate it here.
 
 ---
 
@@ -22,8 +21,8 @@ contested, unproven, or decided-but-not-obvious.
 
 **The verification technique works and it will lie to you if you use it wrong.**
 `claude -p --plugin-dir <repo> "<organic prompt>"` loads the working tree, so a
-skill can be exercised before release and without touching the installed plugin.
-It found a real UTC bug and it proved skill-to-skill chaining. It also produced a
+skill can be exercised before release without touching the installed plugin.
+It found a real UTC bug and proved skill-to-skill chaining. It also produced a
 false result that reached a release and deleted a working feature.
 
 **Two rules, both non-optional:**
@@ -32,11 +31,9 @@ false result that reached a release and deleted a working feature.
    session's permission posture is variable, and `Skill` gets denied on some runs
    and not others. A denied `Skill` call means the skill never loaded and the
    agent hand-rolls the task instead — while sounding completely authoritative.
-2. **Read outcomes, not requests.** A `tool_use` block in the stream is the model
-   *asking*. What happened is in the paired `tool_result`, which is where
-   `Permission to use Skill has been denied` sits. Parsing `tool_use` alone is
-   how three probe runs looked like a skill choosing not to act when the skill
-   had never run at all.
+2. **Read outcomes, not requests.** A `tool_use` block is the model *asking*.
+   What happened is in the paired `tool_result`, which is where
+   `Permission to use Skill has been denied` sits.
 
 Two further habits, learned the same way:
 
@@ -48,76 +45,76 @@ Two further habits, learned the same way:
   parsed. The subject was right.
 
 **Negative results are weak; positive results are strong.** A found bug is a
-found bug. "It didn't do X" from one run proves nothing — run-to-run variance is
-real, and one run leaked a DEVLOG entry two others correctly withheld.
+found bug. "It didn't do X" from one run proves nothing.
 
 ## The delta (not in the files)
 
-- **`/start` step 2d works. Do not delete it again.** 1.25.0 removed it on the
-  evidence above and 1.26.0 put it back. Verified with `Skill` permitted: the
-  skill loads, reads `known_marketplaces.json`, and emits a correct `Toolchain:`
-  line. The tell that you are about to repeat the mistake is a probe where 2d
-  "silently didn't fire" — check for a denied `Skill` call before believing it.
+- **`critic-loop` lives in two places on purpose.** `skills-source/critic-loop/`
+  is what ships. `skills-drafts/critic-loop/` stays because its `rounds/` are the
+  evidence log (the two off-image rounds that gated graduation) and the draft
+  README holds the n=4 observation below. Don't "tidy" the drafts copy away.
 
-- **The evidence ladder does not catch instrument failure, and that is a real
-  gap.** It grades *how much* evidence stands behind a claim. Both overclaims
-  this session were a different shape: the check ran, produced output, and the
-  output was misread. A rung-4 "I ran a script" is worthless if the script
-  measured the wrong thing. Unresolved; worth thinking about before the ladder is
-  cited as though it covers this.
+- **An observation, not a rule (n=4):** four times a critic marked an item *"not
+  safe to take without review"* for a reason only the author could resolve, and
+  each was taken as a logged deviation. Honest with a scrupulous author,
+  rationalisation with a careless one, and the author can't tell which. It stays
+  in the draft README until someone other than the author has watched it happen.
 
-- **Don't fold the ladder into the confidence score.** The obvious tidy-up and
-  wrong. Confidence is how sure the agent feels; the rung is what was checked.
-  The finding worth catching is the one that is 95-confident at rung 2.
+- **`/start` step 2d works. Do not delete it again.** 1.25.0 removed it on
+  misread probe evidence and 1.26.0 put it back. The tell that you are about to
+  repeat the mistake is a probe where 2d "silently didn't fire" — check for a
+  denied `Skill` call before believing it.
 
-- **Don't centralize the ladder either.** Settled 1.23.1 after measuring: ~14 of
-  32 lines are portable, and rung 3 means genuinely different things in
-  `robustness-audit` and `blast-radius`. Names and order shared, definitions
-  local. A data format earns an owner; a vocabulary does not.
+- **The evidence ladder does not catch instrument failure.** It grades *how
+  much* evidence stands behind a claim; both 2026-08-19 overclaims were a check
+  that ran, produced output, and was misread. Unresolved.
 
-- **`leroy-jenkins` commits its trail; `show-me-your-work` does not by default.**
-  Deliberate. Most trails are working artifacts; Leroy's case is the unusual one.
+- **Don't fold the ladder into the confidence score, and don't centralize it.**
+  Confidence is how sure the agent feels; the rung is what was checked. Names
+  and order shared, definitions local (settled 1.23.1).
 
-- **`autoUpdate` absent does not mean "never refreshes".** A catalog was observed
-  refreshing on 2026-08-19 with the flag absent. 2d's wording was corrected to
-  say the flag removes the *guarantee*; report on the two fields, not on a theory
-  of the mechanism.
+- **`autoUpdate` absent does not mean "never refreshes".** 2d reports on the two
+  fields, not on a theory of the mechanism.
 
-- **The pstack rejections, so they aren't re-derived.** Roughly two-thirds does
-  not transfer: it assumes a team, Graphite stacks, MCP-backed observability, and
-  subagents on named cross-vendor models the Agent tool cannot address. Rejected:
-  `poteto-mode`'s router, `swarm`, `arena`, `interrogate`, `architect`,
-  `how`/`why`, `recall` (overlaps `/start`), `automate-me` (this plugin *is* the
-  mode skill).
+- **The pstack rejections, so they aren't re-derived:** `poteto-mode`'s router,
+  `swarm`, `arena`, `interrogate`, `architect`, `how`/`why`, `recall` (overlaps
+  `/start`), `automate-me`. `unslop` would fight this repo's own prose — fork,
+  don't adopt.
 
-- **`unslop` would fight this repo's own prose.** It bans em dashes,
-  mid-sentence colons, and "surface"/"scaffolding" as metaphors; every skill body
-  here uses all three deliberately. `TASKS.md` says fork it, not adopt it.
-
-- **Branch protection is settled; don't reopen it.** Every push this session
-  printed "Bypassed rule violations" — the rule working, not failing.
-  `enforce_admins` false, required reviews 0, `berad217` the only write path.
+- **Branch protection is settled; don't reopen it.** "Bypassed rule violations"
+  on push is the rule working. `enforce_admins` false, `berad217` the only write
+  path.
 
 ## What is now actually verified
 
-First time anything in this plugin has been *watched running* rather than
-reviewed. Verified with a sound instrument: **`/start`** (doc globbing including
-uppercase `HANDOVER.md`, newest-DEVLOG-entry-only, TASKS Active without leaking
-Someday, unpushed-commit reporting, read-only contract, and step 2d), and
-**`leroy-jenkins` → `show-me-your-work`** chaining with every alternative path
-blocked.
+Watched running with a sound instrument: **`/start`** (globbing incl. uppercase
+`HANDOVER.md`, TASKS Active only, unpushed-commit reporting, read-only contract,
+step 2d) and **`leroy-jenkins` → `show-me-your-work`** chaining.
+**`critic-loop`** was run on itself twice before shipping (that is the only
+skill here judged by its own protocol).
 
-Everything else is still assumed, including all of `grill`, `tasks`,
-`handover-manager`, `project-checkup`, and `robustness-audit`.
+Still assumed: `grill`, `tasks`, `handover-manager`, `project-checkup`,
+`robustness-audit`, and everything in `skills-drafts/`.
 
-## Stale, not merely queued
+## Toolchain data point
 
-1. **Every other machine is seven releases behind** (1.22–1.26) and cannot receive
-   any of them until someone runs `update-plugin.bat` there and sets `autoUpdate`.
-   **This machine is too** — still on 1.21.1.
-2. **`autoUpdate` firing across a relaunch remains unproven.**
+This machine is on **1.28.0** (installed 2026-09-11 22:13Z, three minutes
+*before* the 1.28.0 release was cut — so it came from the tag or a manual update,
+not the release loop). The `human-training` marketplace `lastUpdated` then
+advanced to **2026-09-12 10:00Z** on its own. That is one data point toward
+"`autoUpdate` keeps firing across relaunches" (still open in `TASKS.md`); it is
+not yet proof the *plugin* follows the catalog. Other machines: unknown, and
+they were seven releases behind at last check.
+
+## Parked for the next session
+
+`docs/the-new-rules-of-context-engineering-for-claude-5-generation.md` is the
+Anthropic post on removing 80% of Claude Code's system prompt for Claude 5
+models. Saved 2026-09-10, committed 2026-09-12, not yet read against
+`skills-source/`. The open question is whether it becomes an audit lens on how
+verbose these skill bodies are.
 
 ---
 
-*Ephemeral bridge — prune once absorbed. Durable record: the 1.22.0–1.26.0
-release notes, `TASKS.md` for the queue, and the skill bodies themselves.*
+*Ephemeral bridge — prune once absorbed. Durable record: the release notes,
+`TASKS.md` for the queue, and the skill bodies themselves.*
