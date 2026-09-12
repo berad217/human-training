@@ -46,8 +46,11 @@ ones unblock or inform later ones.
 - [ ] **Trim the rest of the skill bodies the way `/start` was trimmed (1.29.0)** —
   fold anti-pattern sections into the body, move mechanics and history to a
   `reference.md`, keep every incident-earned fact, then probe before and after
-  with `Skill` permitted. Order by size: `critic-loop` (4.6k words),
-  `robustness-audit` (4.2k), `antigravity-cli` (3.2k), `codex-cli` (2.8k). The
+  with `Skill` permitted. `robustness-audit` done in 1.30.0 (4.2k -> 1.6k, and the
+  probe found a recursion bug the words were hiding). Remaining, by size:
+  `critic-loop` (4.6k, already has a reference.md, lowest expected gain),
+  `antigravity-cli` (3.2k), `codex-cli` (2.8k), `onboarding-creator` (2.7k),
+  `workflow-orientation` (2.6k). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.
