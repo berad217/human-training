@@ -52,10 +52,13 @@ ones unblock or inform later ones.
   stdout bug it was built around was fixed in agy 1.0.15). Remaining, by size:
   `codex-cli` done 2026-09-12 (2.8k -> 1.3k, ids out of the body; installed
   0.144.6 re-verified, npm at 0.154.0 not installed). Remaining, by size:
-  `critic-loop` (4.6k, already has a reference.md, lowest expected gain),
-  `onboarding-creator` (2.7k), `workflow-orientation` (2.6k),
-  `handover-manager` (2.4k), `leroy-jenkins` (2.3k), `image-gen` (2.2k, has
-  `gpt-image-2` and `gpt-5.6-*` ids: same rule). The
+  `image-gen` done 2026-09-12 (2.2k -> 1.1k; the built-in tool's backing model
+  is no longer named anywhere, so the body points at Codex's runtime image
+  skill instead). Remaining, by size: `critic-loop` (4.6k, already has a
+  reference.md, lowest expected gain), `onboarding-creator` (2.7k),
+  `workflow-orientation` (2.6k), `handover-manager` (2.4k), `leroy-jenkins`
+  (2.3k), `gemini-api` (1.5k, ids in body and description: the description ones
+  are triggers and stay, the body ones go). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.
