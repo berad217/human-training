@@ -1,11 +1,13 @@
 # Handover — human-training
 
 **Session date:** 2026-09-12
-**State:** **1.29.0, 1.30.0 and 1.31.0 shipped** the same day. Four skills
+**State:** **1.29.0 through 1.32.0 shipped** the same day. Five skills
 through the trim: `/start` 2,804 → 890 words, `robustness-audit` 4,160 → 1,643,
 `antigravity-cli` 3,232 → 1,325 (a rewrite: the stdout bug it documented was
-fixed in agy 1.0.15), `codex-cli` 2,770 → 1,250. Each has a `reference.md` and
-was probed before and after. Tree clean and in sync. Nothing in flight.
+fixed in agy 1.0.15), `codex-cli` 2,770 → 1,250, `image-gen` 2,224 → 1,194 (the
+built-in tool's model is no longer named anywhere; it now returns alpha). Each
+has a `reference.md` and was probed before and after. Tree clean and in sync.
+Nothing in flight.
 
 What shipped is in the release notes; don't restate it here.
 
@@ -71,8 +73,8 @@ they dispatch agents. Budget before running a third.
 
 - **No model ids in skill bodies** (Brad, 2026-09-12; in memory too). Point at
   the discovery command (`agy models`; Codex has none, so the TUI's `/model`),
-  put a dated snapshot in `reference.md` marked do-not-copy. `image-gen` and
-  `gemini-api` still carry ids in the body; they are on the queue.
+  put a dated snapshot in `reference.md` marked do-not-copy. `gemini-api` is the last
+  skill with ids in the body; it is on the queue.
 
 - **"Dispatch in one block" is moot, not wrong.** All three audit runs
   dispatched one agent per turn. The Agent tool now launches async, so they
