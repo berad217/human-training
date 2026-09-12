@@ -43,6 +43,14 @@ ones unblock or inform later ones.
 
 <!-- skill-authoring craft, applies across skills-source/ -->
 
+- [ ] **Trim the rest of the skill bodies the way `/start` was trimmed (1.29.0)** —
+  fold anti-pattern sections into the body, move mechanics and history to a
+  `reference.md`, keep every incident-earned fact, then probe before and after
+  with `Skill` permitted. Order by size: `critic-loop` (4.6k words),
+  `robustness-audit` (4.2k), `antigravity-cli` (3.2k), `codex-cli` (2.8k). The
+  classifier for what stays: could the model observe it by looking? Then it is
+  not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
+  generation.md`. Added 2026-09-12.
 - [ ] **Add a `**Reply:**` contract to every skill** — one closing line naming
   exactly what to hand back. Every pstack skill has one; almost none of ours do.
   Cheapest quality win in the audit.
