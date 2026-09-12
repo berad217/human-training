@@ -48,9 +48,12 @@ ones unblock or inform later ones.
   `reference.md`, keep every incident-earned fact, then probe before and after
   with `Skill` permitted. `robustness-audit` done in 1.30.0 (4.2k -> 1.6k, and the
   probe found a recursion bug the words were hiding). Remaining, by size:
+  `antigravity-cli` done 2026-09-12 (3.2k -> 1.3k, and it was a rewrite: the
+  stdout bug it was built around was fixed in agy 1.0.15). Remaining, by size:
   `critic-loop` (4.6k, already has a reference.md, lowest expected gain),
-  `antigravity-cli` (3.2k), `codex-cli` (2.8k), `onboarding-creator` (2.7k),
-  `workflow-orientation` (2.6k). The
+  `codex-cli` (2.8k, same vendor-CLI shape as antigravity-cli: re-verify the
+  binary before trimming, and pull its `gpt-5.6-*` ids out of the body),
+  `onboarding-creator` (2.7k), `workflow-orientation` (2.6k). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.
