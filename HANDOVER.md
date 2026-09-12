@@ -1,9 +1,11 @@
 # Handover — human-training
 
 **Session date:** 2026-09-12
-**State:** **1.29.0 and 1.30.0 shipped** the same day: `/start` trimmed 2,804 →
-890 words, `robustness-audit` 4,160 → 1,643, each with a `reference.md` and each
-probed before and after. Tree clean and in sync. Nothing in flight.
+**State:** **1.29.0, 1.30.0 and 1.31.0 shipped** the same day. Four skills
+through the trim: `/start` 2,804 → 890 words, `robustness-audit` 4,160 → 1,643,
+`antigravity-cli` 3,232 → 1,325 (a rewrite: the stdout bug it documented was
+fixed in agy 1.0.15), `codex-cli` 2,770 → 1,250. Each has a `reference.md` and
+was probed before and after. Tree clean and in sync. Nothing in flight.
 
 What shipped is in the release notes; don't restate it here.
 
@@ -60,6 +62,18 @@ they dispatch agents. Budget before running a third.
   set by the interface the model touched (the output template, the subagent
   prompt), not by the rule count.
 
+- **Re-verify the binary before trimming a vendor-CLI skill.** `antigravity-cli`
+  was verified against 1.0.13; the machine was on 1.1.27 and self-updated to
+  1.2.2 mid-session. Run the tool, read its changelog (`agy changelog`, GitHub
+  releases for codex), then decide whether it is a trim or a rewrite.
+  `codex-cli` installed is 0.144.6, npm latest 0.154.0, deliberately not
+  upgraded here; the skill's first-use nudge covers that.
+
+- **No model ids in skill bodies** (Brad, 2026-09-12; in memory too). Point at
+  the discovery command (`agy models`; Codex has none, so the TUI's `/model`),
+  put a dated snapshot in `reference.md` marked do-not-copy. `image-gen` and
+  `gemini-api` still carry ids in the body; they are on the queue.
+
 - **"Dispatch in one block" is moot, not wrong.** All three audit runs
   dispatched one agent per turn. The Agent tool now launches async, so they
   overlapped anyway. Delete the instruction next time `robustness-audit` is
@@ -97,8 +111,10 @@ they dispatch agents. Budget before running a third.
 
 Watched running with a sound instrument: **`/start`** (both bodies, same
 coverage), **`robustness-audit`** (three runs; the guarded body is the one
-that shipped), **`leroy-jenkins` → `show-me-your-work`** chaining, and
-**`critic-loop`** on itself, twice.
+that shipped), **`antigravity-cli`** and **`codex-cli`** (old and new bodies,
+each producing a working script; the agy claims re-run live on 1.2.2, the
+codex claims on 0.144.6), **`leroy-jenkins` → `show-me-your-work`** chaining,
+and **`critic-loop`** on itself, twice.
 
 Still assumed: `grill`, `tasks`, `handover-manager`, `project-checkup`, and
 everything in `skills-drafts/`.

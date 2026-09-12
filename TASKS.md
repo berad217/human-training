@@ -50,10 +50,12 @@ ones unblock or inform later ones.
   probe found a recursion bug the words were hiding). Remaining, by size:
   `antigravity-cli` done 2026-09-12 (3.2k -> 1.3k, and it was a rewrite: the
   stdout bug it was built around was fixed in agy 1.0.15). Remaining, by size:
+  `codex-cli` done 2026-09-12 (2.8k -> 1.3k, ids out of the body; installed
+  0.144.6 re-verified, npm at 0.154.0 not installed). Remaining, by size:
   `critic-loop` (4.6k, already has a reference.md, lowest expected gain),
-  `codex-cli` (2.8k, same vendor-CLI shape as antigravity-cli: re-verify the
-  binary before trimming, and pull its `gpt-5.6-*` ids out of the body),
-  `onboarding-creator` (2.7k), `workflow-orientation` (2.6k). The
+  `onboarding-creator` (2.7k), `workflow-orientation` (2.6k),
+  `handover-manager` (2.4k), `leroy-jenkins` (2.3k), `image-gen` (2.2k, has
+  `gpt-image-2` and `gpt-5.6-*` ids: same rule). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.

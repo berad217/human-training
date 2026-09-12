@@ -6,287 +6,135 @@ allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, WebFetch]
 
 # Codex CLI — headless / non-interactive
 
-Drive OpenAI's Codex CLI from a script or another agent: fire a prompt, capture the answer, keep it safe and
-context-lean. `codex exec` is the non-interactive entry point (alias `codex e`) — it runs the agent to
-completion and exits, no TUI.
+Drive OpenAI's Codex CLI from a script or another agent. `codex exec` (alias
+`codex e`) runs the agent to completion and exits, no TUI. The desktop app has
+no external "run this prompt" entry point; you need the standalone CLI
+(`npm i -g @openai/codex`), which shares the app's login through `$CODEX_HOME`.
+For image generation and editing through Codex's built-in tool, see the
+`image-gen` skill, which builds on the mechanics here.
 
-> **Making images?** Codex's built-in `image_gen` tool (gpt-image-2, no API key) generates *and* edits
-> images headlessly — a capability of its own with its own recipe. See the **`image-gen`** skill; it builds
-> on the generic CLI mechanics documented here (stdin trap, `-o` capture, sandbox, model flags).
+**Verified against `codex-cli 0.144.6` on 2026-09-12.** Flags and models drift
+between versions; `codex exec --help` on the target machine is the authority.
+On first use compare `codex --version` with `npm view @openai/codex version`
+and tell the user once if they differ: an agent driving Codex headlessly is
+often the only thing positioned to notice a stale CLI, and a stale CLI is the
+root of most flag and model errors.
 
-**Verified against `codex-cli 0.144.6`** (default model `gpt-5.6-sol`). Flags and models drift between versions —
-confirm with `codex exec --help` on the target machine. The honesty line matters because this is a skill another
-agent will trust: re-check, don't assume.
+## The posture: Codex fails quietly
 
-**On first use, check the CLI is current — and tell the user if it isn't.** An outdated Codex is the root of most
-footguns below: flag drift, missing models, model-metadata load errors on startup. Compare the running build
-against the latest published, and surface any gap:
-
-```bash
-codex --version                 # running build
-npm view @openai/codex version  # latest published   →  npm i -g @openai/codex   to upgrade
-```
-
-Say it once, but do say it: an agent driving Codex headlessly is often the *only* thing positioned to notice a
-stale CLI, so this may be the user's only nudge to update.
-
-## TL;DR — the rules that keep headless Codex from biting you
-
-**The meta-rule: Codex fails *quietly*.** It hangs instead of erroring (stdin), silently falls back to a default
-model (`--ignore-user-config`), misreports which model it is, apologizes *in-band* when a blocked write fails, and
-clobbers a reused `-o` path without a word. So the posture for anything you depend on is
-**assume-degraded-until-verified**: every leg gets a cheap explicit check — the stderr **banner** (model + effort),
-the **`-o` file** (exists, non-empty, de-preambled), and the **exit code**. The numbered rules are the specific
-instances.
-
-1. **Always close stdin.** Append `< /dev/null` (bash) or `'' |` (PowerShell). The #1 footgun — without it the
-   call can hang forever (it's blocked *reading stdin*, not working). See [§3](#3-the-stdin-trap).
-2. **Capture the answer with `-o FILE`.** stdout carries **only the final message**; stderr carries the banner,
-   progress, and reasoning. `-o FILE` writes just the final message — the clean, context-lean capture. Avoid
-   `--json` unless you actually want the whole event stream.
-3. **The CLI is not the desktop app.** The Codex GUI app can't be driven externally. Install the standalone CLI
-   (`npm i -g @openai/codex`); it reuses the app's stored login.
-4. **`--ignore-user-config` for a clean, reproducible reader.** Skips `config.toml` (auth still works) so a heavy
-   local setup (MCP servers, custom tools) can't perturb or stall the run.
-5. **Pick the sandbox deliberately.** `-s read-only` for "read & analyze", `-s workspace-write` only when it
-   should edit files. `codex exec` never prompts mid-run.
+It hangs instead of erroring, falls back to a default model without saying so,
+misreports which model it is, apologises in-band when a blocked write fails,
+and overwrites a reused output path without a word. So every run you depend on
+gets three cheap checks: the stderr **banner** (`model:`, `sandbox:`,
+`reasoning effort:`), the **`-o` file** (exists, non-empty, no apology on top),
+and the **exit code**. Never the agent's prose.
 
 The canonical call:
 
 ```bash
 codex exec --ignore-user-config -s read-only \
-  -m gpt-5.6-terra \
-  -o ANSWER.md \
+  -m <model-id> \
   -c 'model_reasoning_effort="high"' \
+  -o ANSWER.md \
   "Your full prompt here." \
   < /dev/null
 ```
 
-Default `-m gpt-5.6-terra` for most delegated work; escalate to `gpt-5.6-sol` for the hard, ambiguous calls. See
-[§6](#6-picking-the-model) — and note that `--ignore-user-config` throws away your configured model default, so
-pass `-m` explicitly whenever you use it.
+1. **Close stdin.** `< /dev/null` in bash, `'' |` in PowerShell. Without it a
+   call with a prompt and an open, dataless pipe blocks reading stdin for an
+   EOF that never comes. It looks like a hang; stderr says
+   `Reading additional input from stdin...` and nothing else happens. Using
+   stdin on purpose (`codex exec - < prompt.txt`) is fine.
+2. **Capture with `-o FILE`.** stdout carries only the final message and
+   stderr carries banner, progress and reasoning; `-o` writes the final
+   message alone, the context-lean capture. `--output-schema FILE` constrains
+   it to a JSON shape. `--json` is the whole event stream; reserve it for when
+   you want that.
+3. **`--ignore-user-config`** skips `config.toml` so a heavy local setup (MCP
+   servers, custom tools) can't perturb or stall the run. Auth still works.
+   It also discards your configured model default, so pass `-m` explicitly.
+4. **Pick the sandbox deliberately.** `read-only` for read-and-analyse,
+   `workspace-write` (plus `--add-dir`) only when it should edit,
+   `danger-full-access` only inside something already isolated. `codex exec`
+   never prompts mid-run; command failures go back to the model, not to a
+   human.
 
-## 1. The CLI is not the desktop app
+## Reading the capture
 
-`codex exec` is a **command-line** feature. The **desktop app** has no external "run this prompt" entry point —
-you can attach *reactive* [hooks](#hooks-are-reactive-not-a-launcher) to it, but a hook fires *when* Codex does
-something; it cannot *start* a run. To drive Codex from a script or agent you need the **standalone CLI**,
-installed separately from the app. They coexist; both read `$CODEX_HOME` (default `~/.codex`), so the CLI reuses
-the app's login.
+`-o` is written by the CLI, not the sandboxed agent, so it lands even when the
+agent believes it failed. Under `read-only` the model sometimes tries to write
+its own output file, gets blocked, and announces "I couldn't write the file."
+That prose is not the outcome; the file and the exit code are.
 
-## 2. Install & auth
+Two consequences. First, that apology often lands as the first one or two
+lines of the `-o` file, ahead of the real answer: strip it on read, or grant
+`workspace-write` scoped to the output folder so no apology is generated.
+Second, `-o` is a plain overwrite with no lock: two parallel runs sharing a
+path leave you with one silently missing result. Template the path off the
+run's identity.
 
-```bash
-npm i -g @openai/codex      # the `codex` binary (a native build shipped via npm)
-codex --version             # confirm
-codex login                 # if not already authenticated
-codex doctor                # diagnose install / config / auth / runtime health
-```
+## Models and effort
 
-- **Auth reuse:** `codex exec` uses `$CODEX_HOME/auth.json` by default. If the desktop app is logged in, the CLI
-  picks it up — no separate login.
-- **API-key auth (CI / unattended):** `CODEX_API_KEY=<key> codex exec ...` (env var, per the docs — not a flag).
-- **Windows PATH gotcha:** npm's global bin (`%APPDATA%\npm`) is often missing from a non-interactive shell's
-  PATH. If `codex` "isn't found," call it by full path (`"$HOME/AppData/Roaming/npm/codex"`) or add that dir.
+`-m` takes any model id the account can use; there is no CLI command that
+lists them, the TUI's `/model` picker does, and the current family with a
+tier-to-tier mapping against Claude is in `reference.md`, dated. Don't copy
+an id from a document older than the CLI. The stderr banner's `model:` line is
+the model of record: asked which model it is, the agent often names the wrong
+one.
 
-### Detecting whether the CLI is actually installed
+Reasoning effort is the second dial, `-c 'model_reasoning_effort="high"'`,
+confirmed by the banner's `reasoning effort:` line. Spend `high` or above on
+the legs whose wrongness is expensive (validation, lock-in, adversarial
+checks) and leave generative-breadth legs at default; paying high effort
+across many candidates mostly buys latency.
 
-**Test with `codex --version`. Never infer it from `~/.codex` existing** — that directory is the *app's* too, and
-auth reuse (above) is exactly what makes it misleading. On a box with only the desktop app, `~/.codex` is present
-and fully populated — a valid `auth.json` reading `"auth_mode": "chatgpt"`, plus `skills/`, `plugins/`, `sessions/`,
-`config.toml` — with **no CLI anywhere**, nothing on PATH, and `npm root -g` pointing at a `node_modules` that
-doesn't exist. Every signal short of running the binary says "installed."
+`-c key=value` overrides any config value, parsed as TOML, so quote strings
+and use dotted paths for nesting. `--strict-config` errors on keys this
+version doesn't know, which catches drift after an upgrade. `-C DIR` sets the
+working root, `--skip-git-repo-check` allows a non-repo, `--ephemeral` skips
+the session file. `codex exec review` runs a non-interactive review;
+`codex exec resume --last "…"` continues the latest session.
 
-Two traps follow from that:
+## Install and auth
 
-- **Don't reach for the bundled binary.** Hunting the filesystem turns up a real, working
-  `~/.codex/plugins/.plugin-appserver/codex.exe`. It runs and it honours the same flags — and it is an
-  **app-internal path that moves when the app updates**, on an alpha build (observed `0.146.0-alpha.9.2` while npm
-  shipped stable `0.146.0`). Fine for a one-off probe, wrong to script against or write into a doc.
-- **The fix is seconds, so just do it:** `npm i -g @openai/codex` — a ~6 s, two-package install that inherits the
-  app's existing login, so there is no `codex login` round-trip and nothing to re-authorize.
+`npm i -g @openai/codex`, then `codex --version`, `codex login` if needed,
+`codex doctor` for health. The CLI reuses the desktop app's `auth.json`; for
+CI, `CODEX_API_KEY=<key>` in the environment. On Windows the npm global bin
+(`%APPDATA%\npm`) is often absent from a non-interactive shell's PATH, so call
+by full path.
 
-`codex doctor` is the other honest check once the CLI exists.
+**Test for the CLI with `codex --version`, never by `~/.codex` existing.** The
+desktop app populates that directory fully, auth and all, with no CLI
+anywhere, and a working alpha binary sits under `~/.codex/plugins/` that moves
+when the app updates. The story is in `reference.md`; the fix is the six-second
+npm install, which inherits the login.
 
-## 3. The stdin trap
-
-`codex exec`'s prompt argument is documented as:
-
-> *"If not provided as an argument (or if `-` is used), instructions are read from **stdin**. If stdin is piped
-> and a prompt is also provided, stdin is appended as a `<stdin>` block."*
-
-So when you pass a prompt **and** stdin is an open pipe with no data and no EOF (the normal situation in
-automation), Codex blocks **reading stdin**, waiting for an EOF that never arrives. It looks like a hang; it's a
-parked read.
-
-**Fix — hand it immediate EOF:**
-
-```bash
-codex exec "prompt" < /dev/null      # bash / Git Bash / WSL — the verified form
-```
-
-PowerShell has no `<` redirection — pipe empty input, or run Codex from a bash shell:
-
-```powershell
-'' | codex exec "prompt"
-```
-
-Using stdin *on purpose* is fine: `echo "long prompt" | codex exec` or `codex exec - < prompt.txt`. The trap
-only springs when stdin is left open unintentionally.
-
-## 4. Capturing output (context-lean)
-
-stdout = the agent's **final message only**. stderr = banner, progress, tool activity, reasoning summaries.
-That split is what makes Codex scriptable.
-
-| You want | Use |
-|---|---|
-| Just the final message, in a file | `-o FILE` / `--output-last-message FILE` |
-| The full event stream (reasoning, tool calls) as JSONL | `--json` |
-| The final message constrained to a JSON shape | `--output-schema SCHEMA.json` |
-
-For "ask a question, read the answer," **`-o FILE` is the right tool** — the file holds exactly the final
-message, so a downstream reader pulls in only that. For machine-parseable output, pair `--output-schema` with a
-JSON Schema file. Reserve `--json` for when you genuinely need the event log; it's the opposite of lean.
-
-**The agent's self-report is NOT the run's outcome — trust the capture.** `-o FILE` is written by the *CLI*, not
-the sandboxed agent, so it lands the final message even when the agent believes it failed. Under `-s read-only`
-the model sometimes *tries* to write a file itself, gets blocked, and announces *"I couldn't write the file."*
-Don't let that prose trigger a false *"the consult failed"*: the source of truth is the **`-o` file + the exit
-code**, not the agent's narration. More generally the agent is an *unreliable narrator about its own execution* —
-whether it succeeded, and even which **model** it ran as, come from the CLI/banner, not its prose
-(see [§6](#6-picking-the-model)). (Same lesson as the Antigravity CLI's empty-stdout: the headless capture is
-robust even when the agent's own account of events isn't.)
-
-**`-o` is robust but not always pristine.** When you tell a *read-only* agent to write its own output file, its
-final message often *opens with a 1–2 line apology* ("I'm in a read-only workspace and can't save the file, so
-here's the content directly:") followed by the real answer — and since `-o` captures the final message verbatim,
-that preamble lands at the **top of the file**, ahead of what you wanted. Two clean fixes: **strip the leading
-apology on read** (safest for a pure read task), or grant **`-s workspace-write` scoped to the output folder** so
-the agent writes its file successfully and emits no apology.
-
-**One `-o` path per run.** `-o` is a plain overwrite — not an append, not a lock. Fan out several runs in parallel
-with two pointed at the same file and the second to finish silently clobbers the first: no error, just an arm
-that's missing when you go looking. Template the path off the run's identity (coordinate / arm / vendor / index).
-
-## 5. Safety: sandbox & approval
-
-`codex exec` can run shell commands and edit files. Govern it with the sandbox flag:
-
-| `-s, --sandbox` | The agent may |
-|---|---|
-| `read-only` | Read the workspace; **no writes, no side-effecting commands**. Right for analysis. |
-| `workspace-write` | Read + write within the working dir (and `--add-dir` extras). Right when it must edit. |
-| `danger-full-access` | No sandbox — only inside an already-isolated environment. |
-
-- For a pure "read this and answer" task, pass **`-s read-only`**. Capturing with `-o` still works (the *CLI*
-  writes that file, not the sandboxed agent), so read-only never blocks your output.
-- `codex exec` is **non-interactive** — it does not prompt mid-run (unlike the TUI's `-a/--ask-for-approval`).
-  Command failures are returned to the model, not escalated to a human.
-- `--dangerously-bypass-approvals-and-sandbox` exists for externally-sandboxed CI. The name is the warning.
-
-## 6. Picking the model
-
-`-m, --model` takes any model string. The live frontier family is **GPT-5.6**, which splits into three tiers
-that map cleanly onto the Claude tiers you already reason in:
-
-| Tier | `-m` string | Reach for it like… | Sweet spot |
-|---|---|---|---|
-| **Sol** | `gpt-5.6-sol` | **Opus** | Hard, ambiguous, high-value work — deep reasoning, tricky refactors, research, security |
-| **Terra** | `gpt-5.6-terra` | **Sonnet** | The everyday default — balanced depth for most delegated tasks |
-| **Luna** | `gpt-5.6-luna` | **Haiku** | Fast, cheap, repeatable — extraction, classification, mechanical passes |
-
-**Default to Terra; escalate to Sol** when the task is genuinely hard or under-specified; drop to **Luna** for
-high-volume mechanical work. Older families (`gpt-5.5` and below) remain callable but there's rarely a reason to
-reach for them now — pick a 5.6 tier and pass it explicitly.
-
-**`--ignore-user-config` discards your `config.toml` model preference**, so pair it with an explicit `-m` —
-otherwise you get whatever built-in default the CLI falls back to, not the Sol/Terra you intended.
-
-**Reasoning effort is the second dial:** `-c 'model_reasoning_effort="high"'`. Accepted values
-`minimal` / `low` / `medium` / `high` / `xhigh` (`xhigh` is model-dependent; the `0.143.0` changelog adds `max`
-for 5.6, not yet in the config-reference enum — confirm on your version before relying on it). The startup banner
-on stderr prints `reasoning effort: <level>` — use it to confirm the override took. That **same banner is the
-model-of-record**: an agent asked which model it is will often name the wrong one (a `gpt-5.6-sol` run answering
-"GPT-5"), so when you need to *attribute* a result to a model, read the banner's `model:` line — never the
-agent's self-report.
-
-**Match effort to the leg's stakes, not habit.** Spend `high`/`xhigh` on the calls whose *wrongness is expensive*
-— validation, lock-in, adversarial verification. Leave generative-breadth legs (produce many candidates for a
-downstream gate to cull) at default/`medium`: paying `high` × N candidates mostly buys latency. This pairs with
-the tiers above — the common shape is `terra @ medium` for breadth, `sol @ high` for the load-bearing judgment.
-
-**Other config knobs:**
-
-- **`-c, --config key=value`** — override any `config.toml` value. Parsed as **TOML** (falls back to a literal
-  string if it doesn't parse), so quote strings: `-c 'model_reasoning_effort="high"'`. Dotted paths reach nested
-  keys: `-c shell_environment_policy.inherit=all`.
-- **`--ignore-user-config`** — skip `config.toml` (auth still works; it lives in `$CODEX_HOME`). The clean-room
-  switch for reproducible automation — but see the `-m` caveat above.
-- **`--strict-config`** — error on unrecognized config keys (catch drift after upgrades).
-- **`-C, --cd DIR`** set the working root · **`--skip-git-repo-check`** run outside a git repo ·
-  **`--ephemeral`** don't persist a session file (good for throwaway probes).
-
-## 7. Recipes
-
-**Read-only analysis → file (the workhorse):**
-```bash
-codex exec --ignore-user-config -s read-only -m gpt-5.6-terra -o REVIEW.md \
-  -c 'model_reasoning_effort="high"' \
-  "Read ./src and ./docs/spec.md. List the top 5 mismatches between spec and implementation." \
-  < /dev/null
-```
-
-**Structured JSON output (mechanical extraction → Luna):**
-```bash
-codex exec --ignore-user-config -s read-only -m gpt-5.6-luna \
-  --output-schema schema.json -o result.json \
-  "Extract every TODO in ./src as {file, line, text}." < /dev/null
-```
-
-**Let it change the repo (use with care):**
-```bash
-codex exec -s workspace-write -o SUMMARY.md \
-  "Add type hints to ./util.py and run the tests." < /dev/null
-```
-
-**Throwaway smoke test (writes nothing persistent):**
-```bash
-codex exec --ephemeral --ignore-user-config -m gpt-5.6-luna "Reply with exactly: OK" < /dev/null
-```
-
-**Related subcommands:**
-```bash
-codex exec review                 # non-interactive code review of the current repo
-codex exec resume --last "..."    # continue the most recent session with a new instruction
-```
-
-## 8. Troubleshooting
+## Troubleshooting
 
 | Symptom | Cause / fix |
 |---|---|
-| Hangs forever, no output | stdin trap — add `< /dev/null` (bash) or `'' \|` (PowerShell). §3. |
-| `command not found: codex` | Not on PATH — call by full path or add npm global bin. §2. |
-| `command not found: codex`, but `~/.codex` exists with valid auth | That's the desktop app's dir; the CLI was never installed. Don't use the bundled `.plugin-appserver` exe — `npm i -g @openai/codex`, which inherits the login. §2. |
-| Auth errors / login loop | `codex login`; `codex doctor`; confirm `$CODEX_HOME/auth.json` exists. |
-| Slow startup / errors loading skills or MCP | Heavy local `config.toml` — add `--ignore-user-config`. |
-| Reasoning effort seems wrong | Check the stderr banner; set `-c 'model_reasoning_effort="high"'`. |
+| Hangs, stderr ends in `Reading additional input from stdin...` | stdin trap. `< /dev/null` or `'' \|`. |
+| `command not found: codex` | Not on PATH. Full path, or add npm's global bin. |
+| `command not found`, but `~/.codex` has valid auth | The desktop app's dir. Install the CLI with npm; don't script against the bundled exe. |
+| Auth errors | `codex login`, `codex doctor`, confirm `$CODEX_HOME/auth.json`. |
+| Slow startup, errors loading skills or MCP | Heavy `config.toml`. `--ignore-user-config`. |
+| Wrong model or effort | Read the banner. Pass `-m` (required with `--ignore-user-config`) and `-c 'model_reasoning_effort="…"'`. |
 | Config key rejected after upgrade | `--strict-config` to surface it, or `codex doctor`. |
-| Won't edit files | Default/`read-only` sandbox blocks writes — pass `-s workspace-write`. §5. |
-| Missing / overwritten output in a parallel fan-out | Two runs shared one `-o` path — last writer wins. Give each a unique path. §4. |
-| Agent claims it's a different model than you set | Self-report is unreliable — read the stderr banner's `model:` line. §6. |
-| Output starts with a "can't write the file" apology | Read-only agent told to save its own file; strip the leading preamble, or use scoped `-s workspace-write`. §4. |
-| Non-ASCII garbled (em-dash → `â€"`) | Windows console encoding; cosmetic if symmetric, but breaks downstream *machine* parses — keep parse-bound output ASCII-safe or normalize on read. |
+| Won't edit files | Sandbox is `read-only`. `-s workspace-write`. |
+| A parallel run's output is missing | Shared `-o` path, last writer wins. One path per run. |
+| Output opens with a can't-write apology | Read-only agent told to save its own file. Strip it, or scoped `workspace-write`. |
+| Non-ASCII garbled on Windows | Console encoding. Cosmetic if symmetric; normalise before a machine parse. |
 
-## Hooks are reactive, not a launcher
-
-Codex **hooks** (`SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, …) run your scripts
-**when** Codex does something. They work with both the CLI and the desktop app but are **reactive only** — a
-hook cannot *initiate* a run. To start Codex with a prompt, use `codex exec`; to react to one finishing, use a
-`Stop` hook.
+Hooks (`SessionStart`, `PreToolUse`, `Stop`, …) are reactive: they run when
+Codex does something and cannot start a run. To launch, use `codex exec`; to
+react to a finish, a `Stop` hook.
 
 ---
 
-*Provenance: distilled from a real dogfood (driving Codex as a headless cross-vendor consultant from another
-agent's shell), verified end-to-end against `codex-cli 0.144.6` (default model `gpt-5.6-sol`). Re-run
-`codex exec --help` to confirm flags and models on any other version.*
+*Provenance: distilled from driving Codex as a headless cross-vendor consultant
+from another agent's shell. Re-verified 2026-09-12 on 0.144.6: `-o` and stdout
+both carry the final message, the banner reports model, sandbox and effort,
+and an open dataless stdin pipe hangs until timeout with the
+`Reading additional input` line. npm's latest that day was 0.154.0; its release
+notes to that point mention no change to `exec`'s stdin, capture or sandbox
+flags (0.154.0 adds managed worktrees to `exec`, unverified here).*
