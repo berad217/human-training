@@ -1,7 +1,10 @@
 # Handover — human-training
 
-**Session date:** 2026-09-12
-**State:** **1.29.0 through 1.32.0 shipped** the same day. Five skills
+**Session date:** 2026-09-14
+**State:** **1.33.0 shipped** - `onboarding-creator` gains a "Messages from other
+sessions" block (peer messages are credible, not authoritative), lifted from the
+Blendy repo the day it was needed. Before that, on 2026-09-12: **1.29.0 through
+1.32.0 shipped** the same day. Five skills
 through the trim: `/start` 2,804 → 890 words, `robustness-audit` 4,160 → 1,643,
 `antigravity-cli` 3,232 → 1,325 (a rewrite: the stdout bug it documented was
 fixed in agy 1.0.15), `codex-cli` 2,770 → 1,250, `image-gen` 2,224 → 1,194 (the
