@@ -47,7 +47,9 @@ Invoked explicitly with `/tasks`, or in natural language ("add a task to…",
 - **Add**: insert into **Active** (or **Someday** for a parked idea) with a
   one-line context. Confirm the wording if it's ambiguous.
 - **Done**: tick the checkbox, strike the title, append `(today's date)`, move it
-  under **Done** (newest first).
+  under **Done** (newest first). Ticking in place mid-work is fine: `/start`
+  sweeps ticked items out of Active into Done one-liners at the next session
+  open. Done stays one line per item either way.
 
 ## Notices & offers (the guardrail)
 
@@ -67,6 +69,9 @@ Rules:
 
 ## Anti-patterns
 
+- **Filing a finding as a task.** An item is a pointer with one line of context;
+  a 40-line body belongs in the DEVLOG or the decision register, with the item
+  naming the number. `/start` flags items over ~10 lines.
 - **Turning Done into a changelog.** Done is a checkbox + date. The *why* of a
   decision goes in the DEVLOG, not here.
 - **Surfacing Someday unprompted.** The parking lot stays parked until asked.

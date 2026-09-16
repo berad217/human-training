@@ -84,10 +84,16 @@ they dispatch agents. Budget before running a third.
   overlapped anyway. Delete the instruction next time `robustness-audit` is
   touched; it is in the body of every skill that dispatches.
 
-- **`/start`'s docs-only contract is contested.** Both `/start` probes read
-  source diffs to explain a dirty tree, and it was the most useful line in
-  the orientation. Nobody has decided whether to loosen the contract to permit
-  `git diff --stat` on a dirty tree. Not decided in 1.29.0.
+- **`/start`'s docs-only contract is contested - one piece decided (1.34.0).**
+  Both `/start` probes read source diffs to explain a dirty tree, and it was
+  the most useful line in the orientation. Nobody has decided whether to
+  loosen the contract to permit `git diff --stat` on a dirty tree. What IS
+  decided (Brad, 2026-09-16): `/start` makes exactly one write, the TASKS
+  sweep - ticked items out of Active into Done one-liners, because it is the
+  reader that pays for a bloated Active and a session open is when culling
+  costs no attention. Not probed before shipping: the headless CLI's OAuth
+  had expired; the fixture (a TASKS with two ticked items in Active) is
+  described in `reference.md`'s sweep section and is a five-line rebuild.
 
 - **`critic-loop` lives in two places on purpose.** `skills-source/` ships;
   `skills-drafts/critic-loop/rounds/` is the evidence log. Don't tidy it.

@@ -1,7 +1,35 @@
 # /start — reference
 
-Mechanics and history behind the three checks in `SKILL.md` §3. Open this when
-a check fires and you need the detail, or when tempted to remove one.
+Mechanics and history behind the TASKS sweep in `SKILL.md` §2 and the three
+checks in §3. Open this when one fires and you need the detail, or when tempted
+to remove one.
+
+## The TASKS measurement
+
+One command, before TASKS.md is opened:
+
+```bash
+awk '/^## Active/{a=1;next} /^## /{a=0} a' TASKS.md > /tmp/active.md
+echo "open $(grep -c '^- \[ \]' /tmp/active.md)  ticked $(grep -c '^- \[x\]' /tmp/active.md)  bytes $(wc -c < /tmp/active.md)"
+```
+
+## The Done one-liner
+
+`- [x] ~~<title>~~ (<YYYY-MM-DD>) - <ids>`
+
+- **title**: the item's bold header, cut at the first clause break (` - `, `: `,
+  `. `) after ~25 characters; strip a leading date and any `DONE ...:` or
+  `(superseded by ...)` prefix.
+- **date**: the latest date in the item that follows a status word (LANDED,
+  DONE, CLOSED, RULED, PRICED TO ZERO, SUPERSEDED, MOOT); else the item's own.
+- **ids**: the decision / finding / issue numbers in the header (D57, F290,
+  #123), first four; omit the dash when there are none.
+
+Every Active item's first line must survive verbatim (kept or parked), as
+exactly this one-liner (swept), or be a named drop (a superseded original whose
+ticked twin carries its ids). Assert that before writing. A script beats hand
+edits past a dozen items; a scratchpad Python with those asserts did 194 items
+in one pass.
 
 ## The memory slug
 
@@ -35,6 +63,13 @@ fields, not on a theory of the mechanism.
 
 ## Why these checks exist
 
+- **The TASKS sweep.** panel_reader's Active section was 264 KB — 139 open and
+  55 ticked items, some 150–290 lines long — after two months of ticking in
+  place. `/start` had read the first 60 lines and missed the rest; the `tasks`
+  skill's Done verb fires only on `/tasks` or "mark X done", and the lifecycle
+  loop never touches TASKS. The sweep sits in `/start` because it is the reader
+  that pays for the bloat, and a session open is the one moment when culling
+  doesn't pull attention off a task in hand (2026-09-16).
 - **Uppercase `HANDOVER.md`.** A lowercase `*handover*` glob missed a root
   `HANDOVER.md` on a case-insensitive filesystem. The both-cases rule in §1 was
   written after that miss.
