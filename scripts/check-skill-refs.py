@@ -21,16 +21,21 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SKILLS = ROOT / "skills"
 REF = re.compile(r"human-training:([a-z0-9-]+)")
+# Explicit /skill and $skill mentions name an invocation, not a dependency.
+PROSE_REF = re.compile(r"(?<![/\$])human-training:([a-z0-9-]+)")
 
 failures = []
 
 # --- Fact 1: every cross-reference resolves to a shipped skill -------------
 shipped = {d.name for d in SKILLS.iterdir() if (d / "SKILL.md").is_file()}
 refs = {}
+prose_self_refs = set()
 for skill_md in SKILLS.glob("*/SKILL.md"):
     text = io.open(skill_md, encoding="utf-8").read()
     for target in set(REF.findall(text)):
         refs.setdefault(target, set()).add(skill_md.parent.name)
+    if skill_md.parent.name in PROSE_REF.findall(text):
+        prose_self_refs.add(skill_md.parent.name)
 
 for target, sources in sorted(refs.items()):
     if target not in shipped:
@@ -39,10 +44,9 @@ for target, sources in sorted(refs.items()):
             f"skills/{target}/SKILL.md does not exist"
         )
 
-# --- Fact 2: no skill references itself (a rewrite that lost its target) ---
-for target, sources in sorted(refs.items()):
-    if target in sources and len(sources) == 1:
-        failures.append(f"SELF-REF: skills/{target} references itself and nothing else")
+# --- Fact 2: no skill depends on itself in prose ----------------------------
+for target in sorted(prose_self_refs):
+    failures.append(f"SELF-REF: skills/{target} references itself in prose")
 
 # --- Fact 3: plugin.json's hardcoded skill list matches what ships ---------
 import json
