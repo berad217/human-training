@@ -1,4 +1,4 @@
-# /start — reference
+# start — reference
 
 Mechanics and history behind the TASKS sweep in `SKILL.md` §2 and the three
 checks in §3. Open this when one fires and you need the detail, or when tempted
@@ -6,11 +6,17 @@ to remove one.
 
 ## The TASKS measurement
 
-One command, before TASKS.md is opened:
+One read-only command, before TASKS.md is opened. Use the form for the active
+shell; neither writes a scratch file:
 
 ```bash
-awk '/^## Active/{a=1;next} /^## /{a=0} a' TASKS.md > /tmp/active.md
-echo "open $(grep -c '^- \[ \]' /tmp/active.md)  ticked $(grep -c '^- \[x\]' /tmp/active.md)  bytes $(wc -c < /tmp/active.md)"
+LC_ALL=C awk '/^## Active/{a=1;next} /^## /{a=0} a {if ($0 ~ /^- \[ \]/) open++; if ($0 ~ /^- \[x\]/) ticked++; bytes += length($0)+1} END {printf "open %d  ticked %d  bytes %d\n", open, ticked, bytes}' TASKS.md
+```
+
+```powershell
+$tasksText = Get-Content -Raw TASKS.md
+$activeText = [regex]::Match($tasksText, '(?ms)^## Active[^\r\n]*\r?\n(.*?)(?=^## |\z)').Groups[1].Value
+"open $([regex]::Matches($activeText, '(?m)^- \[ \]').Count)  ticked $([regex]::Matches($activeText, '(?m)^- \[x\]').Count)  bytes $([text.encoding]::UTF8.GetByteCount($activeText))"
 ```
 
 ## The Done one-liner
@@ -31,21 +37,51 @@ ticked twin carries its ids). Assert that before writing. A script beats hand
 edits past a dozen items; a scratchpad Python with those asserts did 194 items
 in one pass.
 
-## The memory slug
+## Bounded local Claude memory discovery (either host)
 
-Claude Code derives the per-project memory directory from the working directory
+Claude Code derives the per-project memory directory from its working directory
 by replacing each of `:`, `\`, `/` and `_` with `-`:
 
 ```
 P:\software_projects\Blendy_McBlendface  ->  ~/.claude/projects/P--software-projects-Blendy-McBlendface/memory/
 ```
 
-The slug is case-sensitive to how the path was typed. A session launched from
-`p:\...` rather than `P:\...` gets a different directory, so if the derived slug
-finds nothing, list `~/.claude/projects/` and match case-insensitively before
-concluding. Two case-variants both present is a fork.
+Use the active process's `CLAUDE_CONFIG_DIR` when set; otherwise use
+`~/.claude`. The override replaces that whole config directory, not its
+`projects/` subdirectory. A Codex process may not inherit an override used
+only to launch Claude. If the expected directory is unavailable, say so when
+relevant and ask for the config path; do not search the machine for it.
+
+1. Take the current working directory and `git rev-parse --show-toplevel` (if
+   in Git), then the `worktree ` paths from `git worktree list --porcelain`.
+   These are related checkout paths, not evidence of another machine's clone.
+   Deduplicate identical path strings, but preserve case variants because they
+   can produce different slugs. Inspect at most 20 linked worktree roots; if
+   there are more, say the search was truncated. For each root, derive the
+   exact slug above and test `<config>/projects/<slug>/memory/`.
+2. The slug is case-sensitive to how the path was typed. Also list only the
+   immediate child names of `<config>/projects/` (up to 500; disclose any
+   truncation) and test case-insensitive equality with each derived slug. A
+   case variant is another candidate, not an automatic replacement. Do not
+   use prefix, substring, or project-name matches. A slug is lossy (`_` and
+   path separators collide), so read the memory index or a relevant entry for
+   project/path evidence before calling it credible. If identity remains
+   unclear, show the candidate and ask rather than treating it as a match.
+3. Deduplicate candidates resolving to the same directory. If none is credible,
+   stay quiet or report unavailable. If several remain plausible (including
+   two case variants or linked worktree memories), show the paths and ask which
+   to use. Do not merge them or silently prefer the current worktree.
+4. For one credible directory, read at most its `MEMORY.md` index (up to 16 KB)
+   and three relevant entry files. Compare claims with the repo's
+   `memory/MEMORY.md` and relevant entries. Name useful missing facts, with
+   source paths, rather than counting files as missing facts. If identity or
+   content is unclear or truncated, disclose that and offer review; never
+   copy or edit from this skill. Offer curated migration only when the repo is
+   known to be private.
 
 ## The toolchain fix, when asked for
+
+Claude Code only:
 
 ```bash
 claude plugin marketplace update <name>

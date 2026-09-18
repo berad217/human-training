@@ -1,10 +1,11 @@
 ---
 name: start
-description: One-keystroke session opener. Reads the project's temporal docs (onboarding map, latest DEVLOG entry, current handover, TASKS Active, in-repo memory index), sweeps ticked tasks out of Active into Done, checks for unpushed commits, stranded memory and a stale plugin toolchain, then surfaces a short orientation and proposes the next move. Docs-only; the TASKS sweep is its one write. Explicit invocation via /start at the top of a fresh session.
+description: Explicit fresh-session opener for Claude Code (/human-training:start) or Codex ($human-training:start). Reads the project's temporal docs and in-repo memory index, sweeps ticked TASKS Active items to Done, checks unpushed commits and local Claude memory that may be stranded, then proposes the next move. Claude Code also checks marketplace freshness. Docs-only; the TASKS sweep is its one write. Use only when the user selects this skill at the top of a fresh session.
 allowed-tools: [Read, Glob, Bash, Edit]
+disable-model-invocation: true
 ---
 
-# /start — Fresh-session orient
+# start — Fresh-session orient
 
 One command that runs the orient sequence from `lifecycle-manager` §1, so a
 fresh session never has to remember to type "read onboarding and the handover
@@ -15,11 +16,19 @@ not run tests, build, push, or migrate. The one file it writes is `TASKS.md`,
 and only for the sweep in §2: ticked items out of Active into Done as
 one-liners. That write is mechanical and lossless (the why is in the DEVLOG,
 the text in git), which is why it needs no approval; every other finding is
-offered. The other commands it runs are reads (`git status -sb`, a directory
-listing, the TASKS measurement).
+offered. The other commands it runs are reads (`git status -sb`,
+`git worktree list --porcelain`, directory listings, the TASKS measurement).
 
-**Invoke only on `/start`.** Not on "let's get started" or "where were we".
-Not in the plugin-factory repo itself; that repo has no sprint workflow.
+**Invoke only when explicitly selected:** `/human-training:start` in Claude
+Code or `$human-training:start` in Codex. Not on "let's get started" or "where
+were we". Not in the plugin-factory repo itself; that repo has no sprint
+workflow.
+
+Use the active runtime to decide which host-specific checks apply. Do not
+infer the host from an installed `claude` or `codex` command. Follow the
+project's canonical instructions as loaded by that host; if the project uses
+`CLAUDE.md`, keep it canonical in both hosts (Codex may be configured to use
+it as an instruction fallback). Do not create a parallel `AGENTS.md`.
 
 **Hand off when:** onboarding is absent (`human-training:workflow-orientation`
 owns doc auditing); the project looks dormant and the question is "what should
@@ -60,8 +69,8 @@ blindly. Report what's missing, offer `workflow-orientation`, stop.
 - **Handover**: in full. It is short by design.
 - **TASKS.md**: measure Active before opening it (the sweep, below), then the
   Active section only. Never surface Someday or Done.
-- **memory/MEMORY.md**, if present: the index in full; individual entries only
-  when relevant.
+- **memory/MEMORY.md**, if present: the shared, repo-tracked index in full;
+  individual entries only when relevant. Use it in either host.
 
 Not the spec, not source, not the full DEVLOG, unless a specific question needs
 them.
@@ -103,21 +112,23 @@ stops being read.
 only on this disk: report and offer to push. No upstream, or in sync: say
 nothing.
 
-**Stranded memory.** Claude Code keeps per-project memory at
-`~/.claude/projects/<slug>/memory/`, which does not travel between machines.
-Derive the slug (see `reference.md`) and compare with the in-repo `memory/`:
+**Stranded memory (either host).** Repo-tracked `memory/MEMORY.md` is the
+shared source for private projects. Claude Code may also have useful notes at
+`<Claude config dir>/projects/<slug>/memory/`; Codex can inspect those notes
+read-only on the same machine. Use the bounded path discovery in
+`reference.md`: current checkout plus Git-linked worktree roots, with
+`CLAUDE_CONFIG_DIR` when set. Do not guess from other clones or fuzzy project
+names. No credible local directory: say nothing unless availability matters.
+Multiple plausible directories: show their paths and ask which project memory
+to use. For exactly one credible directory, inspect its index and only relevant
+entries, compare their facts with repo memory, and report potentially useful
+facts missing from the repo. Offer a curated migration for a confirmed private
+repo; never auto-copy, edit Claude's memory, or treat a matching slug alone as
+proof of project identity. Migration is `workflow-orientation` §6's job. Keep
+new durable facts in the repo memory for the rest of the session.
 
-| In-repo | Global | Say |
-|---|---|---|
-| yes | no | nothing |
-| no | yes | "N entries stranded at the global path — want them moved in-repo?" |
-| yes | yes | a probable fork; surface it and stop, don't guess which is canonical |
-| no | no | nothing |
-
-Migration is `workflow-orientation` §6's job. If memory is in-repo, write new
-memory there for the rest of the session.
-
-**Toolchain.** Read `~/.claude/plugins/known_marketplaces.json`. Each entry
+**Toolchain (Claude Code only).** Read
+`~/.claude/plugins/known_marketplaces.json`. Each entry
 carries `autoUpdate` and `lastUpdated`; those two fields are the whole check,
 no network. `autoUpdate` absent or false: report it as the root cause, since
 the catalog is not guaranteed to refresh and `claude plugin update` will keep
@@ -125,6 +136,8 @@ answering "already current" against the stale catalog. `autoUpdate` true but
 `lastUpdated` months old: report that too. Fresh within a month, or no file:
 nothing. The fix is in `reference.md`; offer it, never run it, never edit
 `settings.json`.
+In Codex, omit this check; Claude's marketplace registry does not describe
+the active Codex plugin installation.
 
 ## 4. Surface the orientation, then propose
 
@@ -135,7 +148,7 @@ nothing. The fix is in `reference.md`; offer it, never run it, never edit
 **Active tasks:** <top 1–3 from TASKS Active; omit the line if no TASKS.md>
 **Tasks:** <swept N to Done; Active is M items / K KB — park the rest? omit when nothing swept and under the bar>
 **Durability:** <N commits unpushed on <branch> — push? omit when in sync>
-**Memory:** <N entries stranded — move in-repo? omit when resolved or absent>
+**Memory:** <local facts missing from repo, or ambiguous candidate paths — curate? omit when resolved or absent>
 **Toolchain:** <marketplace <name>: autoUpdate off, last refreshed <date> — want the fix? omit when current>
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
