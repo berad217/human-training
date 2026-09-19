@@ -36,7 +36,7 @@ ones unblock or inform later ones.
   agent already paid the cost, resist re-deriving. And name the tell — a "let me
   verify from scratch" pass means treating the trail as untrustworthy when it's
   actually authoritative. Also mandate the `wip:` commit before handing over.
-- [ ] **`onboarding-creator`: the Diátaxis mode-picker** — one document, one mode.
+- [x] **`onboarding-creator`: the Diátaxis mode-picker** (done 2026-09-19, 1.38.0) — one document, one mode.
   Two questions (action vs understanding, learning vs work) pick tutorial /
   how-to / reference / explanation. One paragraph, not a skill; the rest of
   pstack's 11KB `technical-writing` doesn't earn its keep here.
@@ -58,7 +58,12 @@ ones unblock or inform later ones.
   names generalised so it runs under Codex, the moot "dispatch in one block"
   line deleted, `Reply:` contract added, `agents/openai.yaml` added). Remaining,
   by size: `critic-loop` (4.6k, already has a reference.md, lowest expected
-  gain), `onboarding-creator` (2.7k), `workflow-orientation` done 2026-09-19
+  gain), `onboarding-creator` done 2026-09-19 (3.1k -> 1.3k words, the biggest
+  cut yet: it carried each section three times — explained, exemplified,
+  templated — so the examples, self-contained skeleton, peer-sessions block
+  and checklist moved to `assets/onboarding-reference.md`; the Diátaxis
+  picker folded in as the classifier for what does not belong in onboarding),
+  `workflow-orientation` done 2026-09-19
   (2.5k -> 1.5k; five states plus memory migration is dense, so the cut is
   shallower; templates and boilerplate to `assets/workflow-orientation-reference.md`),
   `handover-manager` done 2026-09-19 (2.3k -> 1.1k; Track 1 has no reference.md
