@@ -58,7 +58,9 @@ ones unblock or inform later ones.
   names generalised so it runs under Codex, the moot "dispatch in one block"
   line deleted, `Reply:` contract added, `agents/openai.yaml` added). Remaining,
   by size: `critic-loop` (4.6k, already has a reference.md, lowest expected
-  gain), `onboarding-creator` (2.7k), `workflow-orientation` (2.6k),
+  gain), `onboarding-creator` (2.7k), `workflow-orientation` done 2026-09-19
+  (2.5k -> 1.5k; five states plus memory migration is dense, so the cut is
+  shallower; templates and boilerplate to `assets/workflow-orientation-reference.md`),
   `handover-manager` done 2026-09-19 (2.3k -> 1.1k; Track 1 has no reference.md
   slot, so the lookup material ships as `assets/handover-reference.md` via the
   template dir; the inheritance pearl and the `wip:` mandate folded in).
