@@ -54,11 +54,13 @@ ones unblock or inform later ones.
   0.144.6 re-verified, npm at 0.154.0 not installed). Remaining, by size:
   `image-gen` done 2026-09-12 (2.2k -> 1.1k; the built-in tool's backing model
   is no longer named anywhere, so the body points at Codex's runtime image
-  skill instead). Remaining, by size: `critic-loop` (4.6k, already has a
-  reference.md, lowest expected gain), `onboarding-creator` (2.7k),
-  `workflow-orientation` (2.6k), `handover-manager` (2.4k), `leroy-jenkins`
-  (2.3k), `gemini-api` (1.5k, ids in body and description: the description ones
-  are triggers and stay, the body ones go). The
+  skill instead). `leroy-jenkins` done 2026-09-19 (2.3k -> 1.2k; host tool
+  names generalised so it runs under Codex, the moot "dispatch in one block"
+  line deleted, `Reply:` contract added, `agents/openai.yaml` added). Remaining,
+  by size: `critic-loop` (4.6k, already has a reference.md, lowest expected
+  gain), `onboarding-creator` (2.7k), `workflow-orientation` (2.6k),
+  `handover-manager` (2.4k), `gemini-api` (1.5k, ids in body and description:
+  the description ones are triggers and stay, the body ones go). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.
