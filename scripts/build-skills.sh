@@ -97,7 +97,7 @@ build_skill "lifecycle.md" "lifecycle-manager" \
 build_skill "handover-guide.md" "handover-manager" \
     "Use when the user requests a handover, the context window is getting full or laggy, at a natural pause point (end of sprint or milestone), or when stuck and a fresh perspective is needed. Creates a handover capturing the ephemeral conversation delta not already in the project files. Works with any AI agent." \
     "Read, Write, Edit, Grep, Glob, Bash" \
-    "handover.md"
+    "handover.md" "handover-reference.md"
 
 build_skill "onboarding-guide.md" "onboarding-creator" \
     "Use when setting up a new project, after the Sprint 0 spec is complete, or when an AI agent entry point is missing. Creates onboarding.md, the universal orientation doc that works across any environment (Cursor, VSCode, Claude Code, web) - the office tour, not the employee handbook." \

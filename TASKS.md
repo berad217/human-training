@@ -31,7 +31,7 @@ ones unblock or inform later ones.
   `[verified, uncommitted]`, `[reverted]`, `[planned, not started]`. "A thread
   with no tag is not done yet, so tag it." Sharper than the current prose
   "In flight" line.
-- [ ] **`handover-manager`: a pickup is inheritance** — the handover skill says
+- [x] **`handover-manager`: a pickup is inheritance** (done 2026-09-19, 1.36.0) — the handover skill says
   what to write; it never tells the reader not to redo the work. Add: the prior
   agent already paid the cost, resist re-deriving. And name the tell — a "let me
   verify from scratch" pass means treating the trail as untrustworthy when it's
@@ -59,7 +59,10 @@ ones unblock or inform later ones.
   line deleted, `Reply:` contract added, `agents/openai.yaml` added). Remaining,
   by size: `critic-loop` (4.6k, already has a reference.md, lowest expected
   gain), `onboarding-creator` (2.7k), `workflow-orientation` (2.6k),
-  `handover-manager` (2.4k), `gemini-api` (1.5k, ids in body and description:
+  `handover-manager` done 2026-09-19 (2.3k -> 1.1k; Track 1 has no reference.md
+  slot, so the lookup material ships as `assets/handover-reference.md` via the
+  template dir; the inheritance pearl and the `wip:` mandate folded in).
+  `gemini-api` (1.5k, ids in body and description:
   the description ones are triggers and stay, the body ones go). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-

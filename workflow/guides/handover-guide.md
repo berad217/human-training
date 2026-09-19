@@ -1,322 +1,134 @@
 # Handover Guide
 
-**Purpose**: Enable smooth context resets by capturing what's not documented elsewhere. Works with any AI agent (Claude, GPT, Gemini, etc.).
+A handover bridges a context reset. It works with any AI agent, in any host.
+The template is in `assets/handover.md`; worked examples, the incident this
+guide was rewritten after, and the bootstrap/pickup checklists are in
+`assets/handover-reference.md`. Read those only when a step points you there.
+
+**Invoke when** the user asks for a handover, the context is getting full or
+laggy, at a natural pause (end of sprint, milestone), or when stuck and a fresh
+session would help. Not on "let's wrap up" alone — ask first.
 
 ---
 
-## For Outgoing AI: How to Write a Handover
+## The one idea: Ephemeral Delta
 
-### When User Requests Handover
+A handover is not a status report. It is the **conversation context that does
+not live in the files yet**: the debate in progress, the path that failed, the
+thing that is half-done and currently broken.
 
-You're about to hand off to a fresh AI session. Your job: **Capture the "Ephemeral Delta"—the conversation context that doesn't live in the files yet.**
+- **Record** (permanent): code, spec, DEVLOG, tests, CONTEXT.md.
+- **Bridge** (temporary): the handover.
 
-### The Handover Philosophy: Ephemeral Delta
-
-A handover is NOT a status report. It is a bridge.
-
-- **Record**: Files, Spec, DEVLOG, Tests (Permanent).
-- **Bridge**: Handover (Temporary).
-
-**Rule**: If it is in a file, it does NOT belong in the handover.
-**Rule**: Once a decision is written to a file, DELETE it from the handover.
-
-> **Word warning**: "committed" in the sentence above is the *prose* sense —
-> written down to a doc. It is NOT `git commit`. The two senses collide, and the
-> collision is how a handover ends up asserting that work is safe when it is
-> sitting unpushed on one laptop. See Step 0.
+**If it is in a file, it does not belong in the handover. Once a decision
+lands in a file, delete it from the handover.** The budget is ~200 tokens —
+about 150 words, one screen. A clean stop needs almost nothing; length comes
+from unresolved context, never from filling empty sections.
 
 ---
 
-### Step 0: Durability Check (do this before anything else)
+## Outgoing: writing one
 
-The Record/Bridge split above has an unstated axiom: **"in a file = safe."** On a
-local disk that is false. A file is one disk away from gone, and a commit that was
-never pushed is invisible to every other machine and every future session.
+### Step 0 — Durability, before you write a word
 
-So before you write a word of handover, establish whether the work is actually
-**durable**.
+"In a file" is not "safe". A file is one disk away from gone, and a commit that
+was never pushed is invisible to every other machine and every future session.
 
-**Which repos to check.** A session often spans more than one repo (sibling
-projects, a library plus its consumer). Check, in order:
+**Commit first.** Whatever is uncommitted goes into one `wip:` commit on the
+current branch before the handover is written. If the tree is broken, say so in
+one line of the commit body. A handover that describes work only the working
+tree holds is describing work that a crash deletes.
 
-1. The repo you are working in.
-2. Any sibling repos named in `onboarding.md` or in the current handover.
-3. If you are not sure the session was confined to those, **ask the user** —
-   "did we touch any repo besides X today?" is one question and it closes the gap.
-
-**The check**, run in each repo:
+**Then check, in every repo the session touched** — the one you are in, any
+sibling repo named in `onboarding.md` or the current handover, and if you are
+not sure, ask: "did we touch any repo besides X today?"
 
 ```bash
 git status -sb
 ```
 
-Read the **first line**, and specifically the `[ahead N]` / `[behind N]` marker —
-not just the list of modified files. The file list tells you about *uncommitted*
-work. The marker tells you about *undurable* work. Those are different failures
-and only one of them is obvious.
+Read the **first line**, specifically the `[ahead N]` marker. The file list
+below it tells you about *uncommitted* work; the marker tells you about
+*undurable* work. They are different failures and only one is obvious.
 
-| First line shows | What it means | What to write |
+| First line | Meaning | Write |
 |---|---|---|
-| `## main...origin/main` (no marker) | Committed **and** pushed | Nothing — a clean stop is genuinely clean |
-| `## main...origin/main [ahead 4]` | 4 commits exist **only on this disk** | Say so, and **offer to push** |
-| `## main` (no upstream) | No remote or no tracking branch | Say it plainly — "committed" is the ceiling here |
-| Modified / untracked files listed | Uncommitted work in flight | Ordinary Delta material (§2) |
+| `## main...origin/main` | committed **and** pushed | nothing — a clean stop is clean |
+| `## main...origin/main [ahead 4]` | 4 commits exist **only on this disk** | say so, and **offer** to push |
+| `## main` (no upstream) | no remote | say it plainly; "committed" is the ceiling |
 
-**Never push on your own.** Report the state and offer; the user decides. Pushing
-unasked trades a visibility bug for a consent bug — and the remote may be shared.
+**Never push on your own.** Report and offer; the remote is usually shared and
+consent is not yours to assume. If you cannot run commands, say *"push state
+unverified — I can't run git here."* An honest unknown is useful; a confident
+wrong "all work committed" is what this step exists to prevent. Never cite a
+commit SHA as evidence of safety: it proves the commit exists on this disk and
+nothing more, and its precision makes the claim more convincing, not more true.
+The incident that taught this is in the reference.
 
-If you cannot run commands at all (no shell access in your environment), say so
-explicitly: *"Push state unverified — I can't run git here."* An honest unknown is
-useful. A confident wrong "all work committed" is what this step exists to prevent.
+### Step 1 — Inventory
 
----
+Don't assume docs exist. Glob for `onboarding.md`, `CONTEXT.md`, `DEVLOG.md`,
+`spec.md`, and the current handover (`HANDOVER.md`, `docs/.agents/current-handover.md`,
+or wherever `onboarding.md` says it lives — its map is the authority). Adapt to
+what is missing; the full candidate-path list is in the reference.
 
-### Step 1: Inventory What Exists
+### Step 2 — Decide where it goes
 
-**Don't assume documentation exists.** Check what's actually in the project:
+**A handover follows the work, not the cwd.** The default is the repo the work
+happened in. The case that breaks the default: a session that graduated or
+moved work into another repo. The next session on that work starts *there*, and
+will never see a handover left in the sandbox.
 
-```bash
-# What docs are present?
-- [ ] onboarding.md (how to work with this human)
-- [ ] docs/.agents/global-preferences.md (communication style) — legacy aliases: `.agents/global-preferences.md`, `.claude/global-preferences.md`
-- [ ] SPEC.md or similar (what to build)
-- [ ] CONTEXT.md (the project's glossary / shared language)
-- [ ] DEVLOG.md (what was built and why)
-- [ ] Code (actual implementation)
+- Write it in the repo where the next session on that work will start.
+- The origin repo keeps its own handover, scoped to itself, **citing the
+  departure**: what left, when, where to, what remains.
+- A session that touched several repos may owe several handovers, one per repo
+  with unfinished business. Never one fat handover in whichever directory you
+  were standing in.
 
-**If paths are unclear, search these common locations:**
-- onboarding: `onboarding.md`, `./docs/onboarding.md`, `./docs/.agents/onboarding.md`, `.agents/onboarding.md`, `.claude/onboarding.md`
-- global preferences: `./docs/.agents/global-preferences.md`, `.agents/global-preferences.md`, `.claude/global-preferences.md`
-- handover: `HANDOVER.md`, `./docs/.agents/current-handover.md`, `.agents/current-handover.md`, `.claude/current-handover.md`, `./docs/handover.md`
-- spec: `spec.md`, `SPEC.md`, `./docs/spec.md`, `./documentation/spec.md`
-- context: `CONTEXT.md`, `./docs/CONTEXT.md`
-- devlog: `DEVLOG.md`, `./docs/DEVLOG.md`, `./docs/devlog.md`
-```
+### Step 3 — Write it
 
-**Adapt your handover based on what's missing.**
+Use `assets/handover.md`. Three sections: **Orientation** (two sentences;
+include the `Durability:` line *only* when something is not pushed),
+**The Delta** (active debates, failed paths, in-flight breakage — strictly what
+is not in the files), **Next steps** (specific, numbered). Delete any section a
+file already covers. Capture the discussion, not just the state: if the next
+agent has to ask "why did we choose X?" or "what have we tried?", it failed.
 
-### Step 2: Understand What to Capture
+**Overwrite, never delete-and-recreate.** Some IDEs fail to process a file
+recreated in the same turn. Edit the existing file; keep its name; create only
+if none exists.
 
-Different docs serve different purposes:
+### Step 4 — Flush what is Record
 
-| Document | What It Contains | What It DOESN'T Contain |
-|----------|------------------|-------------------------|
-| Spec | What to build (decisions made) | Decisions still in flight |
-| DEVLOG | What was built + rationale | Current discussions, unsolved problems |
-| Code | Implementation | Why we chose this approach over alternatives we discussed |
-| CONTEXT.md | The project's shared vocabulary (glossary) | Plans, decisions, implementation — those live in spec/DEVLOG |
-| **Handover** | **Conversation state** | Nothing - handover is ephemeral |
+Before saving: land any sharpened or coined terms in `CONTEXT.md` if the
+project keeps one (terms are Record, not Delta), and make sure the DEVLOG has
+the decisions that were made. Then tell the user it is prepared, summarize the
+Delta in a sentence, and save.
 
-**Handover captures the discussion, not just the state.**
-
-### Step 3: Write the Handover
-
-**First decide WHERE it goes. A handover follows the work, not the cwd.**
-
-The default is the repo the work happened in. That default breaks in one specific,
-recurring case: **a session that graduates or moves work into a different repo.** You
-started in the sandbox; the work now lives elsewhere; and the next session on that work
-will start *there*, where it will never see a handover left behind in the sandbox.
-
-- **Write the handover in the repo where the next session on that work will start.**
-  If a project just graduated into its own repo, its handover is written **there**, at
-  graduation — not in the folder it left.
-- **The origin repo keeps its own handover**, scoped to itself, and it should **cite the
-  departure**: what left, when, where it went, and what remains. That citation is the
-  breadcrumb for the next session in the origin repo, which will otherwise go hunting for
-  a folder that no longer exists.
-- **A session that touched several repos may owe several handovers.** Write one per repo
-  that has unfinished business, each scoped to that repo. Do not write one fat handover in
-  whichever directory you happened to be standing in — that is how a handover about
-  project B ends up unread inside project A.
-
-Then use this lean template. If a section is already covered by a file, **delete the
-section.**
+**Reply:** the durability state per repo (or "unverified"), the handover's
+path, and the one-line Delta summary.
 
 ---
 
-## Handover Template
+## Incoming: using one
 
-### 1. Orientation (2 Sentences Max)
+**A pickup is an inheritance, not an audit.** The previous agent already paid
+for what is in the handover and the DEVLOG. Resist re-deriving it. The tell is
+a "let me verify from scratch" pass over decisions the trail already records —
+that treats the trail as untrustworthy when it is authoritative. Verify the
+*build* (tests, a smoke run) because state drifts; do not re-litigate the
+*decisions* unless something you observe contradicts them.
 
-```markdown
-New AI: Oriented via onboarding.md. We are in Implementation Phase, Sprint 4.
-```
+1. Read in order: `onboarding.md` (map) → handover (the live feed) → spec /
+   DEVLOG only as a question requires.
+2. Verify the build immediately.
+3. **Prune as you go.** When an in-flight item in the handover is now fixed,
+   delete it from the handover before you end your session. Zombie Delta —
+   a decision still listed as "in flight" after it was made — is the most
+   common rot.
+4. **Say so if it was bad.** A novel instead of a delta, or a question the
+   handover should have answered: tell the user in one line, and prune it.
 
-**Durability line — include ONLY when something is not pushed.** Omit it entirely
-when every repo is committed and in sync; a clean stop needs no line, and the
-handover has a 200-token budget to protect.
-
-```markdown
-**Durability:** Blendy ahead 4, Blocky ahead 4 — committed but NOT pushed.
-```
-
-### 2. The Delta (Conversation Context)
-
-**Strictly what is NOT in the files:**
-
-- **Active Debates**: "We are choosing between X and Y. User leans Z but is worried about [Tradeoff]."
-- **Failed Paths**: "Approach A failed because [Reason]. Don't try it again."
-- **In-Flight Issues**: "Extracting the engine logic but stopped at the event handler. Code is currently broken in `engine.ts`."
-
-### 3. Next Steps (Specific)
-
-1. [Next immediate task]
-2. [Task following that]
-
----
-
-### Step 4: The Overwrite Rule
-
-**CRITICAL**: NEVER delete and recreate the handover file in the same turn. Many IDEs will fail to process the new file.
-
-1. **Always overwrite** the existing `HANDOVER.md` or `current-handover.md`.
-2. Do not change the filename unless the user explicitly requests it.
-3. If no file exists, create it. If it exists, edit it.
-
-### Step 5: Context Hygiene & Pruning
-
-As soon as a task is done and the DEVLOG is updated:
-
-1. **Wipe the handover clean** or reduce it to the next immediate "in-flight" thought.
-2. **The budget is ~200 tokens.** That is the single length target for a handover — roughly 150 words, one screen, no scrolling. It is the number every other length note in this guide defers to. Write to what the delta actually contains: a session with one live debate needs a few lines, and a clean stop needs almost nothing. Length comes from unresolved context, never from padding with sections that have nothing in them.
-3. **Draft the Handover**: Tell the user you've prepared it, summarize the "Delta", and save/overwrite the file.
-4. **Flush the glossary**: If any domain terms got sharpened or coined this session, land them in `CONTEXT.md` now (if the project keeps one). Terms are Record, not Delta — they belong in the glossary, not the handover.
-
----
-
-## For Incoming AI: How to Use a Handover
-
-### Step 1: Trust the Files, then the Handover
-
-1. `onboarding.md` - Your map.
-2. `SPEC.md` / `DEVLOG.md` - Your history and destination.
-3. **Handover** - Your "live" radio feed of what's happening *right now*.
-
-### Step 2: Context Reset Hygiene
-
-If the handover mentions an "In-Flight" issue that you have now fixed:
-**DELETE the mention from the handover at the end of your session.**
-Do not let old "Delta" context linger once it has become "Record" (code/docs).
-
-### Step 3: Immediate Feedback on Bloat
-
-If an outgoing agent left you a "novel" instead of a "delta", tell the user. "The handover was too long and duplicated the spec. I've pruned it to keep the session lean."
-
----
-
-## Anti-Patterns
-
-❌ **Duplicating the Spec/DEVLOG** - If it's in a permanent doc, keep it out of the handover.
-❌ **Keeping "Zombie" Context** - Leaving a "Decision in Flight" in the handover after the decision was made.
-❌ **Delete-then-Create** - Deleting the handover file instead of overwriting it (breaks IDE toolchains).
-❌ **The Novel** - Running past the ~200-token budget (Step 5). Keep it a bridge, not a book.
-❌ **Missing Failed Paths** - Not warning the next agent about what *didn't* work.
-
-**Durability (see Step 0):**
-
-❌ **Declaring work safe because it is committed** - Committed ≠ pushed. Verify with `git status -sb`, or say the state is unverified.
-❌ **Citing commit SHAs as evidence of safety** - A SHA proves a commit exists *on this disk*. It proves nothing about the remote, and its precision makes the claim more convincing, not more true.
-❌ **Checking only the current repo when the session spanned several** - A sibling repo strands work just as easily, and nobody thinks to look there.
-❌ **Pushing on your own initiative** - Surface and offer. The remote is usually shared; consent is not yours to assume.
-
-**For Outgoing AI:**
-
-❌ **Assuming docs exist** - Check first
-❌ **Writing a novel** - Keep it lean, reference other docs
-❌ **Only stating facts** - Capture the discussion and uncertainty
-❌ **Vague next steps** - Be specific and actionable
-❌ **Skipping red flags** - Warn about known issues
-
-**For Incoming AI:**
-
-❌ **Skipping the handover** - Read it first
-❌ **Asking questions answered in handover** - User will notice
-❌ **Not providing feedback** - If handover was bad, say so
-❌ **Diving straight into code** - Orient yourself first
-
----
-
-## Example: Good Handover
-
-```markdown
-# Handover - Quiz App
-
-## 1. Orientation
-New AI: Oriented via onboarding.md. We are in Implementation, midway through Sprint 3.
-
-## 2. The Delta
-- **Active Debate**: Extracted the `QuizEngine` (src/quiz/engine.ts). User is unsure if a pure class is too disconnected from React state. We are weighing a `Zustand` store as an alternative but haven't started.
-- **Failed Path**: Tried lifting state to the `App` component; it caused a render loop. Do not revert to that.
-- **In-Flight**: Engine logic is extracted but tests are currently failing on the transition from Q1 to Q2.
-
-## 3. Next Steps
-1. Debug `engine.test.ts` question transition failure.
-2. Discuss if `Zustand` is preferred over the current class approach.
-```
-
-**Why this is good:**
-
-- Points to other docs without duplicating them
-- Captures the refactoring discussion (not in docs yet)
-- Shows what was tried (ephemeral context)
-- Flags the decision that needs making
-- Specific next steps
-- Warns about known issue
-
----
-
-## Example: The Handover That Looked Perfect And Wasn't
-
-This is a real one. It is the reason Step 0 exists.
-
-```markdown
-## 1. Orientation
-Clean stop - nothing in flight, all work committed in both repos
-(Blendy `22e36f1`, Blocky `6854e21` at time of writing).
-```
-
-Accurate. Precise. Cited SHAs. **Both SHAs were unpushed local tips.** Eight
-commits across two repos lived on a single disk for a day, and were found only
-because a later session happened to run `git push` for an unrelated reason and
-watched a four-commit range fly past.
-
-Note what went wrong: nothing was *false*. The work genuinely was committed. The
-failure is that a confident, specific claim of safety **stops the next agent from
-checking**. A vague handover would have prompted a look; this one guaranteed
-nobody would.
-
-The fix is one command before you write. If Step 0 had run, the line would have
-read `**Durability:** Blendy ahead 4, Blocky ahead 4 — NOT pushed.` and the work
-would have been safe within the minute.
-
----
-
-## Remember
-
-**Handover is about the conversation, not just the state.**
-
-Capture what a new AI needs to pick up the discussion where you left off, not just know what's been done.
-
-If incoming AI has to ask "why did we choose X?" or "what have we tried?", the handover failed.
-
----
-
-## First-Agent Bootstrap (no docs exist yet)
-
-- Create `onboarding.md` with doc locations, workflow, and how to write handovers.
-- Create `DEVLOG.md` skeleton and note initial sprint.
-- If global preferences are provided, save to `./docs/.agents/global-preferences.md` (or `.agents/...` / `.claude/...` if already used).
-- If no spec is needed (meta project), say so explicitly; otherwise create `spec.md`.
-- Write a minimal `HANDOVER.md` capturing what you set up and any open decisions.
-
-## Fresh-Context Pickup (later agents)
-
-- Read `onboarding` → `handover` → `spec` → `DEVLOG`.
-- Verify the build immediately.
-- **Prune the handover**: If the handover context is now obsolete because of your first tool call, update it.
-- **Reset Context**: If the conversation gets too long, ask the user: "Should I write a fresh handover and reset our context to keep things fast?"
-
----
-
-**Continuous improvement:** Incoming AIs should provide feedback if handover was inadequate. This guide evolves based on what actually works.
+**Reply:** what the handover said was in flight, what you verified, and what
+you pruned.
