@@ -69,8 +69,11 @@ ones unblock or inform later ones.
   `handover-manager` done 2026-09-19 (2.3k -> 1.1k; Track 1 has no reference.md
   slot, so the lookup material ships as `assets/handover-reference.md` via the
   template dir; the inheritance pearl and the `wip:` mandate folded in).
-  `gemini-api` (1.5k, ids in body and description:
-  the description ones are triggers and stay, the body ones go). The
+  `gemini-api` done 2026-09-19 (1.5k -> 0.9k; description ids stay as
+  triggers, every id and limit number left the body for a "Discover, never
+  recall" step — `client.models.list()`, AI Studio rate-limit page, 429
+  `retryDelay` — with the tables kept as a dated do-not-copy snapshot in the
+  reference and the cookbook switched to a `MODEL` placeholder). The
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.

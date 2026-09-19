@@ -4,8 +4,11 @@ Complete, runnable snippets for the most-asked Gemini API use cases. Each
 example uses the current SDK (`google-genai` / `@google/genai`) and bakes in
 the 3.x conventions from `current-conventions.md`, so it's safe to copy.
 
-Default model in every example: `gemini-3.5-flash`. For latency or cost
-sensitivity, swap in `gemini-3.1-flash-lite`.
+Every example uses `MODEL`, a variable you set from `client.models.list()`
+(or `ai.models.list()` in JS) — never a literal id from memory or from this
+file. Pick the current-generation Flash for a production default, the
+Flash-Lite tier for cost or latency, hosted Gemma for free-tier batch work.
+The `SKILL.md` section "Discover, never recall" says why.
 
 ---
 
@@ -20,9 +23,10 @@ from google import genai
 from google.genai import types
 
 client = genai.Client()
+MODEL = "..."  # pick from client.models.list(); see SKILL.md "Discover, never recall"
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents="What's the capital of France?",
     config=types.GenerateContentConfig(
         system_instruction="Answer with only the city name, no punctuation, no commentary."
@@ -36,9 +40,10 @@ print(response.text)  # -> "Paris"
 ```typescript
 import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({});
+const MODEL = "...";  // pick from ai.models.list(); see SKILL.md "Discover, never recall"
 
 const response = await ai.models.generateContent({
-  model: "gemini-3.5-flash",
+  model: MODEL,
   contents: "What's the capital of France?",
   config: {
     systemInstruction: "Answer with only the city name, no punctuation, no commentary.",
@@ -62,7 +67,7 @@ text = "Hey, are you down to grab some pizza later? I'm starving!"
 target_lang = "German"
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=f"Translate the following text to {target_lang}: {text}",
     config=types.GenerateContentConfig(
         system_instruction="Output only the translated text. No explanation, no source, no commentary."
@@ -93,7 +98,7 @@ class ReviewAnalysis(BaseModel):
 review = "The boots look amazing and the leather is high quality, but they run way too small. I'm sending them back."
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=f"Analyze this customer review: {review}",
     config=types.GenerateContentConfig(
         response_mime_type="application/json",
@@ -127,7 +132,7 @@ schema = {
 }
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents="Analyze: The boots run too small, returning them.",
     config=types.GenerateContentConfig(
         response_mime_type="application/json",
@@ -153,7 +158,7 @@ const schema = {
 };
 
 const response = await ai.models.generateContent({
-  model: "gemini-3.5-flash",
+  model: MODEL,
   contents: "Analyze: The boots run too small, returning them.",
   config: {
     responseMimeType: "application/json",
@@ -178,7 +183,7 @@ with open("photo.jpg", "rb") as f:
     image_bytes = f.read()
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=[
         types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
         "What's in this image? List objects visible.",
@@ -200,7 +205,7 @@ const imagePart = {
 };
 
 const response = await ai.models.generateContent({
-  model: "gemini-3.5-flash",
+  model: MODEL,
   contents: [imagePart, "What's in this image? List objects visible."],
 });
 console.log(response.text);
@@ -222,7 +227,7 @@ my_file = client.files.upload(file="long_video.mp4")
 
 # Reference it in one or more generate_content calls
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=[my_file, "Summarize what happens in this video."],
 )
 print(response.text)
@@ -251,7 +256,7 @@ import httpx
 doc_data = httpx.get("https://example.com/document.pdf").content
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=[
         types.Part.from_bytes(data=doc_data, mime_type="application/pdf"),
         "Summarize this document in three bullet points.",
@@ -297,7 +302,7 @@ def get_current_time(timezone: str) -> str:
 client = genai.Client()
 
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents="What's the weather in Boston, and what time is it in New York?",
     config=types.GenerateContentConfig(
         tools=[get_current_weather, get_current_time],
@@ -342,7 +347,7 @@ weather_tool = types.Tool(function_declarations=[weather_decl])
 # 2. First call — model may emit a function_call
 user_prompt = "What's the weather in Boston?"
 response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model=MODEL,
     contents=user_prompt,
     config=types.GenerateContentConfig(tools=[weather_tool]),
 )
@@ -353,7 +358,7 @@ if response.function_calls:
     result = get_current_weather(**fc.args)
 
     final = client.models.generate_content(
-        model="gemini-3.5-flash",
+        model=MODEL,
         contents=[
             types.Content(role="user", parts=[types.Part.from_text(text=user_prompt)]),
             response.candidates[0].content,  # replay model's function_call turn
@@ -408,7 +413,7 @@ function getCurrentWeather(city: string) {
 const userPrompt = "What's the weather in Boston?";
 
 const response = await ai.models.generateContent({
-  model: "gemini-3.5-flash",
+  model: MODEL,
   contents: userPrompt,
   config: { tools: [{ functionDeclarations: [weatherDecl] }] },
 });
@@ -421,7 +426,7 @@ if (response.functionCalls && response.functionCalls.length > 0) {
   const responsePart = createPartFromFunctionResponse(fc.id, fc.name, { result });
 
   const final = await ai.models.generateContent({
-    model: "gemini-3.5-flash",
+    model: MODEL,
     contents: [
       { role: "user", parts: [{ text: userPrompt }] },
       response.candidates[0].content,

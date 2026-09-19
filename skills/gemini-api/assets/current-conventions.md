@@ -286,7 +286,17 @@ If you must persist conversations to a database, store the full `Content` object
 
 ---
 
-## Current Gemini 3.x models
+## Snapshot: models and free-tier limits (2026-06) — do not copy
+
+Everything in this section and the Gemma section below was true when it was
+written and is **not** to be pasted into code. Model ids, limits and defaults
+change faster than this file: run `client.models.list()` (or fetch the models
+overview page from the index at the end) for ids, and read your own limits at
+https://aistudio.google.com/rate-limit. The snapshot is here so you recognise
+the *shape* — which tier is for what, and that free-tier requests-per-day can
+differ by an order of magnitude between tiers — not for the numbers.
+
+### Gemini 3.x models as of the snapshot
 
 | Model | Model code | Input limit | Output limit | Knowledge cutoff | When to pick |
 |---|---|---|---|---|---|
@@ -300,7 +310,7 @@ Pre-3.x model IDs (`gemini-pro`, `gemini-1.5-flash`, `gemini-1.5-pro`, `gemini-2
 
 ---
 
-## Gemma 4 on the hosted Gemini API
+## Gemma 4 on the hosted Gemini API (ids and limits: snapshot, do not copy)
 
 Gemma 4 (Google's open-weight family, released April 2026, Apache 2.0) is served on the **same** hosted Gemini API as the Gemini-branded models — same `generativelanguage.googleapis.com/v1beta/models/{id}:generateContent` endpoint, same `google-genai` / `@google/genai` SDK, same request shape. You do NOT need to download weights or run a local server to use these via the API. (The smaller on-device variants — E2B, E4B — are open-weights-only and not served on the hosted API; only the two below are.)
 
@@ -313,7 +323,7 @@ Gemma 4 (Google's open-weight family, released April 2026, Apache 2.0) is served
 
 **Why Gemma 4 matters for batch work — free-tier RPD.** The free-tier requests-per-day limit is dramatically higher for Gemma than for the Gemini Flash models, which flips the usual default for high-volume jobs (captioning, judging, eval/search loops):
 
-| Model | Approx. free-tier RPD |
+| Model | Approx. free-tier RPD (2026-06 snapshot — read yours in AI Studio) |
 |---|---|
 | Gemma 4 | ~1,500 |
 | `gemini-3.1-flash-lite` | ~500 |
@@ -368,3 +378,31 @@ Footgun 1 above (**don't set `temperature` / `top_p` / `top_k`**) is specific to
 - If you genuinely need sampling control on Gemma, treat it as unverified: test empirically and check the current model card (https://ai.google.dev/gemma/docs/core/model_card_4) rather than assuming.
 
 This asymmetry — a rule that's load-bearing for Gemini 3.x but unverified for Gemma — is exactly the kind of thing that produces subtly wrong code when you pattern-match "it's all the Gemini API" too eagerly.
+
+---
+
+## Index of Google's docs pages
+
+Fetch these live with `WebFetch`; the skill body does not restate what they
+cover. If one 404s the page was reshuffled — start from
+https://ai.google.dev/gemini-api/docs and follow the left nav.
+
+| Topic | Where to look |
+|---|---|
+| Models overview (ids, limits, cutoffs) | https://ai.google.dev/gemini-api/docs/models |
+| Rate limits (per-model tables no longer published; see AI Studio) | https://ai.google.dev/gemini-api/docs/rate-limits |
+| Your actual limits | https://aistudio.google.com/rate-limit |
+| Pricing | https://ai.google.dev/gemini-api/docs/pricing |
+| Streaming (`generate_content_stream`) | https://ai.google.dev/gemini-api/docs/text-generation |
+| Async (`client.aio.models.*`) | https://ai.google.dev/gemini-api/docs/text-generation |
+| Multi-turn chat (`client.chats.create()`) | https://ai.google.dev/gemini-api/docs/chat |
+| Safety filters & `finish_reason` handling | https://ai.google.dev/gemini-api/docs/safety-guidance |
+| Structured output (beyond Pydantic basics) | https://ai.google.dev/gemini-api/docs/structured-output |
+| Caching | https://ai.google.dev/gemini-api/docs/caching |
+| `count_tokens` | https://ai.google.dev/gemini-api/docs/tokens |
+| Files API lifecycle (48h expiration, delete) | https://ai.google.dev/gemini-api/docs/files |
+| Vertex AI vs Gemini Developer API | https://ai.google.dev/gemini-api/docs/migrate-to-cloud |
+| Built-in tools (Search, URL context, code execution) | https://ai.google.dev/gemini-api/docs/tool-combination |
+| Migration checklist from pre-3.x ids | https://ai.google.dev/gemini-api/docs/whats-new-gemini-3.5 |
+| Running Gemma 4 via the hosted Gemini API | https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api |
+| Gemma 4 model card (variants, params, modalities) | https://ai.google.dev/gemma/docs/core/model_card_4 |
