@@ -1,9 +1,9 @@
 # Handover — human-training
 
-**Session date:** 2026-09-19
-**State:** **1.35.0, 1.36.0, 1.37.0 shipped** in one session — `leroy-jenkins`,
-`handover-manager`, `workflow-orientation` through the trim, each probed live
-before release. Tree clean and in sync. Nothing in flight.
+**Session date:** 2026-09-19 (second session)
+**State:** **1.38.0 and 1.39.0 shipped** — `onboarding-creator` and `gemini-api`
+through the trim, both probed live before release, CI green on both. Tree
+clean and in sync. Nothing in flight.
 
 What shipped is in the release notes; don't restate it here.
 
@@ -20,15 +20,16 @@ contested, unproven, or decided-but-not-obvious.
 
 **The verification technique works and it will lie to you if you use it wrong.**
 `claude -p --plugin-dir <repo> "<prompt>"` loads the working tree's `skills/`
-(the **build output**, so rebuild first or you probe the old body). Six clean
+(the **build output**, so rebuild first or you probe the old body). Eight clean
 probes now, one false result that once reached a release.
 
 **Rules, all non-optional:**
 
 1. **Pass `--allowedTools Skill Read Glob Grep Bash`**, plus `Agent` for skills
-   that dispatch and `Edit Write` for skills that write. Without it `Skill`
-   gets denied on some runs and not others, and a denied `Skill` call means the
-   agent hand-rolls the task while sounding authoritative.
+   that dispatch, `Edit Write` for skills that write, `WebFetch` for
+   `gemini-api`. Without it `Skill` gets denied on some runs and not others,
+   and a denied `Skill` call means the agent hand-rolls the task while
+   sounding authoritative.
 2. **Read outcomes, not requests.** `tool_use` is the model asking; the paired
    `tool_result` is what happened, and that is where a denial sits.
 3. **Count `Skill` calls in the stream — and know which trigger path you used.**
@@ -39,55 +40,95 @@ probes now, one false result that once reached a release.
    `onboarding.md` suppresses `human-training:*` triggers here.
 5. **Believe the subject.** When a run says in its own prose that a tool was
    blocked, it was. It will also tell you when it has spotted the fixture.
+6. **Print the final reply with `PYTHONIOENCODING=utf-8`.** The summarizer
+   script died on a `→` in the subject's last message under cp1252 and the
+   most important paragraph of the probe (what it could not verify) was
+   nearly missed.
 
 **Negative results are weak; positive results are strong.** The variance floor
 is two audit runs disagreeing on the headline finding.
 
-**Cost.** `/start`, `handover-manager`, `workflow-orientation` probes are
-$0.50–1. `leroy-jenkins` with a stated goal is ~$1.15 without subagents.
-`robustness-audit` is $6–15 because it dispatches.
+**Cost.** `/start`, `handover-manager`, `workflow-orientation`,
+`onboarding-creator` probes are $0.50–1. `gemini-api` on a review-and-fix
+prompt is ~$0.85. `leroy-jenkins` with a stated goal is ~$1.15 without
+subagents. `robustness-audit` is $6–15 because it dispatches.
 
-**Fixture.** A 60-line Python CLI (`tempo/`: parse a workout log, weekly
+**Fixtures.** A 60-line Python CLI (`tempo/`: parse a workout log, weekly
 totals; 3 pytest tests; `onboarding.md`, `docs/DEVLOG.md`, `TASKS.md` with three
-Active items) is enough for every non-audit skill. Five minutes to rebuild.
-Add a bare remote + one unpushed commit + one uncommitted red test for
-handover; four commits past the last DEVLOG entry for orientation.
+Active items) is enough for every non-audit skill; drop `onboarding.md` to
+probe `onboarding-creator`. Five minutes to rebuild. Add a bare remote + one
+unpushed commit + one uncommitted red test for handover; four commits past the
+last DEVLOG entry for orientation. For `gemini-api`: a captioner on the
+deprecated SDK with a retired id, `temperature`, `sleep(0.2)` and no error
+handling, README saying "600 images, free tier", **no `GEMINI_API_KEY`** —
+the missing key is the point (below).
 
 ## The delta (not in the files)
 
-- **The trim method is now 5 for 5** (`/start`, `robustness-audit`,
-  `antigravity-cli`, `codex-cli`, `image-gen`, then today's three). Keep every
-  rule that encodes a fact the model cannot see by looking. Fold anti-pattern
-  sections into the step they guard. Move templates, lists, history and worked
-  examples to a reference, pointed at from the step. Add a `Reply:` line. Probe
-  after. Dense skills (five states + a procedure) cut ~40%, not ~55% — don't
-  force it.
+- **The trim method is 10 for 11.** Only `critic-loop` remains (4.6k, already
+  has a reference, lowest expected gain — it may not be worth a release).
+  The classifier held on every skill: keep what the model cannot observe by
+  looking; fold anti-patterns into the step they guard; examples, templates,
+  lists and history go to a reference pointed at from the step; add `Reply:`.
+  Cuts ran 38% (`gemini-api`, dense with footguns) to 59% (`onboarding-creator`,
+  which carried each section three times).
+
+- **`/reload-plugins` does not refresh the marketplace catalog.** Verified
+  this session: after the reload the catalog clone was still at `15f698f`
+  (1.34.1), `lastUpdated` unchanged. Only a full app quit/relaunch runs the
+  autoUpdate fetch — exactly what `/start` 2d and `onboarding.md` §2 say, now
+  with evidence. Worth one line in `start`'s reference if it is not there.
+  Further proof of lag: **this session's `handover-manager` invocation loaded
+  the pre-1.36.0 body** (the old anti-patterns section, no `Reply:` line) —
+  the desktop app is serving the stale plugin while the repo is at 1.39.0.
+
+- **`autoUpdate` does fire on relaunch** — the catalog advanced 09-16 → 09-18
+  22:03 EDT and the install moved 1.34.0 → 1.34.1. It lags three-plus
+  releases only because that refresh ran 19 minutes before 1.35.0 landed. One
+  relaunch now should land 1.39.0 and close the TASKS item; not done yet
+  because Brad had other sessions mid-job both times.
+
+- **"No key → snapshot id + startup guard + say so" is the contract working.**
+  The `gemini-api` probe could not run `models.list()` (no key in the
+  environment), so it took an id from the do-not-copy snapshot, added a guard
+  that fails fast if the id is not live on the caller's key, and said in its
+  reply that the id and the limit numbers were unverified. Do not read a
+  hardcoded id in that situation as a miss; read a hardcoded id *without* the
+  guard and the disclosure as one.
+
+- **`onboarding-creator` ships two templates on purpose.** `assets/onboarding.md`
+  is minimal and defers to a local `docs/.agents/lifecycle.md`; the
+  self-contained skeleton in `assets/onboarding-reference.md` inlines the rules
+  for projects that carry no lifecycle guide. Collapsing them changes what the
+  asset assumes downstream — Brad's call, not a trim's. Undecided.
 
 - **Track 1 has no `reference.md` slot.** Guides ship through `build_skill` with
   synthesized frontmatter; the only extra files are `assets/` copied from
-  `workflow/templates/`. So a Track 1 reference lives at
-  `workflow/templates/<skill>-reference.md` and is added to the assets list in
+  `workflow/templates/`. A Track 1 reference lives at
+  `workflow/templates/<skill>-reference.md`, added to the assets list in
   **both** builders. Diff the two builders' output (`-OutputDir` on the ps1)
   before committing — CI does the same with `diff -r`.
 
-- **The Bash tool's heredoc mangles `\\`.** Twice today a Python patch that
-  should have written a backslash-newline continuation wrote a literal `\n`
-  into `build-skills.sh`; the build then silently skipped an asset named `n`.
-  The only tell is `WARNING: asset not found` in the build output. Grep the
-  build output for `warn` every time, and use the Edit tool, not a heredoc,
-  for builder edits.
+- **The Bash tool's heredoc mangles `\\`.** A Python patch that should write a
+  backslash-newline continuation writes a literal `\n` into `build-skills.sh`;
+  the build then silently skips an asset named `n`. The only tell is
+  `WARNING: asset not found` in the build output. Grep the build output for
+  `warn` every time, and use the Edit tool, not a heredoc, for builder edits.
+
+- **`Reply:` contracts now on 7 of 12 shipped skills** (`blast-radius`,
+  `gemini-api`, `handover-manager`, `leroy-jenkins`, `onboarding-creator`,
+  `show-me-your-work`, `workflow-orientation`). The TASKS item "add to every
+  skill" is half done as a side effect of trimming; the untrimmed ones
+  (`grill`, `tasks`, `project-checkup`, `lifecycle-manager`, `project-genesis`)
+  are where it is missing.
 
 - **`/start`'s docs-only contract is still contested.** Both `/start` probes
   read source diffs to explain a dirty tree, and it was the most useful line
   in the orientation. Undecided whether to permit `git diff --stat` on a dirty
   tree. Decided (1.34.0): the TASKS sweep is its one write.
 
-- **No model ids in skill bodies** (Brad, 2026-09-12; in memory too).
-  `gemini-api` is the last skill with ids in the body; it is on the queue.
-
-- **Issue #6 was bot outreach**, closed without comment: identical title on
-  216 repos from a 1,707-repo account funnelling into a 290-star/276-fork
-  "awesome" list. The tell is the star:fork ratio. Ignore the genre.
+- **Issue #6 was bot outreach**, closed without comment. The tell is the
+  star:fork ratio. Ignore the genre.
 
 - **`critic-loop` lives in two places on purpose.** `skills-source/` ships;
   `skills-drafts/critic-loop/rounds/` is the evidence log. Don't tidy it.
@@ -109,23 +150,26 @@ handover; four commits past the last DEVLOG entry for orientation.
 ## What is now actually verified
 
 Watched running with a sound instrument: **`/start`**, **`robustness-audit`**,
-**`antigravity-cli`**, **`codex-cli`**, **`leroy-jenkins`** (stated goal,
-unattended, floor respected), **`handover-manager`** (Step 0 first, `wip:`
-commit, offered push without pushing), **`workflow-orientation`** (zero writes,
-stopped at Discuss), **`critic-loop`** on itself. All under Claude Code only;
-**nothing has been live-run under Codex** despite three releases now claiming
-host-agnostic bodies.
+**`antigravity-cli`**, **`codex-cli`**, **`leroy-jenkins`**, **`handover-manager`**,
+**`workflow-orientation`**, **`critic-loop`** on itself, **`onboarding-creator`**
+(one trigger, reference opened only where the body points, `skip:` line for
+the inapplicable section, 115-line output with no padding), **`gemini-api`**
+(one trigger after the provider grep, SDK swapped, sampling params dropped
+with the Gemma caveat stated, introspected the installed SDK for timeout
+units instead of guessing). All under Claude Code only; **nothing has been
+live-run under Codex** despite five releases now claiming host-agnostic bodies.
 
-Still assumed: `grill`, `tasks`, `project-checkup`, `onboarding-creator`,
-`lifecycle-manager`, `project-genesis`, and everything in `skills-drafts/`.
+Still assumed: `grill`, `tasks`, `project-checkup`, `lifecycle-manager`,
+`project-genesis`, and everything in `skills-drafts/`.
 
 ## Toolchain data point
 
-Installed plugin is **1.34.0** (sha `039c50a`); catalog `lastUpdated`
-2026-09-16 20:57Z; repo is at **1.37.0**. Four releases unfetched. The
-"does `autoUpdate` fire on relaunch" task now has the cleanest fixture it will
-ever get — the relaunch was deferred today only because other sessions were
-mid-job. Do it first thing next session, before anything else moves.
+Installed plugin is **1.34.1** (sha `15f698f`); catalog `lastUpdated`
+2026-09-19 02:03Z; repo is at **1.39.0**. Five releases unfetched.
+`/reload-plugins` did not move it. **Quit and relaunch first thing next
+session**, then re-read `installed_plugins.json` and
+`marketplaces/human-training` — expected: catalog at `6d0317b`, installed
+1.39.0. That closes the "autoUpdate fires on relaunch" TASKS item.
 
 ---
 
