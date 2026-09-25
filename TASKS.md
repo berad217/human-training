@@ -77,9 +77,14 @@ ones unblock or inform later ones.
   classifier for what stays: could the model observe it by looking? Then it is
   not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
   generation.md`. Added 2026-09-12.
-- [ ] **Add a `**Reply:**` contract to every skill** — one closing line naming
-  exactly what to hand back. Every pstack skill has one; almost none of ours do.
-  Cheapest quality win in the audit.
+- [x] **Add a `**Reply:**` contract to every skill** (done 2026-09-25, 1.40.0) —
+  one closing line naming exactly what to hand back. Seven arrived with the
+  trims; `project-checkup`, `lifecycle-manager`, `project-genesis` added
+  directly, each aimed at that skill's overclaim (unrun components reported as
+  run, "tests pass" unrun, agent-made spec choices read as decided).
+  `grill` and `tasks` skip: their output is the conversation / the file itself,
+  and Brad finds grill's hand-back already satisfactory. Value of the line in
+  isolation is unmeasured.
 - [ ] **Adopt the `skip: <reason>` rule** — a step you choose not to do stays in
   the list with a one-line reason. Skipping silently is not allowed. Directly
   addresses the failure `/start`'s anti-patterns section already worries about.
@@ -96,8 +101,9 @@ ones unblock or inform later ones.
 - [ ] **Exercise the behavioural checklist** — unrun across 1.17–1.21 and the
   largest unverified surface in the repo. Cheapest entry point is one `/start` on
   a machine whose `autoUpdate` is off, confirming a `Toolchain:` line appears.
-- [ ] **Confirm `autoUpdate` fires on relaunch**, not just once when set. 2d is
-  built on the assumption that `lastUpdated` keeps advancing.
+- [x] **Confirm `autoUpdate` fires on relaunch** (done 2026-09-25), not just once
+  when set. Confirmed: after a relaunch the catalog advanced to `59f62ff`
+  (`lastUpdated` 2026-09-22) and the install moved 1.34.1 -> 1.39.0.
 - [ ] **Bring one other machine current by hand** — also tests whether the
   two-step recovery in `onboarding.md` §2 is written correctly.
 

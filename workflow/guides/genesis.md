@@ -149,3 +149,13 @@ Genesis is the only moment where this is free to fix, so fix it here:
 **Private repos only.** Memory holds working-style notes and project context that
 the human may not want public. If the new repo is or may become public, say so
 and leave memory out of it rather than migrating and hoping.
+
+---
+
+**Reply:** where the session landed — still exploring (the one or two questions
+worth carrying), build (the spec's path), not-build (the reasons), or parked
+(where the entry went). For a spec, list every choice you made that the human
+did not — stack, dependencies, data shapes, visual identity — so they can
+confirm each before a zero-context agent treats it as decided, and mark each
+omitted section `skip: <reason>`. Then which transition steps are done and
+which are still owed.
