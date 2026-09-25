@@ -39,11 +39,12 @@ When faced with ambiguity, use this threshold:
 - **MODERATE CONFIDENCE**: Spec is ambiguous, but there's a clear "best" path. -> **Do it, but highlight the choice in the DEVLOG.**
 - **LOW CONFIDENCE**: Multiple valid paths with significant tradeoffs, or spec is silent. -> **STOP. Propose 2-3 options to the human and wait for a decision.**
 
-**Reply** (each time you hand a unit of work back): what changed, by path; the
-test command you ran and its result, or `tests: not run` with the reason; each
-MODERATE-confidence call and where the DEVLOG records it; whether the work is
-committed and pushed (`ahead N` is not pushed); and the verdict — continue,
-sprint complete, or blocked on a named question.
+**Reply** (each time you hand a unit of work back): lead with what is blocked
+on the human (a LOW-confidence question, an approval), or say nothing is. Then
+what changed, by path; the test command you ran and its result, or
+`tests: not run` with the reason; each MODERATE-confidence call and where the
+DEVLOG records it; whether the work is committed and pushed (`ahead N` is not
+pushed); and whether the sprint continues or is complete.
 
 ---
 

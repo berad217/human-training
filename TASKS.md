@@ -21,6 +21,18 @@ ones unblock or inform later ones.
 
 <!-- pstack: pearls for existing skills -->
 
+- [x] **Opus 5.5 playbook pearls** (done 2026-09-25, 1.42.0; `robustness-audit`
+  skip: its report ends in the triage question, so all of it is "blocked on
+  you", and Cited-with-what-stopped-the-trace already is "where you looked") — from claude.dev "Getting
+  the most out of Opus 5.5" (2026-09-22). (1) `Reply:` on the long-run skills
+  (`leroy-jenkins`, `robustness-audit`, `lifecycle-manager`) leads with what is
+  blocked on the human, then changed, then found. (2) The unverified slots in
+  `gemini-api`, `project-checkup`, `robustness-audit` add "and where you
+  looked". (3) `leroy-jenkins`: status notes ride in the same message as the
+  next action; "want me to continue?" is never a stop. Opus 5.5's named
+  failure mode is stopping to report mid-run. Checked clean, no change: no
+  "think hard" lines, no reasoning-in-reply requests (a flag category now).
+
 - [ ] **`grill`: classify before you ask** — if the answer to a question is a fact
   you could observe by running something, it is not the human's to answer. Sketch
   it and let the result decide. Grill's design is one question at a time; this

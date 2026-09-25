@@ -127,6 +127,10 @@ pause protocol.
 
 Run this at the budget, on an explicit "stop", or when context is about to
 compact. "Keep going", "I'm going to bed", and "don't stop" mean *continue*.
+Finishing a chunk is not a reason to stop either: put the status note in the
+same message as the next action. A stop to summarise, to offer to continue, or
+to list choices that don't block the work is a pause nobody asked for, and on
+an unattended run nobody is there to answer it.
 
 1. **Stop at a safe boundary.** Finish or back out of the step in flight.
    Never leave a known-broken state. Start nothing new; let dispatched
@@ -142,6 +146,8 @@ compact. "Keep going", "I'm going to bed", and "don't stop" mean *continue*.
 A run that ends mid-edit with the plan only in context is unresumable, which
 costs more than the work it saved.
 
-**Reply:** where the run stopped; what is on disk versus still in your head
+**Reply:** first, what is waiting on the human (the open questions logged at
+LOW forks, anything parked as irreversible), or "nothing". Then where the run
+stopped; what is on disk versus still in your head
 (paths, not diffs); commits made and whether the tree is clean; the trail's
 path; and the first action on resume.

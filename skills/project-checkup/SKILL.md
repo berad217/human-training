@@ -164,7 +164,7 @@ The "next move" at the top is non-negotiable. The whole point of this skill is t
 
 **Size the report to what the pulse actually found.** A healthy project checks out in a handful of lines, and that brevity is the finding — it says "nothing is in your way, go." Sections with nothing in them get one line ("Friction: none") or get dropped, not filled. This report competes for attention with the work it's trying to send the user back to, so every line past the next move has to earn its place.
 
-**Reply:** the Phase 3 report and nothing after it. A component that was invoked but did not finish (denied, errored, cut short) is reported as *not run*, never summarized from what it would probably have found; a pulse signal you could not read (no remote, no `gh`, no git) says `unknown` rather than dropping out of the table.
+**Reply:** the Phase 3 report and nothing after it. A component that was invoked but did not finish (denied, errored, cut short) is reported as *not run*, never summarized from what it would probably have found; a pulse signal you could not read (no remote, no `gh`, no git) says `unknown` and what you tried, rather than dropping out of the table.
 
 ---
 

@@ -128,4 +128,4 @@ https://ai.google.dev/gemini-api/docs and follow the left nav.
 
 **Reply:** which model id you chose and how you confirmed it is live, which of
 the footguns applied to the code in hand, and any limit or default you could
-not verify and are treating as unknown.
+not verify, where you looked for it, and that you are treating it as unknown.
