@@ -66,6 +66,9 @@ scripts/verify-plugin-manifests.py
 .codex-plugin/plugin.json  Codex plugin manifest; points at the same skills/
 .github/workflows/         verify-skills.yml — `diff -r` of committed
                            skills/ against a fresh build plus manifest checks
+docs/maintainer-notes.md   Probing rules (read before probing anything),
+                           build gotchas, settled decisions
+HANDOVER.md                Live session delta only; TASKS.md is the queue
 ```
 
 User-facing communication style lives in the user's global CLAUDE.md (auto-

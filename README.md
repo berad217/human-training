@@ -258,6 +258,9 @@ for seven weeks and nineteen tagged releases (found 2026-09-25). So after every
 release: **claude.ai → Customize → Plugins → Add → Manage marketplaces →
 human-training ⋮ → Check for updates**, and confirm "Synced commit" shows the
 release's sha. Ten seconds, and it is the step that actually moves the copy.
+**Look at "Synced commit" before clicking:** the toggle was reset on
+2026-09-25, and if a release has already synced on its own, auto-sync works
+again and this step can shrink to a check.
 
 The desktop app may need a
 **full restart** (quit the process, not just the window) to drop its cached
