@@ -115,6 +115,17 @@ fields, not on a theory of the mechanism.
   removed in 1.25.0 on a misread probe (a denied `Skill` call looked like the
   check silently not firing) and restored in 1.26.0. Before deleting it again,
   confirm the probe actually loaded the skill.
+- **`git diff --stat` on a dirty tree, and no further.** Both probes before
+  1.41.0 broke the docs-only contract to read source diffs, and the result was
+  the most useful line in their orientations: it tied a dirty tree to the
+  thread that made it. `--stat` keeps that attribution at bounded cost and
+  without reading source; the content diff stays an offered move (decided
+  2026-09-25).
+- **Status tags.** Adapted from pstack `recall`'s output contract (1.41.0),
+  minus its PR tags, which need network `/start` doesn't use. The aim is
+  preventive, not incident-earned: prose "In flight" lets a handover's word
+  stand unchecked, and one tag per thread, taken from git where git can see,
+  puts any handover-versus-git mismatch on the page. Unprobed at release.
 - **Stranded memory.** Solo developer, desktop plus laptop: the global path
   fails silently, as an agent that has forgotten something the human is sure
   they said.

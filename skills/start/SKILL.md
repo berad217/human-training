@@ -17,7 +17,8 @@ and only for the sweep in §2: ticked items out of Active into Done as
 one-liners. That write is mechanical and lossless (the why is in the DEVLOG,
 the text in git), which is why it needs no approval; every other finding is
 offered. The other commands it runs are reads (`git status -sb`,
-`git worktree list --porcelain`, directory listings, the TASKS measurement).
+`git diff --stat HEAD` when the tree is dirty, `git worktree list --porcelain`,
+directory listings, the TASKS measurement).
 
 **Invoke only when explicitly selected:** `/human-training:start` in Claude
 Code or `$human-training:start` in Codex. Not on "let's get started" or "where
@@ -110,7 +111,10 @@ stops being read.
 
 **Durability.** `git status -sb`, first line. `[ahead N]` means N commits exist
 only on this disk: report and offer to push. No upstream, or in sync: say
-nothing.
+nothing. If the rest of the output shows a dirty tree, run
+`git diff --stat HEAD` (untracked names come from the status output) so each
+changed file can be pinned to a thread in §4. File names and line counts only:
+reading the diff itself is a move to offer, not to make.
 
 **Stranded memory (either host).** Repo-tracked `memory/MEMORY.md` is the
 shared source for private projects. Claude Code may also have useful notes at
@@ -143,7 +147,7 @@ the active Codex plugin installation.
 
 ```markdown
 **Where we are:** <one or two lines: current sprint/branch and its state>
-**In flight (from handover):** <mid-stream or unresolved, or "nothing — clean stop">
+**In flight:** <each thread + one tag, or "nothing — clean stop">
 **Last chronicle entry:** <date + one line, from DEVLOG or its equivalent>
 **Active tasks:** <top 1–3 from TASKS Active; omit the line if no TASKS.md>
 **Tasks:** <swept N to Done; Active is M items / K KB — park the rest? omit when nothing swept and under the bar>
@@ -153,6 +157,15 @@ the active Codex plugin installation.
 
 **Next:** I'd suggest <X> because <Y>. 1) <X> (recommended). 2) <alt>. 3) Stop / set your own direction.
 ```
+
+**Tag every thread** the handover calls in flight or unresolved, plus any work
+git shows that the handover doesn't mention. Exactly one tag each:
+`[shipped <sha|version>]`, `[committed, unpushed]`, `[uncommitted: <files>]`,
+`[in flight <branch>]`, `[undecided]`, `[not started]`. A thread with no tag is
+not done yet, so tag it. Tags come from git wherever git can see the state;
+when it can't (a PR, a pending decision), suffix `per handover`. When the
+handover and git disagree, tag what git shows and say so; that mismatch is
+usually the most useful line in the orientation.
 
 Keep it tight; the point is to remove inertia, not to produce a report. If the
 handover, DEVLOG, or TASKS Active names a concrete unfinished task, that is the

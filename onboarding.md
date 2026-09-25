@@ -185,7 +185,11 @@ human-training--vX.Y.Z --title "vX.Y.Z — <Title>" --notes-file <notes> --lates
 on a pushed annotated tag of the same name). The auto-update loop keys on
 releases; a version bump that is pushed but never released is invisible to it —
 1.27.0 sat that way for 23 days. Titles follow the house style: a short cheeky
-phrase that names the lesson, and a body that says what broke and why. Then the
+phrase that names the lesson, and a body that says what broke and why. Then
+press **Check for updates** on the claude.ai account marketplace (Customize →
+Plugins → Add → Manage marketplaces) and confirm the synced commit — its
+"sync automatically" trigger silently stopped for seven weeks in 2026, which
+left desktop and web on 1.21.1 (README, "...and to your phone, web, and the desktop app"). Then the
 user runs `/plugin update human-training@human-training` per Claude Code
 machine. Codex installs may need a plugin reinstall/cache refresh and a new
 thread.

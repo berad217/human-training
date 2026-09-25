@@ -122,10 +122,6 @@ the missing key is the point (below).
   (`grill`, `tasks`, `project-checkup`, `lifecycle-manager`, `project-genesis`)
   are where it is missing.
 
-- **`/start`'s docs-only contract is still contested.** Both `/start` probes
-  read source diffs to explain a dirty tree, and it was the most useful line
-  in the orientation. Undecided whether to permit `git diff --stat` on a dirty
-  tree. Decided (1.34.0): the TASKS sweep is its one write.
 
 - **Issue #6 was bot outreach**, closed without comment. The tell is the
   star:fork ratio. Ignore the genre.
@@ -162,14 +158,13 @@ live-run under Codex** despite five releases now claiming host-agnostic bodies.
 Still assumed: `grill`, `tasks`, `project-checkup`, `lifecycle-manager`,
 `project-genesis`, and everything in `skills-drafts/`.
 
-## Toolchain data point
+## Toolchain data point (2026-09-25)
 
-Installed plugin is **1.34.1** (sha `15f698f`); catalog `lastUpdated`
-2026-09-19 02:03Z; repo is at **1.39.0**. Five releases unfetched.
-`/reload-plugins` did not move it. **Quit and relaunch first thing next
-session**, then re-read `installed_plugins.json` and
-`marketplaces/human-training` — expected: catalog at `6d0317b`, installed
-1.39.0. That closes the "autoUpdate fires on relaunch" TASKS item.
+CLI install reached 1.39.0 after a relaunch (TASKS item closed). The
+**desktop/web** copy is a separate claude.ai-account copy and had been stuck
+at 1.21.1 for seven weeks with auto-sync on; "Check for updates" under Manage
+marketplaces moved it to 1.40.0. That is now a manual release step (README,
+onboarding). Whether auto-sync ever resumes on its own is unknown.
 
 ---
 

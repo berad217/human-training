@@ -251,7 +251,15 @@ claude plugin tag --push      # cuts + pushes human-training--vX.Y.Z (keys off p
 gh release create human-training--vX.Y.Z --title "vX.Y.Z — ..." --notes-file notes.md   # optional blurb
 ```
 
-Now the account copy has a real version to grab. The desktop app may need a
+Now the account copy has a real version to grab — **but grabbing it is not
+automatic in practice.** The account marketplace has a "Sync automatically
+(re-syncs on GitHub changes)" toggle, and it was on while the copy sat at 1.21.1
+for seven weeks and nineteen tagged releases (found 2026-09-25). So after every
+release: **claude.ai → Customize → Plugins → Add → Manage marketplaces →
+human-training ⋮ → Check for updates**, and confirm "Synced commit" shows the
+release's sha. Ten seconds, and it is the step that actually moves the copy.
+
+The desktop app may need a
 **full restart** (quit the process, not just the window) to drop its cached
 snapshot. Confirm by counting skills: `claude -p "list every human-training
 skill"` always reports the truth from the CLI — if the app shows *fewer*, it's

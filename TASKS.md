@@ -26,7 +26,7 @@ ones unblock or inform later ones.
   it and let the result decide. Grill's design is one question at a time; this
   says some of those questions shouldn't be asked at all. Also adopt "done as a
   falsifiable predicate" over "crisp and bounded".
-- [ ] **`start`: status tags on every thread** — steal `recall`'s output contract.
+- [x] **`start`: status tags on every thread** (done 2026-09-25, 1.41.0, with `git diff --stat` on a dirty tree) — steal `recall`'s output contract.
   Exactly one tag per thread: `[merged #N]`, `[open PR #N]`, `[in flight <branch>]`,
   `[verified, uncommitted]`, `[reverted]`, `[planned, not started]`. "A thread
   with no tag is not done yet, so tag it." Sharper than the current prose
