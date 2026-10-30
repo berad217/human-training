@@ -110,12 +110,12 @@ Your job:
 
 **A `coordinator` improvement PR arrives already built.** A coordinator run in
 another project opens one per run (that skill's §9). It changes
-`skills-source/coordinator/` (rules in SKILL.md or reference.md, rows appended
-to evidence.md) and carries the matching rebuilt `skills/coordinator/`, so CI
-is green. It bumps no version. Before merging, check CI and its scrub: this
-repo is public, so no names, paths, hosts or project figures. After merging,
-bump both manifests (patch for a rule change) and release per workflow #5.
-Several such PRs can share one bump.
+`skills-source/coordinator/` (rules in coordinator.md, worker.md or
+reference.md, rows appended to evidence.md) and carries the matching rebuilt
+`skills/coordinator/`, so CI is green. It bumps no version. Before merging,
+check CI and its scrub: this repo is public, so no names, paths, hosts or
+project figures. After merging, bump both manifests (patch for a rule change)
+and release per workflow #5. Several such PRs can share one bump.
 
 ### 2. Developing a skill *in this repo* (skills-drafts/ → skills-source/)
 

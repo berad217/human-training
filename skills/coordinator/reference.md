@@ -1,7 +1,7 @@
 # coordinator — reference
 
-Lookup material for [SKILL.md](SKILL.md). Nothing here is required reading. Each
-section is pointed at from the rule that needs it.
+Lookup material for [coordinator.md](coordinator.md). Nothing here is required
+reading. Each section is pointed at from the rule that needs it.
 
 ## Where the shift files live
 
@@ -16,10 +16,10 @@ both.
 | `<date>-log.md` | The shift log, append-only |
 | `decisions.md` | The live decision list. There is one, across shifts |
 | `<date>-return.md` | Each return brief. A new one marks the last one superseded |
-| `lanes/<lane>.md` | Lane notes |
+| `workers/<worker>.md` | Worker notes |
 | `skill-feedback.md` | The skill-feedback list, across runs |
 
-Lane trails follow `show-me-your-work` and stay on each lane's branch.
+Worker trails follow `show-me-your-work` and stay on each worker's branch.
 
 ## Preset checklists
 
@@ -41,11 +41,11 @@ go to the shift order.
       no-op build run? Does the package step raise an elevation prompt? Each
       "no" is settled before the human goes, or its work moves to their
       return.
-- [ ] **Roles:** every lane and peer the night could need is open now, including
-      a spare with only a queue. Peers on other machines are opened by the
+- [ ] **Roles:** every worker the night could need is open now, including a
+      spare with only a queue. Workers on other machines are opened by the
       human as native sessions.
 - [ ] **The machine:** name the gate. Main goes first, gates take the hold
-      first, and lanes leave gaps. On the human's own box: headless, idle
+      first, and workers leave gaps. On the human's own box: headless, idle
       priority, a memory floor.
 - [ ] **Budget:** the dial's position, the cap, the measured burn rate.
 - [ ] **Stop conditions:** the queue is done; the cap is reached; everything
@@ -61,7 +61,7 @@ go to the shift order.
 
 **Running.**
 
-- [ ] Wait on events, not the clock: lane reports, background tasks finishing,
+- [ ] Wait on events, not the clock: worker reports, background tasks finishing,
       and one long wake-up as a fallback.
 - [ ] Write at most one line per event to the transcript. The return brief is
       the real output.
@@ -74,21 +74,22 @@ go to the shift order.
 
 **Stopping.**
 
-- [ ] Each lane runs `leroy-jenkins`' pause protocol, or writes its lane note.
+- [ ] Each worker runs `leroy-jenkins`' pause protocol, or writes its worker
+      note.
 - [ ] Write the return brief as a file. Post it as the coordinator's first
       message when the human appears.
-- [ ] Add up to three skill deltas (SKILL.md §9).
+- [ ] Add up to three skill deltas (coordinator.md §9).
 
 ### Away day
 
 - [ ] The check-in times are in the shift order. Time the decision list for
       them.
-- [ ] Lane queues are two jobs deep, and veto in play is on.
+- [ ] Worker queues are two jobs deep, and veto in play is on.
 - [ ] Send at most one push between check-ins, for a ten-second answer that
       unblocks real work. The blocking tier can be answered from a phone, so
       *ask* where a night would *park*.
 - [ ] The burn backlog (reviews, docs, audits, jobs for another pool) is ready
-      as the day's filler, so lanes don't run dry when only the human's calls
+      as the day's filler, so workers don't run dry when only the human's calls
       are left.
 - [ ] Post the return brief at each check-in, carrying the open asks forward.
 
@@ -108,9 +109,10 @@ go to the shift order.
 
 ### Thrift
 
-- [ ] Run few lanes. Compact every idle context while it's warm, or retire it.
-- [ ] Machine-bound work goes first. Mechanical lanes get a cheaper model or a
-      lower effort.
+- [ ] Run few workers. Compact every idle context while it's warm, or retire
+      it.
+- [ ] Machine-bound work goes first. Mechanical workers get a cheaper model or
+      a lower effort.
 - [ ] The coordinator wakes rarely, in batches.
 - [ ] Put "thrift" in the first line of each report, so the human knows why
       things are slower.
@@ -121,8 +123,8 @@ go to the shift order.
       still runs.
 - [ ] Report the weekly figure, and flag a big spend before starting it. Don't
       pause on the cap alone.
-- [ ] Before the human leaves, offer the away or night preset (SKILL.md, the
-      invocation line).
+- [ ] Before the human leaves, offer the away or night preset (coordinator.md,
+      the invocation line).
 
 ## Templates
 
@@ -136,7 +138,7 @@ go to the shift order.
 **Machine:** <the gated resource, its gate, who goes first> · **Wake-me bar:** <never | machine emergency or data at risk | blocking tier, one push per gap>
 
 ## Queue (priority order)
-1. <item>: done means <...>. Lane <name>.
+1. <item>: done means <...>. Worker <name>.
 2. ...
 **Out of scope:** <...>
 **When it runs dry:** <machine queue | burn backlog items | stop spending>
@@ -148,17 +150,18 @@ go to the shift order.
 <Each step: settled now, or moved to the return with the work that depends on it.>
 
 ## Roster
-| Lane | Session id | Machine | Branch / worktree | Model, effort | Queue |
+| Worker | Session id | Machine | Branch / worktree | Model, effort | Queue |
 |---|---|---|---|---|---|
 
 ## Stop conditions
 Queue done · cap reached · everything left waits on the human · the gate red twice on the same thing · <return time>.
 ```
 
-### Lane brief
+### Worker brief
 
 ```markdown
-You are lane <name> in a coordinated shift. Coordinator: <session id>.
+You are worker <name> in a coordinated shift. Coordinator: <session id>.
+Invoke /human-training:coordinator; you are a worker.
 Read the shift order at <path> first, and again after any compaction.
 
 **Queue** (in order):
@@ -166,37 +169,19 @@ Read the shift order at <path> first, and again after any compaction.
 2. <item>. Done means <...>.
 3. <item>. Done means <...>.
 
-**When blocked:** send the question to the coordinator, with the options, your
-recommendation and what the answer unblocks. Then ship the reversible default
-as veto-in-play, or take the next item. Never wait in your own chat.
-
-**Rules you inherit:** the gate (<how to take the hold>; give it back between
-steps; leave a gap). <the project's never-list>. Commit on <branch> only; no
-push; no deletes. Stop and report on any refusal; never route around it. Stage
-outward-facing actions for the coordinator to ship. Anything touching main, the
-machine or another lane's files goes to the coordinator first.
-
-**Reports:** results, failures, decisions needed and handoffs, never status. The
-verdict goes in the first sentence: only about the first 400 characters reach
-the coordinator. If the human gives you work directly, tell the coordinator in
-one line.
-
-**Watching long runs:** wait on a background task's single completion, or a
-`Monitor` filtered to the lines that need action.
-
-**After merging main:** sync the git-ignored derived files your tests read
-before trusting a red.
-
-**Decisions:** `leroy-jenkins`' overlay. Keep the trail at <path>, per
-`show-me-your-work`.
-
-**Before idling long or retiring:** write your lane note at <path>.
+**The gate:** <the command that takes the hold, and the one that gives it back>.
+**Never, in this project:** <the project's never-list>.
+**Branch:** <branch>. **Worker note:** <path>.
+**Trail:** <path>, per `show-me-your-work`; decisions under `leroy-jenkins`' overlay.
 ```
 
-### Lane note
+Everything else a worker needs (whose word counts, never waiting, reports, what
+goes up) is in worker.md, which the invoke line loads. Don't restate it here.
+
+### Worker note
 
 ```markdown
-# Lane <name>: note, <date>
+# Worker <name>: note, <date>
 **Branch:** <branch> @ <sha> · merged to main: <yes, at <sha> | no>
 **Stopped at:** <one line>
 **First step on resume:** <one concrete action>
@@ -204,7 +189,7 @@ before trusting a red.
 **Waiting on:** <decision list item, or nothing>
 ```
 
-Under a page. This is handover-manager's ephemeral delta scoped to one lane.
+Under a page. This is handover-manager's ephemeral delta scoped to one worker.
 If it is in a file already, it doesn't belong here.
 
 ### Decision list
@@ -216,8 +201,8 @@ Answer by number: "1 yes, 2b, rest as recommended".
 ## While you're here (needs you in person or your credentials)
 - W1. <action>. Needed for <what it unblocks>.
 
-## Blocking (a lane or a release waits)
-1. <question>. **Recommend <X>**, because <Y>. Else <Z>. Unblocks <lane or item>.
+## Blocking (a worker or a release waits)
+1. <question>. **Recommend <X>**, because <Y>. Else <Z>. Unblocks <worker or item>.
 
 ## The recommendation stands if you say nothing (reversible)
 2. <question>. **Recommend <X>**. Settles at <the next check-in>.
@@ -229,7 +214,7 @@ Answer by number: "1 yes, 2b, rest as recommended".
 - <what changed>. Restore with <the switch, or the revert>.
 ```
 
-Number by what each answer unblocks, with waiting lanes first. Mark an item
+Number by what each answer unblocks, with waiting workers first. Mark an item
 carried over from an earlier brief as *(open since <date>)*. Prune an item the
 moment it is answered or lands.
 
@@ -241,9 +226,9 @@ moment it is answered or lands.
 **Waiting on you:** while-you're-here items first, then blocking decisions by number. Carried-over asks are marked (open since <date>). The full list is at <path>.
 **Landed:** <merges and pushes with SHAs; each round's result in one line>
 **Verified, and not:** <results with numbers; anything done but unproven, said plainly>
-**In flight:** <one line per lane: where it stopped, its first step on resume>
+**In flight:** <one line per worker: where it stopped, its first step on resume>
 **Went wrong:** <each failure, and what was done about it>
-**Spend:** <weekly x% to y% against the cap; machine time per lane if the box was the bottleneck>
+**Spend:** <weekly x% to y% against the cap; machine time per worker if the box was the bottleneck>
 **Cleanup offers:** <items for the trash, awaiting approval>
 **Skill deltas:** <up to three, or "none this run">. Feedback list: <path>
 ```
@@ -251,8 +236,38 @@ moment it is answered or lands.
 The human should be able to act on it in two minutes. Keep it to one screen.
 Give paths and SHAs, not diffs. Don't re-explain decisions the human already
 made, but do flag anything that changed in their world while they were away (a
-build ready to copy, a disk filling up). Publish a page per lane only when
-there are many lanes.
+build ready to copy, a disk filling up). Publish a page per worker only when
+there are many workers.
+
+### Roster report
+
+```markdown
+## Roster, <time> (<shift start | mid-shift | close | asked>)
+
+**<this machine>**
+| Worker | State | Job | Next job | Last report |
+|---|---|---|---|---|
+| <name> | working / idle / waiting on <X> | <job> | <job, or **none**> | <time> |
+
+**<another machine>**
+| <name> | <state> | <job> | <job, or **none**> | per its <HH:MM> report |
+
+**<sub-coordinator name>**, per its <HH:MM> report: its own roster, as one block.
+
+Not managed: <a session the coordinator didn't start or doesn't run, one line each>.
+```
+
+- **Build it from the host's listings, not from memory:** the linked-sessions
+  list for this machine, `ListAgents` for other machines, and each branch tip
+  against the last SHA the coordinator expected. A moved tip is a report the
+  coordinator may have missed.
+- **A row from another machine says where it came from.** The coordinator sees
+  that session's run state, not its work.
+- **Idle with no next job is the row to act on.** Give it work, or retire it.
+- **Sessions the coordinator doesn't run** (another project, a machine it
+  didn't know about) get one line under the table, never a row: listed, not
+  managed.
+- In a return brief, the roster replaces the **In flight** line.
 
 ### Skill-feedback list
 
@@ -269,7 +284,7 @@ never proposed to the skill.
 ### Skill delta
 
 ```markdown
-**Delta <n>:** <SKILL.md or reference.md>, <section>
+**Delta <n>:** <coordinator.md, worker.md or reference.md>, <section>
 **Old:** "<the exact text>"
 **New:** "<the exact text>"
 **Evidence:** feedback row <#> (<date>): <a scrubbed phrase>. Seen <once | in N runs>.
@@ -283,12 +298,12 @@ standing grants from project memory and confirm them; don't ask again.
 
 | Action | Default | Notes |
 |---|---|---|
-| Commit to lane branches | yes | one branch or worktree per lane |
-| Merge lanes into main | after the lane's own checks and a green round | never into a running round |
+| Commit to worker branches | yes | one branch or worktree per worker |
+| Merge worker branches into main | after the worker's own checks and a green round | never into a running round |
 | Push main | only if granted, standing or for this shift | scan the range for secrets and private material first |
 | Push other branches, or anything in **another repo** | no, unless granted for that repo | a grant for one repo doesn't cover another |
-| Publish, send, or any other outward-facing action | only from the session holding the human's request | lanes stage; the coordinator ships |
-| Start sessions | while the human is present | in their absence: existing lanes, or background subagents |
+| Publish, send, or any other outward-facing action | only from the session holding the human's request | workers stage; the coordinator ships |
+| Start sessions | while the human is present | in their absence: existing workers, or background subagents |
 | Releases, tags, deploys, packages for others | no | at the human's return |
 | Delete | to the trash only, for items pre-listed in the shift order | anything else is a cleanup offer; discarding uncommitted work counts as a delete |
 | Messages to people, purchases, accounts, settings, credentials, permissions, elevation | never | |
@@ -296,7 +311,7 @@ standing grants from project memory and confirm them; don't ask again.
 When the harness refuses something a grant allows: report it, park it, and move
 on. Never route the action through another session or tool.
 
-## The lane lifecycle options
+## The worker lifecycle options
 
 Costs are relative to a warm wake of a 400K context. "Small" means a wake after
 a compaction to about 50K.
@@ -306,18 +321,18 @@ a compaction to about 50K.
 | Keep idle, woken within the hour | none | 1 (warm) | nothing | |
 | Keep idle, woken after the hour | none | about 40 (cold) | nothing | |
 | Idle compaction | a warm read plus a summary | small, about 5 | detail | `idleCompaction`, on by default: the summary is written about 55 minutes into an idle stretch and applied at the next wake |
-| `/compact` while warm | a warm read plus a summary | small | detail | typed by the human; a lane can't type it. Untested: whether one sent by message runs as a command |
+| `/compact` while warm | a warm read plus a summary | small | detail | typed by the human; a worker can't type it. Untested: whether one sent by message runs as a command |
 | `/compact` after the hour | a cold read plus a summary | small | detail | the costly way round |
-| Lane note, then clear | one warm turn | a fresh start plus re-learning | everything not in the note | `clear_session` on an idle session this one started. Refused for a session serving Remote Control, a pinned one, or one open on screen |
-| Lane note, then archive | one warm turn | a fresh session, on the human's turn only | everything not in the note | `archive_session` |
-| A background subagent per job, no lane | the job only | none | its context, since only its summary returns | `Agent` with worktree isolation, startable on any turn |
+| Worker note, then clear | one warm turn | a fresh start plus re-learning | everything not in the note | `clear_session` on an idle session this one started. Refused for a session serving Remote Control, a pinned one, or one open on screen |
+| Worker note, then archive | one warm turn | a fresh session, on the human's turn only | everything not in the note | `archive_session` |
+| A background subagent per job, no worker | the job only | none | its context, since only its summary returns | `Agent` with worktree isolation, startable on any turn |
 
 ## The standing burn backlog
 
 This is work that is ready, token-bound and safe to run without the human,
 kept as a short list in TASKS. It is pre-approved. One pre-reset burn
 used four fresh sessions on the first four items below, and the ideas they
-produced became the next week's lanes.
+produced became the next week's queues.
 
 - a docs and agent-navigation map, checked path by path;
 - a memory index, regrouped;
@@ -331,25 +346,25 @@ produced became the next week's lanes.
 Docs-only items suit a separate budget pool. New findings become proposals for
 the human, not new work.
 
-## Peers on other machines
+## Workers on other machines
 
-- **Liveness is only half visible.** `ListAgents` shows a peer as running, idle
-  or offline, so check it before sending: a message to an offline peer won't
-  land. An idle peer still sends no turn notes or read receipts.
+- **Liveness is only half visible.** `ListAgents` shows such a worker as
+  running, idle or offline, so check it before sending: a message to an offline
+  one won't land. An idle one still sends no turn notes or read receipts.
 - **Ask for a "started" line with a deadline** (say 15 minutes). A missed
   deadline means unreachable: tell the human if they're around, otherwise
   reassign.
 - **A reassignment needs a stand-down.** The substitute drops its unmerged
   partial work cleanly, and the original resumes from its own branch.
-- **A peer started by a message can't start sessions,** so it works in its own
-  context, which grows with every job.
-- **Keeping a peer's context small,** cheapest first: message it only when it
-  must act; let idle compaction, or a `/compact` the human types while it's
-  still warm, keep it small; or try a *thin dispatcher*, where the peer runs
+- **A worker started by a message can't start sessions,** so it works in its
+  own context, which grows with every job.
+- **Keeping a remote worker's context small,** cheapest first: message it only
+  when it must act; let idle compaction, or a `/compact` the human types while
+  it's still warm, keep it small; or try a *thin dispatcher*, where the worker runs
   each job as a background subagent in its own worktree and only the job's
   summary lands in its context. The thin dispatcher is untested on long gated
   jobs (see Untested, below). Remote Control sessions can't be cleared by
-  tool, so a peer past a few hundred thousand tokens is cleared by the human
+  tool, so a worker past a few hundred thousand tokens is cleared by the human
   on their next visit to that box.
 
 ## The machine: a worked pattern
@@ -366,9 +381,10 @@ rules sit around them:
   file naming the job, its owner, its start time and its expected length)
   *before* waiting. Then it waits for the box to drain (free memory, no other
   heavy process), runs the job, and removes the hold. A pending hold from
-  main's round outranks a lane's. Every gate on the box polls at the same short
-  interval, seconds rather than a minute. A stale hold (its owner gone, or well
-  past its expected length) is broken and logged, never silently ignored.
+  main's round outranks a worker's. Every gate on the box polls at the same
+  short interval, seconds rather than a minute. A stale hold (its owner gone,
+  or well past its expected length) is broken and logged, never silently
+  ignored.
 - **The round script.** It takes the hold once and keeps it from the build
   through the gate tests, the regenerated-artifact check and the full suite. It
   writes the full log to disk and filters only for display. It demands the test
@@ -400,18 +416,18 @@ calibrate against the usage meter.
 | A fresh session | the harness prefix (tools, skills, system prompt: tens of thousands of tokens) plus the brief, but it must re-learn the job |
 
 From one project's transcripts, 2026-10-24 to 10-27: one coordinator, about
-half a dozen lanes, two machines.
+half a dozen workers, two machines.
 
-- About nine in ten coordinator wakes were injected (lane turn notes, peer
-  messages, task completions), not the human. Re-reading was nearly all of the
+- About nine in ten coordinator wakes were injected (worker turn notes,
+  messages from other machines, task completions), not the human. Re-reading was nearly all of the
   coordinator's raw tokens and well over half its cost.
 - Nearly half the coordinator's wakes were one-request acknowledgements, each
   re-reading the whole context.
-- Cold lane wakes were the largest avoidable cost, about a sixth of all spend.
-  Over half came in bursts, where one dispatch woke several cold lanes within
-  minutes. A handful were pure FYIs.
-- Lanes' own `Monitor` events were most lane wakes, mostly warm one-request
-  turns: several percent of spend.
+- Cold worker wakes were the largest avoidable cost, about a sixth of all
+  spend. Over half came in bursts, where one dispatch woke several cold workers
+  within minutes. A handful were pure FYIs.
+- Workers' own `Monitor` events were most worker wakes, mostly warm
+  one-request turns: several percent of spend.
 - Compacting while warm made the next rewarm about 8× smaller. Most manual
   compactions of the coordinator were typed after an hour idle, so each paid
   the cold read first.
@@ -430,7 +446,7 @@ half a dozen lanes, two machines.
 - **The window:** `autoCompactWindow` (100,000-1,000,000), `/autocompact
   <value>`, `--autocompact`, or `CLAUDE_CODE_AUTO_COMPACT_WINDOW`. A lower
   window caps the worst case but compacts long investigations mid-task. Leave
-  the default unless lanes keep hitting the full window.
+  the default unless workers keep hitting the full window.
 - **Off:** `"autoCompactEnabled": false`, or `DISABLE_AUTO_COMPACT` for one
   session. Don't turn it off for an unattended shift: a session that fills its
   context with nobody there stalls.
@@ -462,7 +478,7 @@ half a dozen lanes, two machines.
   the statusline script. An untested idea: a statusline script that also
   writes its JSON to a file the coordinator reads.
 - **`autoContinueAtUsageLimit`** (on by default in interactive claude.ai
-  sessions) waits in the open session and resumes after the reset, so a lane
+  sessions) waits in the open session and resumes after the reset, so a worker
   that hits the 5-hour limit pauses rather than dies.
 - **Waiting without polling:**
   - `/loop` with no interval paces itself with `ScheduleWakeup`.
@@ -494,18 +510,18 @@ half a dozen lanes, two machines.
   event began. The one exception is a side-session event right after the
   human's own turn.
 - **`SendMessage`** to a `local_…` id: "delivered" means the turn started, and
-  "queued" means it runs after the current one. A Remote Control peer gives no
-  receipts beyond that. **`ListAgents`** shows peers as running, idle or
-  offline. That is the liveness check before a send.
-- **A lane's turn note** reaches the coordinator with only its first 400
+  "queued" means it runs after the current one. A Remote Control worker gives no
+  receipts beyond that. **`ListAgents`** shows workers on other machines as
+  running, idle or offline. That is the liveness check before a send.
+- **A worker's turn note** reaches the coordinator with only its first 400
   characters quoted. The full text needs `list_events`.
 - **`clear_session`** clears a session this one started. It is refused for a
   session serving Remote Control, a pinned one, or one open on screen. `"self"`
   clears the coordinator itself once its turn ends.
 - **`set_session_model` and `set_session_effort`:** moving a started session to
   a cheaper model needs no prompt.
-- **`archive_session` and `detach_session`:** detaching keeps a lane alive when
-  the coordinator retires.
+- **`archive_session` and `detach_session`:** detaching keeps a worker alive
+  when the coordinator retires.
 - **`PushNotification`** reaches the phone when the session has Remote Control
   on, and is skipped while the human is active at the terminal. At the desk it
   answered "Not sent — this terminal is active". Ten minutes after the human's
@@ -523,7 +539,7 @@ Client 2.1.308, with no `idleCompaction` key in settings.
   transcript marks the boundary `trigger: auto, precomputed: true`. The session
   shows "Compacted using a summary written while you were away".
 - Sizes: a coordinator went from about 460K, and later from about 310K, to
-  under 60K each time. A lane went from about 470K to 25K.
+  under 60K each time. A worker went from about 470K to 25K.
 - It did not fire for eight idle wakes earlier the same day, so it was probably
   switched on from the server that morning. It also didn't fire for a later
   94-minute idle at about 170K, which rewarmed in full. It may act only above
@@ -532,9 +548,9 @@ Client 2.1.308, with no `idleCompaction` key in settings.
 ### 2026-10-28
 
 - An app update switched Remote Control off for every local session.
-  Messaging between sessions on the same machine kept working. Peers on another
-  machine stayed reachable, because their Remote Control is set on their own
-  box. `notify_when_idle` was not offered for those sessions in that release.
+  Messaging between sessions on the same machine kept working. Workers on
+  another machine stayed reachable, because their Remote Control is set on
+  their own box. `notify_when_idle` was not offered for those sessions in that release.
 
 ### Untested
 
