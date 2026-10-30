@@ -13,9 +13,6 @@ is `TASKS.md`; durable know-how is `docs/maintainer-notes.md`.
 - **`skills-drafts/night-shift/` is untracked and must stay out of git.** It
   is the coordinator's pre-scrub draft: it names people, machines and a
   project. Undecided (Brad): move it out of the repo, or gitignore it.
-- **Merged branch still checked out** in `../ht-coordinator-worker`
-  (`coordinator-worker-role`, local and remote). Safe to remove once nothing
-  is running there.
 
 ## Next
 
