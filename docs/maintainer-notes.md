@@ -112,3 +112,7 @@ line).
 - **Branch protection:** "Bypassed rule violations" on push is the rule working.
 - **Issue #6 was bot outreach**, closed without comment. The tell is the
   star:fork ratio. Ignore the genre.
+- **Pull requests stay enabled.** `coordinator` §9 lands its improvements here
+  as PRs. With the repo's Pull requests feature off (found and re-enabled
+  2026-10-30), `gh pr create` fails with a permissions error even for the
+  admin. Merge those PRs on GitHub; the bump commit goes straight to main.

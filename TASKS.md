@@ -21,82 +21,21 @@ ones unblock or inform later ones.
 
 <!-- pstack: pearls for existing skills -->
 
-- [x] **Opus 5.5 playbook pearls** (done 2026-09-25, 1.42.0; `robustness-audit`
-  skip: its report ends in the triage question, so all of it is "blocked on
-  you", and Cited-with-what-stopped-the-trace already is "where you looked") — from claude.dev "Getting
-  the most out of Opus 5.5" (2026-09-22). (1) `Reply:` on the long-run skills
-  (`leroy-jenkins`, `robustness-audit`, `lifecycle-manager`) leads with what is
-  blocked on the human, then changed, then found. (2) The unverified slots in
-  `gemini-api`, `project-checkup`, `robustness-audit` add "and where you
-  looked". (3) `leroy-jenkins`: status notes ride in the same message as the
-  next action; "want me to continue?" is never a stop. Opus 5.5's named
-  failure mode is stopping to report mid-run. Checked clean, no change: no
-  "think hard" lines, no reasoning-in-reply requests (a flag category now).
-
 - [ ] **`grill`: classify before you ask** — if the answer to a question is a fact
   you could observe by running something, it is not the human's to answer. Sketch
   it and let the result decide. Grill's design is one question at a time; this
   says some of those questions shouldn't be asked at all. Also adopt "done as a
   falsifiable predicate" over "crisp and bounded".
-- [x] **`start`: status tags on every thread** (done 2026-09-25, 1.41.0, with `git diff --stat` on a dirty tree) — steal `recall`'s output contract.
-  Exactly one tag per thread: `[merged #N]`, `[open PR #N]`, `[in flight <branch>]`,
-  `[verified, uncommitted]`, `[reverted]`, `[planned, not started]`. "A thread
-  with no tag is not done yet, so tag it." Sharper than the current prose
-  "In flight" line.
-- [x] **`handover-manager`: a pickup is inheritance** (done 2026-09-19, 1.36.0) — the handover skill says
-  what to write; it never tells the reader not to redo the work. Add: the prior
-  agent already paid the cost, resist re-deriving. And name the tell — a "let me
-  verify from scratch" pass means treating the trail as untrustworthy when it's
-  actually authoritative. Also mandate the `wip:` commit before handing over.
-- [x] **`onboarding-creator`: the Diátaxis mode-picker** (done 2026-09-19, 1.38.0) — one document, one mode.
-  Two questions (action vs understanding, learning vs work) pick tutorial /
-  how-to / reference / explanation. One paragraph, not a skill; the rest of
-  pstack's 11KB `technical-writing` doesn't earn its keep here.
 
 <!-- skill-authoring craft, applies across skills-source/ -->
 
-- [ ] **Trim the rest of the skill bodies the way `/start` was trimmed (1.29.0)** —
-  fold anti-pattern sections into the body, move mechanics and history to a
-  `reference.md`, keep every incident-earned fact, then probe before and after
-  with `Skill` permitted. `robustness-audit` done in 1.30.0 (4.2k -> 1.6k, and the
-  probe found a recursion bug the words were hiding). Remaining, by size:
-  `antigravity-cli` done 2026-09-12 (3.2k -> 1.3k, and it was a rewrite: the
-  stdout bug it was built around was fixed in agy 1.0.15). Remaining, by size:
-  `codex-cli` done 2026-09-12 (2.8k -> 1.3k, ids out of the body; installed
-  0.144.6 re-verified, npm at 0.154.0 not installed). Remaining, by size:
-  `image-gen` done 2026-09-12 (2.2k -> 1.1k; the built-in tool's backing model
-  is no longer named anywhere, so the body points at Codex's runtime image
-  skill instead). `leroy-jenkins` done 2026-09-19 (2.3k -> 1.2k; host tool
-  names generalised so it runs under Codex, the moot "dispatch in one block"
-  line deleted, `Reply:` contract added, `agents/openai.yaml` added). Remaining,
-  by size: `critic-loop` (4.6k, already has a reference.md, lowest expected
-  gain), `onboarding-creator` done 2026-09-19 (3.1k -> 1.3k words, the biggest
-  cut yet: it carried each section three times — explained, exemplified,
-  templated — so the examples, self-contained skeleton, peer-sessions block
-  and checklist moved to `assets/onboarding-reference.md`; the Diátaxis
-  picker folded in as the classifier for what does not belong in onboarding),
-  `workflow-orientation` done 2026-09-19
-  (2.5k -> 1.5k; five states plus memory migration is dense, so the cut is
-  shallower; templates and boilerplate to `assets/workflow-orientation-reference.md`),
-  `handover-manager` done 2026-09-19 (2.3k -> 1.1k; Track 1 has no reference.md
-  slot, so the lookup material ships as `assets/handover-reference.md` via the
-  template dir; the inheritance pearl and the `wip:` mandate folded in).
-  `gemini-api` done 2026-09-19 (1.5k -> 0.9k; description ids stay as
-  triggers, every id and limit number left the body for a "Discover, never
-  recall" step — `client.models.list()`, AI Studio rate-limit page, 429
-  `retryDelay` — with the tables kept as a dated do-not-copy snapshot in the
-  reference and the cookbook switched to a `MODEL` placeholder). The
-  classifier for what stays: could the model observe it by looking? Then it is
-  not a rule. Source: `docs/the-new-rules-of-context-engineering-for-claude-5-
-  generation.md`. Added 2026-09-12.
-- [x] **Add a `**Reply:**` contract to every skill** (done 2026-09-25, 1.40.0) —
-  one closing line naming exactly what to hand back. Seven arrived with the
-  trims; `project-checkup`, `lifecycle-manager`, `project-genesis` added
-  directly, each aimed at that skill's overclaim (unrun components reported as
-  run, "tests pass" unrun, agent-made spec choices read as decided).
-  `grill` and `tasks` skip: their output is the conversation / the file itself,
-  and Brad finds grill's hand-back already satisfactory. Value of the line in
-  isolation is unmeasured.
+- [ ] **Trim `critic-loop` the way `/start` was trimmed (1.29.0)** — the last
+  body this item named (4.6k, already has a reference.md, lowest expected gain).
+  Fold anti-patterns into the body, move mechanics and history to `reference.md`,
+  keep every incident-earned fact, probe before and after with `Skill` permitted.
+  The classifier: could the model observe it by looking? Then it is not a rule.
+  The nine earlier trims and their numbers are in this file's git history
+  (1.30.0–1.39.0). Source: `docs/the-new-rules-of-context-engineering-for-claude-5-generation.md`.
 - [ ] **Adopt the `skip: <reason>` rule** — a step you choose not to do stays in
   the list with a one-line reason. Skipping silently is not allowed. Directly
   addresses the failure `/start`'s anti-patterns section already worries about.
@@ -110,12 +49,14 @@ ones unblock or inform later ones.
 
 <!-- carried from HANDOVER.md, not from the audit -->
 
+- [ ] **Probe 1.40–1.44, riskiest first** — `/start` status tags on `tempo/`
+  with a handover that overclaims; then `leroy-jenkins`' no-stop line. None of
+  1.40–1.44 has been probed.
+- [ ] **Decide: `onboarding-creator`'s two templates** — collapse or keep
+  (Brad's call, open since 2026-09-25).
 - [ ] **Exercise the behavioural checklist** — unrun across 1.17–1.21 and the
   largest unverified surface in the repo. Cheapest entry point is one `/start` on
   a machine whose `autoUpdate` is off, confirming a `Toolchain:` line appears.
-- [x] **Confirm `autoUpdate` fires on relaunch** (done 2026-09-25), not just once
-  when set. Confirmed: after a relaunch the catalog advanced to `59f62ff`
-  (`lastUpdated` 2026-09-22) and the install moved 1.34.1 -> 1.39.0.
 - [ ] **Bring one other machine current by hand** — also tests whether the
   two-step recovery in `onboarding.md` §2 is written correctly.
 
@@ -169,6 +110,12 @@ ones unblock or inform later ones.
 
 ## Done
 
+- [x] ~~Opus 5.5 playbook pearls: Reply leads with blocked-on-you; "and where you looked"; status notes ride with the next action~~ (2026-09-25) - 1.42.0
+- [x] ~~`start`: status tags on every thread, plus `git diff --stat` on a dirty tree~~ (2026-09-25) - 1.41.0
+- [x] ~~Add a `**Reply:**` contract to every skill~~ (2026-09-25) - 1.40.0
+- [x] ~~Confirm `autoUpdate` fires on relaunch~~ (2026-09-25)
+- [x] ~~`onboarding-creator`: the Diátaxis mode-picker~~ (2026-09-19) - 1.38.0
+- [x] ~~`handover-manager`: a pickup is inheritance~~ (2026-09-19) - 1.36.0
 - [x] ~~`critic-loop`: graduate the draft; first two off-image runs logged (the draft judged itself, 2 rounds, 4 critics); shipped in 1.28.0~~ (2026-09-11)
 - [x] ~~Prove a by-name skill reference resolves at runtime (rung 5); found and fixed a UTC bug~~ (2026-08-19)
 - [x] ~~Graduate `blast-radius` to `skills-source/`~~ (2026-08-19)
