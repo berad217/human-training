@@ -1,6 +1,6 @@
 ---
 name: codex-cli
-description: Use when driving OpenAI's Codex CLI non-interactively / headlessly — `codex exec`, running Codex from a script or another agent, capturing its output to a file, or automating a Codex call. Triggers include "run codex from the command line", "codex headless / non-interactive", "codex exec", "is there a codex -p", "automate codex", "codex hangs / stuck with no output", "capture codex output", "codex in CI". Do NOT use for the interactive Codex TUI, the Codex desktop GUI app, or for the OpenAI cloud/Responses API or non-Codex tools.
+description: Use when driving OpenAI's Codex CLI non-interactively / headlessly — `codex exec`, running Codex from a script or another agent, capturing its output to a file, or automating a Codex call. Triggers include "run codex from the command line", "codex headless / non-interactive", "codex exec", "is there a codex -p", "automate codex", "codex hangs / stuck with no output", "capture codex output", "codex in CI", "resume / message a codex session", "hand a job to a codex worker", "how much codex usage is left". Do NOT use for the interactive Codex TUI, the Codex desktop GUI app, or for the OpenAI cloud/Responses API or non-Codex tools.
 allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, WebFetch]
 ---
 
@@ -13,7 +13,7 @@ no external "run this prompt" entry point; you need the standalone CLI
 For image generation and editing through Codex's built-in tool, see the
 `image-gen` skill, which builds on the mechanics here.
 
-**Verified against `codex-cli 0.144.6` on 2026-09-12.** Flags and models drift
+**Verified against `codex-cli 0.166.0` on 2026-11-02** (first written on 0.144.6). Flags and models drift
 between versions; `codex exec --help` on the target machine is the authority.
 On first use compare `codex --version` with `npm view @openai/codex version`
 and tell the user once if they differ: an agent driving Codex headlessly is
@@ -123,7 +123,46 @@ npm install, which inherits the login.
 | Won't edit files | Sandbox is `read-only`. `-s workspace-write`. |
 | A parallel run's output is missing | Shared `-o` path, last writer wins. One path per run. |
 | Output opens with a can't-write apology | Read-only agent told to save its own file. Strip it, or scoped `workspace-write`. |
+| `thread-store conflict … active writer` on resume | The desktop app has that thread loaded. Use a CLI-owned thread, or quit the app fully. |
+| `index.lock: Permission denied` on commit | `.git` is read-only in the sandbox. Commit from the driving agent. |
+| `failed to load models cache: missing field …` | CLI older than the desktop app. `npm i -g @openai/codex@latest`. |
 | Non-ASCII garbled on Windows | Console encoding. Cosmetic if symmetric; normalise before a machine parse. |
+
+## Driving a worker thread: resume, messages, limits
+
+A run is a thread on disk (`$CODEX_HOME/sessions/**/rollout-*.jsonl`), so an
+agent can hold a conversation with one, not just fire one-shots.
+
+- **Talk to it again:** `codex exec resume <thread-id> "msg" -o reply.md < /dev/null`
+  appends a turn with its full history. `resume` takes no `-s`; pass
+  `-c 'sandbox_mode="workspace-write"'`. The id is the banner's `session id:`.
+- **One writer per thread, enforced.** The desktop app holds a writer lock on
+  every thread it has *loaded*, open on screen or not, and a resume fails with
+  `thread-store conflict: … already has an active writer`. Drive threads you
+  started from the CLI, or quit the app fully (tray, not the window close).
+  Never resume a thread the human has open.
+- **It can't hear you mid-turn,** but it can talk: tell it to drop short notes
+  as files in a folder inside its writable root (an outbox), and watch that
+  folder. Its final message is the turn's end. A blocked worker writes the
+  question and ends its turn; you answer by resuming. Mid-turn steering needs
+  the app-server protocol (`turn/steer`), not `exec`.
+- **Commits are yours.** Under `workspace-write` the repo's `.git` is
+  read-only to the agent, and a linked worktree's metadata lives outside its
+  root anyway, so `git commit` fails on `index.lock`. Have it stop at "files
+  ready, checks green", rerun its check yourself, and commit for it.
+- **No network either:** shell `git fetch`/`push` fail. App-configured
+  connectors (a GitHub one) can still work when you don't pass
+  `--ignore-user-config`. `-c sandbox_workspace_write.network_access=true`
+  should open it (untested here); it is the human's call.
+- **Approval is forced to `never`** under `exec`: nothing reaches the human,
+  and anything needing escalation just fails back to the model. The sandbox is
+  the whole permission story.
+- **Usage, without a run:** each turn's rollout carries `token_count` events
+  with `rate_limits.primary` (the 300-minute window) and `.secondary` (the
+  week): `used_percent` and `resets_at` (epoch). Read the newest rollout before
+  you dispatch. The app-server protocol also has `account/rateLimits/read`
+  (seen in the generated schema, not exercised). Model and effort per turn are
+  in `turn_context`; thread names in `session_index.jsonl`.
 
 Hooks (`SessionStart`, `PreToolUse`, `Stop`, …) are reactive: they run when
 Codex does something and cannot start a run. To launch, use `codex exec`; to
@@ -137,4 +176,9 @@ both carry the final message, the banner reports model, sandbox and effort,
 and an open dataless stdin pipe hangs until timeout with the
 `Reading additional input` line. npm's latest that day was 0.154.0; its release
 notes to that point mention no change to `exec`'s stdin, capture or sandbox
-flags (0.154.0 adds managed worktrees to `exec`, unverified here).*
+flags (0.154.0 adds managed worktrees to `exec`, unverified here).
+Re-verified 2026-11-02 on 0.166.0 (the app bundled 0.166.0-alpha): resume of a
+desktop thread, the writer-lock refusal while the app ran, the read-only `.git`,
+no network, forced `approval: never`, and rate limits in the rollout, across two
+real jobs handed to fresh CLI threads with outbox notes watched by another
+agent.*

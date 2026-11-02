@@ -124,6 +124,29 @@ the gated resource and its gate.
 The worked pattern is in reference.md. No scripts ship; they belong to the
 project.
 
+### Codex workers: delegate regularly
+
+A second vendor's agent is capacity the coordinator's own budget doesn't pay
+for, and a hedge against one vendor. Use it every shift, not as an afterthought.
+
+- **What goes to Codex:** self-contained jobs with a written job file, an owned
+  file list and a self-test that goes RED first: tooling, scripts, checkers,
+  reports. When a Claude worker is about to take one of those, write it as a
+  Codex job instead. Engine runs, shared-gate work and anything needing the
+  human's judgement stay with Claude workers.
+- **How:** the `codex-cli` skill's worker-thread section. One fresh CLI-owned
+  thread per job, in a full clone or worktree outside the desktop app's own
+  folders. Model and effort from the human's Codex config (raise effort for
+  jobs that are expensive to get wrong). An outbox folder plus a watcher for
+  its notes. The coordinator reruns the check and commits for it, then reviews
+  by resuming the thread.
+- **Pace it:** read Codex's 5-hour and weekly `used_percent` before each
+  dispatch, and don't start a job the 5-hour window can't finish.
+- **Keep it findable:** a registry file per worker (thread id, folder, branch,
+  model, state). A compaction drops ids; a file doesn't.
+- **Rails:** no push and no PR from the worker, never drive a thread the human
+  has open, and network only if the human says so.
+
 ### On disk, in the repo
 
 Keep the shift's state in the project repo, so a coordinator on any machine
@@ -338,6 +361,8 @@ Improving the coordinator is part of every run's job.
 - **`handover-manager`:** a worker note is its ephemeral delta for one worker.
   If the coordinator itself must hand over mid-shift, it writes a normal
   handover.
+- **`codex-cli`** is how the coordinator drives Codex workers (§3, Codex
+  workers).
 - **`start`** is unchanged. The human returns to the coordinator's own session,
   where the return brief is the first message.
 
