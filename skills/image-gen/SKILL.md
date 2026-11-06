@@ -102,7 +102,8 @@ cp "$src" ./out.png
 
 Then Read `out.png`. Two reasons this is yours to do: on Windows Codex's own
 attempts to copy the PNG into the workspace were blocked by policy even under
-`workspace-write`, and the `-o` file's path and id are usually right but not
+`workspace-write` (with `--ignore-user-config`, that sandbox comes up read-only
+on Windows; see `codex-cli`), and the `-o` file's path and id are usually right but not
 always (one run reported the calling agent's session id, scraped from the
 working-directory path). A wrong id fails loudly with an empty `ls`; the banner
 is free.

@@ -53,11 +53,19 @@ codex exec --ignore-user-config -s read-only \
    servers, custom tools) can't perturb or stall the run. Auth still works.
    It also skips any `model =` line there, so the run gets the CLI's own
    default model. That is wanted: leave `-m` out (see Models and effort).
-4. **Pick the sandbox deliberately.** `read-only` for read-and-analyse,
-   `workspace-write` (plus `--add-dir`) only when it should edit,
-   `danger-full-access` only inside something already isolated. `codex exec`
-   never prompts mid-run; command failures go back to the model, not to a
-   human.
+   **On Windows it also skips `[windows] sandbox`**, the key that turns on
+   the Windows sandbox (the desktop app's setup writes it, `"elevated"` on
+   the box this was verified on). Without that key, a `-s workspace-write`
+   run comes up `sandbox: read-only` with no warning and can't write
+   anything. Put it back on the command line:
+   `-c 'windows.sandbox="elevated"'`.
+4. **Pick the sandbox deliberately, then read it back.** `read-only` for
+   read-and-analyse, `workspace-write` (plus `--add-dir`) only when it should
+   edit, `danger-full-access` only inside something already isolated. The
+   banner's `sandbox:` line is the sandbox of record, the same way `model:`
+   is the model of record: a writing job whose banner says `read-only` will
+   fail, so stop it and fix the call. `codex exec` never prompts mid-run;
+   command failures go back to the model, not to a human.
 
 ## Reading the capture
 
@@ -132,7 +140,8 @@ npm install, which inherits the login.
 | Wrong or stale model | Read the banner. A stale model is a pin: `-m` in the call or `model =` in `config.toml`. Drop it. Effort: `-c 'model_reasoning_effort="…"'`. |
 | `The '<id>' model is not supported when using Codex with a ChatGPT account` | A retired id pinned in `config.toml` or `-m`. Delete the pin; updating the CLI alone does not fix it. |
 | Config key rejected after upgrade | `--strict-config` to surface it, or `codex doctor`. |
-| Won't edit files | Sandbox is `read-only`. `-s workspace-write`. |
+| Won't edit files | Read the banner's `sandbox:` line. If it's `read-only`, add `-s workspace-write`. |
+| Asked for `workspace-write`, banner says `sandbox: read-only` | Windows with `--ignore-user-config`: the `[windows] sandbox` key was skipped too. Add `-c 'windows.sandbox="elevated"'`, or drop `--ignore-user-config`. |
 | A parallel run's output is missing | Shared `-o` path, last writer wins. One path per run. |
 | Output opens with a can't-write apology | Read-only agent told to save its own file. Strip it, or scoped `workspace-write`. |
 | `thread-store conflict … active writer` on resume | The desktop app has that thread loaded. Use a CLI-owned thread, or quit the app fully. |
@@ -147,7 +156,8 @@ agent can hold a conversation with one, not just fire one-shots.
 
 - **Talk to it again:** `codex exec resume <thread-id> "msg" -o reply.md < /dev/null`
   appends a turn with its full history. `resume` takes no `-s`; pass
-  `-c 'sandbox_mode="workspace-write"'`. The id is the banner's `session id:`.
+  `-c 'sandbox_mode="workspace-write"'` (plus the Windows key above if you
+  pass `--ignore-user-config`). The id is the banner's `session id:`.
 - **One writer per thread, enforced.** The desktop app holds a writer lock on
   every thread it has *loaded*, open on screen or not, and a resume fails with
   `thread-store conflict: … already has an active writer`. Drive threads you
@@ -196,4 +206,11 @@ real jobs handed to fresh CLI threads with outbox notes watched by another
 agent. 2026-11-06 on 0.167.0: a `model =` pin in `config.toml` that the user
 didn't remember setting was refused by a ChatGPT login and survived the CLI
 update. With the pin deleted, the same config's run took the CLI's default
-(`gpt-6.1-sol`) and kept the configured effort.*
+(`gpt-6.1-sol`) and kept the configured effort. Same day, same version, Windows:
+a writing job launched with `--ignore-user-config -s workspace-write` came up
+`sandbox: read-only` with no warning. A one-file probe reproduced it: with
+`--ignore-user-config`, the banner said read-only and the shell write was
+blocked; without it, the banner said `workspace-write [workdir, /tmp, $TMPDIR]`
+and the file was written; with `--ignore-user-config` and
+`-c 'windows.sandbox="elevated"'`, the banner said workspace-write and the file
+was written. Only the `elevated` value was tried.*

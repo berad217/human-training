@@ -76,8 +76,13 @@ runs is a hypothesis, not a rule; the banner is free either way.
 
 Every attempt Codex made to `Copy-Item` the PNG into the workspace was
 `rejected: blocked by policy`, including under `-s workspace-write`, and the
-banner read `sandbox: read-only` regardless. Suspected Windows execpolicy;
-POSIX hosts may differ. Under `read-only` the `-o` file was sometimes only a
+banner read `sandbox: read-only` regardless. At the time this was put down to
+Windows execpolicy. A 2026-11-06 probe on 0.167.0 points to a likelier cause:
+these calls pass `--ignore-user-config`, which on Windows also skips the
+`[windows] sandbox` key that `workspace-write` needs, so the run falls back to
+read-only (see `codex-cli`, step 3 of the canonical call). The image runs
+themselves weren't repeated with the key, so harvesting stays the method either
+way. Under `read-only` the `-o` file was sometimes only a
 preamble with no path; on 0.146.0 all three runs reported an exact, correct
 PNG path, so it improved, but "usually right" is not a contract to script
 against.
