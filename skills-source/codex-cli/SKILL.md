@@ -33,7 +33,6 @@ The canonical call:
 
 ```bash
 codex exec --ignore-user-config -s read-only \
-  -m <model-id> \
   -c 'model_reasoning_effort="high"' \
   -o ANSWER.md \
   "Your full prompt here." \
@@ -52,7 +51,8 @@ codex exec --ignore-user-config -s read-only \
    you want that.
 3. **`--ignore-user-config`** skips `config.toml` so a heavy local setup (MCP
    servers, custom tools) can't perturb or stall the run. Auth still works.
-   It also discards your configured model default, so pass `-m` explicitly.
+   It also skips any `model =` line there, so the run gets the CLI's own
+   default model. That is wanted: leave `-m` out (see Models and effort).
 4. **Pick the sandbox deliberately.** `read-only` for read-and-analyse,
    `workspace-write` (plus `--add-dir`) only when it should edit,
    `danger-full-access` only inside something already isolated. `codex exec`
@@ -75,12 +75,23 @@ run's identity.
 
 ## Models and effort
 
-`-m` takes any model id the account can use; there is no CLI command that
-lists them, the TUI's `/model` picker does, and the current family with a
-tier-to-tier mapping against Claude is in `reference.md`, dated. Don't copy
-an id from a document older than the CLI. The stderr banner's `model:` line is
-the model of record: asked which model it is, the agent often names the wrong
-one.
+**Leave `-m` out by default.** With no `-m` and no `model =` in
+`config.toml`, a run gets the CLI's own default, the current flagship for that
+CLI version. Keeping the CLI current (the check at the top) is then what keeps
+the model current. A pinned id does the opposite: when a better model ships,
+the pinned one keeps running at the same price, and nothing says so. The pin
+hides in three places: an `-m <id>` in a script, a `model =` line in
+`config.toml` (a model picker may have written it, so the user often doesn't
+know it is there), and an id copied from a dated document. Pinned ids also get
+retired per login: a ChatGPT login refuses an older one outright. If the
+user's `config.toml` has a `model =` line they didn't choose on purpose, offer
+to delete it, not to update it to today's id.
+
+Pass `-m` only to pick a tier on purpose, a cheaper one for volume, say. No CLI
+command lists the ids; the TUI's `/model` picker does, and the tier mapping
+against Claude is in `reference.md`, dated. Don't copy an id from a document
+older than the CLI. The stderr banner's `model:` line is the model of record,
+pinned or not: asked which model it is, the agent often names the wrong one.
 
 Reasoning effort is the second dial, `-c 'model_reasoning_effort="high"'`,
 confirmed by the banner's `reasoning effort:` line. Spend `high` or above on
@@ -118,7 +129,8 @@ npm install, which inherits the login.
 | `command not found`, but `~/.codex` has valid auth | The desktop app's dir. Install the CLI with npm; don't script against the bundled exe. |
 | Auth errors | `codex login`, `codex doctor`, confirm `$CODEX_HOME/auth.json`. |
 | Slow startup, errors loading skills or MCP | Heavy `config.toml`. `--ignore-user-config`. |
-| Wrong model or effort | Read the banner. Pass `-m` (required with `--ignore-user-config`) and `-c 'model_reasoning_effort="…"'`. |
+| Wrong or stale model | Read the banner. A stale model is a pin: `-m` in the call or `model =` in `config.toml`. Drop it. Effort: `-c 'model_reasoning_effort="…"'`. |
+| `The '<id>' model is not supported when using Codex with a ChatGPT account` | A retired id pinned in `config.toml` or `-m`. Delete the pin; updating the CLI alone does not fix it. |
 | Config key rejected after upgrade | `--strict-config` to surface it, or `codex doctor`. |
 | Won't edit files | Sandbox is `read-only`. `-s workspace-write`. |
 | A parallel run's output is missing | Shared `-o` path, last writer wins. One path per run. |
@@ -181,4 +193,7 @@ Re-verified 2026-11-02 on 0.166.0 (the app bundled 0.166.0-alpha): resume of a
 desktop thread, the writer-lock refusal while the app ran, the read-only `.git`,
 no network, forced `approval: never`, and rate limits in the rollout, across two
 real jobs handed to fresh CLI threads with outbox notes watched by another
-agent.*
+agent. 2026-11-06 on 0.167.0: a `model =` pin in `config.toml` that the user
+didn't remember setting was refused by a ChatGPT login and survived the CLI
+update. With the pin deleted, the same config's run took the CLI's default
+(`gpt-6.1-sol`) and kept the configured effort.*

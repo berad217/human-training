@@ -4,6 +4,11 @@ Dated material and worked recipes behind `SKILL.md`.
 
 ## The model family, as of 2026-09-12 (for the record; confirm before use)
 
+History, not advice: by 2026-11-06 the default of CLI 0.167.0 on a ChatGPT
+login was `gpt-6.1-sol`, two generations past this table. Run unpinned (no
+`-m`, no `model =` in `config.toml`) and read the banner; use this table only
+to pick a tier on purpose.
+
 The live frontier family was GPT-5.6 in three tiers. The mapping onto Claude
 tiers is the useful part; the ids will rot.
 
@@ -25,13 +30,13 @@ for 5.6 before the config reference listed it; confirm on your version.
 
 **Read-only analysis to a file (the workhorse):**
 ```bash
-codex exec --ignore-user-config -s read-only -m <id> -o REVIEW.md \
+codex exec --ignore-user-config -s read-only -o REVIEW.md \
   -c 'model_reasoning_effort="high"' \
   "Read ./src and ./docs/spec.md. List the top 5 mismatches between spec and implementation." \
   < /dev/null
 ```
 
-**Structured JSON output (mechanical extraction, cheapest tier):**
+**Structured JSON output (mechanical extraction, cheapest tier, so `-m` on purpose):**
 ```bash
 codex exec --ignore-user-config -s read-only -m <id> \
   --output-schema schema.json -o result.json \
@@ -46,7 +51,7 @@ codex exec -s workspace-write -o SUMMARY.md \
 
 **Throwaway smoke test:**
 ```bash
-codex exec --ephemeral --ignore-user-config -m <id> "Reply with exactly: OK" < /dev/null
+codex exec --ephemeral --ignore-user-config "Reply with exactly: OK" < /dev/null
 ```
 
 ## Detecting the CLI on a box that only has the desktop app
