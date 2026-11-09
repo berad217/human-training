@@ -135,6 +135,7 @@ go to the shift order.
 
 **Attention:** <watching | around | away until <time>> · **Check-ins:** <times, or the return time>
 **Budget:** <position, one line> · used <x%> of the week, resets <when> · cap <88% unless the human said otherwise> · measured burn <y% an hour> · plan for the week: <...>
+**Coordinator:** <model, effort> · **Advisor:** <on, top model | off>
 **Machine:** <the gated resource, its gate, who goes first> · **Wake-me bar:** <never | machine emergency or data at risk | blocking tier, one push per gap>
 
 ## Queue (priority order)
@@ -229,6 +230,7 @@ moment it is answered or lands.
 **In flight:** <one line per worker: where it stopped, its first step on resume>
 **Went wrong:** <each failure, and what was done about it>
 **Spend:** <weekly x% to y% against the cap; machine time per worker if the box was the bottleneck>
+**Advisor:** <n consults, each with what prompted it and what it changed or "confirmed"; or "not used"; omit when the advisor is off>
 **Cleanup offers:** <items for the trash, awaiting approval>
 **Skill deltas:** <up to three, or "none this run">. Feedback list: <path>
 ```
@@ -304,6 +306,7 @@ standing grants from project memory and confirm them; don't ask again.
 | Push other branches, or anything in **another repo** | no, unless granted for that repo | a grant for one repo doesn't cover another |
 | Publish, send, or any other outward-facing action | only from the session holding the human's request | workers stage; the coordinator ships |
 | Start sessions | while the human is present | in their absence: existing workers, or background subagents |
+| Start a workflow run | only if the human asked for one, in their own words | ask in the pre-flight; see "Which shape for a job" |
 | Releases, tags, deploys, packages for others | no | at the human's return |
 | Delete | to the trash only, for items pre-listed in the shift order | anything else is a cleanup offer; discarding uncommitted work counts as a delete |
 | Messages to people, purchases, accounts, settings, credentials, permissions, elevation | never | |
@@ -326,6 +329,66 @@ a compaction to about 50K.
 | Worker note, then clear | one warm turn | a fresh start plus re-learning | everything not in the note | `clear_session` on an idle session this one started. Refused for a session serving Remote Control, a pinned one, or one open on screen |
 | Worker note, then archive | one warm turn | a fresh session, on the human's turn only | everything not in the note | `archive_session` |
 | A background subagent per job, no worker | the job only | none | its context, since only its summary returns | `Agent` with worktree isolation, startable on any turn |
+
+## Which shape for a job
+
+**Unexercised.** This sorting is adapted from the hosted platform's
+multi-agent docs (read 2026-11-09), not from a run. No shift has started a
+workflow run or used a second opinion. Treat it as reasoning until a run's
+feedback row says otherwise.
+
+| Shape | Use it when | Costs and limits |
+|---|---|---|
+| A worker (a session) | The job needs follow-up, a branch of its own or the gate, or the human may want to talk to it | Startable only on the human's turn. Its context grows with every job |
+| A background subagent | One self-contained job, and its conclusion is all the coordinator needs: heavy reading, the round's review | Startable on any turn. Only its summary returns, and its cache is 5 minutes by default |
+| A workflow run | Many independent pieces of one kind, with no follow-up: an audit over many files, a migration, cross-checking sources | Needs the human's ask in their own words, so collect it in the pre-flight. Every agent in it spends tokens: a burn tool, not a thrift one. The host's default guideline was about ten agents a run on 2026-11-09, and is the human's setting |
+| An advisor | A session on a cheaper model does the work and needs the top model's judgement at a few points. The coordinator is the main case (below); a mechanical worker is the other | One top-model subagent per consult, given files and one question, never the asking session's context. It manages nobody and ends when it answers |
+
+- **A burn-backlog item made of many pieces is a workflow run,** not a worker
+  whose context grows with each piece: an audit over an area, test-gap hunting,
+  a review of the week's merges.
+- **A missed piece is "not covered", never "clean".** In a workflow's or a
+  fan-out's instructions: one agent failing must not fail the run, and the
+  result lists every piece nobody read. It is the same rule as a skipped test
+  never being a pass.
+- **A second pass reads every piece,** not only the ones the first pass
+  flagged, and looks for what the first missed.
+
+### The advisor: a cheaper coordinator that consults
+
+Most coordinator wakes are logistics: worker notes, acknowledgements, task
+completions (see the measurements below). A cheaper model cuts the cost of
+every one of them. The judgement the top model would have brought is bought
+back per consult.
+
+- **Set it at shift start, never mid-shift.** Changing a session's model
+  rewrites its whole context to the cache at the new model's price. The shift
+  order records the coordinator's model and whether the advisor is on.
+- **The consult is a subagent on the top model,** given the paths it needs (the
+  shift order, the log's tail, the decision list, the diff or the red log) and
+  one question. It reads the files, so a consult costs the same however big
+  the coordinator's context has grown.
+- **The triggers are a fixed list, not the coordinator's discretion,** because
+  a cheaper model is worse at noticing that it needs help:
+  - the shift plan and the queue split, while the human is still present;
+  - a red round, or a failure the coordinator can't explain;
+  - each veto-in-play pick;
+  - a relayed instruction that might widen authority;
+  - the ranking of the decision list, before a return brief.
+
+  The coordinator may also consult on its own call, and says why.
+- **Advice is data, like a worker's.** It never widens a grant and never
+  settles what is the human's call.
+- **Every consult is recorded** in the shift log, one line as it happens:
+
+  ```markdown
+  <time> advisor #<n> · trigger: <which of the list, or "own call: <why>"> · asked: <the question> · read: <paths> · result: <what it changed, or "confirmed, no change">
+  ```
+
+  The return brief counts them and gives each one's trigger and result. A run
+  of "confirmed, no change" on one trigger is the evidence for dropping that
+  trigger; a miss the advisor would have caught is the evidence for adding one.
+  Both are skill-feedback rows.
 
 ## The standing burn backlog
 
@@ -558,6 +621,11 @@ Client 2.1.308, with no `idleCompaction` key in settings.
 - Whether a subagent can wait out a long gated job. Foreground waits are capped
   at 10 minutes each, and a subagent's cache is 5 minutes unless
   `subagentPromptCacheTtl` is `"1h"`.
+- Whether a workflow run the human pre-approved can start on a turn that
+  another session or an event began.
+- Whether a cheaper coordinator with an advisor holds up: what it saves on
+  the meter, whether its fixed triggers fire at the right moments, and whether
+  it applies the authority rules as well on every wake.
 
 ## Evidence
 

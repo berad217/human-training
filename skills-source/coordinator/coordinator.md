@@ -216,6 +216,7 @@ reading. A question costs one glance from the human, never one worker-hour.
    that another session or an event began. So open every worker the shift could
    need while the human is present, including a spare with only a queue. In
    their absence, new work goes to existing workers or to background subagents.
+   Which shape fits which job is tabled in reference.md.
 9. **The roster report.** At shift start, mid-shift, in the close brief and
    whenever the human asks: one row per worker, grouped by machine, with its
    state, its job, its next job or **none**, and its last report. Build it from
@@ -279,7 +280,9 @@ green round or the human's read.
   at medium effort, and moves up if its reports go wrong. Code, design and
   taste stay on the top model.
 - **Keep the coordinator lean,** and keep what it knows on disk, so that losing
-  its context costs nothing that matters.
+  its context costs nothing that matters. Unexercised option: run it on a
+  cheaper model with a top-model advisor, every consult logged (reference.md,
+  "The advisor").
 - **Workers on other machines** grow with every job, and every message
   rewarms them. Message one only when it must act; the cheaper options are in
   reference.md.
