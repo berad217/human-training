@@ -66,6 +66,12 @@ codex exec --ignore-user-config -s read-only \
    is the model of record: a writing job whose banner says `read-only` will
    fail, so stop it and fix the call. `codex exec` never prompts mid-run;
    command failures go back to the model, not to a human.
+   **On Windows the sandbox can't run programs that live outside its roots.**
+   A venv's `python.exe` is a launcher that starts the base interpreter it
+   was made from (`home =` in `pyvenv.cfg`, often under `%APPDATA%\uv\python\`),
+   so every Python call fails `Access is denied`. Grant that directory with
+   `--add-dir <home>`. That makes it writable too, so tell the worker not to
+   write there.
 
 ## Reading the capture
 
@@ -142,6 +148,7 @@ npm install, which inherits the login.
 | Config key rejected after upgrade | `--strict-config` to surface it, or `codex doctor`. |
 | Won't edit files | Read the banner's `sandbox:` line. If it's `read-only`, add `-s workspace-write`. |
 | Asked for `workspace-write`, banner says `sandbox: read-only` | Windows with `--ignore-user-config`: the `[windows] sandbox` key was skipped too. Add `-c 'windows.sandbox="elevated"'`, or drop `--ignore-user-config`. |
+| `Unable to create process using '…\.venv\Scripts\python.exe' …: Access is denied` (Windows) | The venv launcher starts a base interpreter outside the sandbox. `--add-dir` the `home =` path from `pyvenv.cfg`. `disk-full-read-access` does not fix it. |
 | A parallel run's output is missing | Shared `-o` path, last writer wins. One path per run. |
 | Output opens with a can't-write apology | Read-only agent told to save its own file. Strip it, or scoped `workspace-write`. |
 | `thread-store conflict … active writer` on resume | The desktop app has that thread loaded. Use a CLI-owned thread, or quit the app fully. |
@@ -213,4 +220,8 @@ a writing job launched with `--ignore-user-config -s workspace-write` came up
 blocked; without it, the banner said `workspace-write [workdir, /tmp, $TMPDIR]`
 and the file was written; with `--ignore-user-config` and
 `-c 'windows.sandbox="elevated"'`, the banner said workspace-write and the file
-was written. Only the `elevated` value was tried.*
+was written. Only the `elevated` value was tried. 2026-11-09 on 0.166.0, Windows,
+elevated sandbox: the venv `python.exe` and the uv base interpreter both failed
+`Access is denied`, and still did with
+`-c 'sandbox_permissions=["disk-full-read-access"]'`. With
+`--add-dir <pyvenv.cfg home>` the venv ran and imported the project.*
