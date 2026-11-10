@@ -1,6 +1,6 @@
 ---
 name: critic-loop
-description: Iterate an artifact whose quality has no test — only a perceiver — against fresh, blind critic agents. On invocation, designs a harness for THIS artifact (rubric, gate, budget in rounds, walls for what the critic cannot see) and proposes it for approval before any round is spent; then runs a free inner loop and rationed critic rounds, logs a per-line vector, and treats a documented stop as a deliverable. Model- and artifact-agnostic. Triggers include "does this read as X", "would a stranger get this", "am I too close to this", "fresh eyes", "critic round", "review loop", "iterate with a reviewer", "is this recognisable / persuasive / clear / obvious what it's for". Explicit invocation via /critic-loop. Not for qualities that have a test — use the test.
+description: Iterate an artifact whose quality needs a perceiver against fresh, blind critics. Proposes an artifact-specific harness (rubric, gate, round budget, executable walls) for approval before spending rounds; then iterates, logs per-line scores, and documents the stop. Model- and artifact-agnostic; includes a UI hill climb for screens and flows. Triggers include "does this read as X", "would a stranger get this", "am I too close to this", "fresh eyes", "critic round", "review loop", "iterate with a reviewer", "is this recognisable / persuasive / clear / obvious what it's for", "design this screen", "UI hill climb", "iterate the menu", "which layout reads best". Explicit invocation via /critic-loop. Not for qualities that have a test — use the test.
 ---
 
 # /critic-loop — Iterating against a fresh pair of eyes
@@ -19,9 +19,10 @@ into changes.** This skill is the method, independent of model and artifact.
 What it produces first, on every invocation, is a **harness** for the artifact
 in hand — and it does not spend a round until the human has approved it.
 
-**Evidence.** Brad's design. Three image subjects over fifteen rounds and one
-prose subject over two rounds, every rule tagged with the round that earned it
-or the `n=0` that says it has not. The stories behind each rule, the harnesses
+**Evidence.** Brad's design. Three image subjects over fifteen rounds, one
+prose subject over two rounds, and one UI subject with round logs 0–11 in
+[ui.md](ui.md). Observations and proposed guards are marked separately.
+The stories behind each rule, the harnesses
 that have run, and the untested classes are in [reference.md](reference.md);
 `[ref: key]` below points into it.
 
@@ -169,7 +170,16 @@ class has run with. Which rows to trust:
 |---|---|---|
 | Rendered model / image | **n=15 rounds, three subjects** | `reference.md` — the image harness |
 | Prose (doc, spec, README) | **n=1 round** | `reference.md` — the prose harness |
-| Code, UI, schema | **UNTESTED** — hypotheses written before any run | `reference.md` — the untested rows; the first run rewrites the row |
+| UI (screen, flow) | **One subject, round logs 0–11** | [ui.md](ui.md) — UI hill climb, harness and worked example |
+| Code, schema | **UNTESTED** — hypotheses written before any run | `reference.md` — the untested rows; the first run rewrites the row |
+
+### UI hill climb
+
+For screen or flow design, read [ui.md](ui.md) before writing §0. It supplies
+the data-driven HTML harness, all-screen walls, counted task routes, blind
+and informed gate, and a search that starts with divergent directions then
+climbs one variant at a time. Its best-so-far stop and structural branch
+decisions specialise §4; the harness still needs the human's approval.
 
 ### 3c. Write §0 and propose it
 

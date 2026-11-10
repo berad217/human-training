@@ -69,6 +69,13 @@ reason: the untested-class rows had left the file. A six-line status index in §
 *status* back without the hypotheses. The total (94 → 91) would have read as regression; the
 vector read as one line up and one down, with the cause named.
 
+### UI — one subject, round logs 0–11
+
+The Bricky family game's start-screen run moved from three divergent directions
+to a single-variant climb, with human rulings at structural branch points.
+[ui.md](ui.md) holds the harness, evidence, limits and proposed guards. UI is
+no longer an untested class; transfer beyond this one game remains untested.
+
 ### Untested classes — hypotheses, written before any run
 
 **A run in one of these rewrites its row from what happened.** Until then these are
@@ -77,7 +84,6 @@ starting points, not guidance.
 | Class | Presentation | Leak channels (expected) | Blind question | Ground truth / walls |
 |---|---|---|---|---|
 | **Code** (module, API surface, PR) — UNTESTED | The diff or file without its PR description | PR title/body, commit message, branch name, issue link, intent-stating docstrings. Identifiers are *part of the artifact* | "What does this do, and what would you expect calling it to do?" — the gap is the finding | Tests, types, lint |
-| **UI** (screen, flow) — UNTESTED | Screenshot or live page, one state at a time | Page title, route, placeholder copy, the ticket | "What is this screen for, what would you click first, what happens?" | Accessibility, load time, validation |
 | **Schema / data model** — UNTESTED | The schema alone, no migration notes | Field comments, migration name, the PR | "What does this store, what would you query, what can't you express?" | Constraints, migrations, integrity |
 
 ---
