@@ -64,8 +64,10 @@ codex exec --ignore-user-config -s read-only \
    edit, `danger-full-access` only inside something already isolated. The
    banner's `sandbox:` line is the sandbox of record, the same way `model:`
    is the model of record: a writing job whose banner says `read-only` will
-   fail, so stop it and fix the call. `codex exec` never prompts mid-run;
-   command failures go back to the model, not to a human.
+   fail, so stop it and fix the call. Read the banner as soon as it prints,
+   before you turn to anything else: a job put in the background and checked
+   only when it ends spends the whole run finding out. `codex exec` never
+   prompts mid-run; command failures go back to the model, not to a human.
    **On Windows the sandbox can't run programs that live outside its roots.**
    A venv's `python.exe` is a launcher that starts the base interpreter it
    was made from (`home =` in `pyvenv.cfg`, often under `%APPDATA%\uv\python\`),
@@ -224,4 +226,10 @@ was written. Only the `elevated` value was tried. 2026-11-09 on 0.166.0, Windows
 elevated sandbox: the venv `python.exe` and the uv base interpreter both failed
 `Access is denied`, and still did with
 `-c 'sandbox_permissions=["disk-full-read-access"]'`. With
-`--add-dir <pyvenv.cfg home>` the venv ran and imported the project.*
+`--add-dir <pyvenv.cfg home>` the venv ran and imported the project.
+2026-11-10 on 0.166.0, Windows: a long background build job ran to the end
+`sandbox: read-only` and changed nothing. The driving agent was working from
+a copy of this skill it had loaded before 1.45.2 (a long session keeps the copy
+it loaded, through context compactions too), and it read the banner only after
+the job ended. Relaunched with the elevated key, the banner read
+workspace-write in the first seconds.*
