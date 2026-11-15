@@ -115,6 +115,8 @@ right. Model critics are proxies; they do not establish behaviour in real users.
    just colours. Run the free inner loop on each, then the same critic reads.
    Pre-commit when to prune and the floor each survivor must beat on rubric
    and want. Keep directions distinct long enough to answer their questions.
+   When each direction costs real building, paint them first and build only
+   the short list: [concepts.md](concepts.md).
 3. **Put branch points to the human.** Make a side-by-side page with the same
    viewport, all screens available, core routes/counts, per-line vectors,
    gate failures and the actual trade to decide. Keep captions here. Recommend
@@ -134,7 +136,8 @@ right. Model critics are proxies; they do not establish behaviour in real users.
    structural trial or a bounded repair exception; log it as such, not a win.
 6. **A line stuck for three rounds is a structural question.** Name the
    unchanged deficiency and its limiting cause. Propose a different grouping,
-   hierarchy, navigation model, asset or toolkit capability. Put a real trade
+   hierarchy, navigation model, asset or toolkit capability; a fresh concept
+   round ([concepts.md](concepts.md)) is the cheap way to find one. Put a real trade
    to the human with pictures; if it cannot change, stop with the gap priced.
    Another badge or spacing tweak does not reset the plateau.
 

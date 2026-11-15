@@ -1,10 +1,10 @@
 # Handover — human-training
 
-**Session date:** 2026-11-09. Shipped 1.46.0 "The Expensive One Consults"
-(`91e819e`), CI green on main, release cut. Workflow: editing a Track 2 skill
-(`coordinator`), then the version bump. Nothing is in flight; the tree was
-clean after the release. Queue is `TASKS.md`; durable know-how is
-`docs/maintainer-notes.md`.
+**Session date:** 2026-11-15. Shipping 1.48.0 "Paint the hills before you
+climb one": critic-loop gains `concepts.md` (breadth as pictures, then code),
+linked from SKILL.md and ui.md §3; image-gen now takes UI/HUD concept work and
+points there. Workflow: editing two Track 2 skills, then the version bump.
+Queue is `TASKS.md`; durable know-how is `docs/maintainer-notes.md`.
 
 ## The delta
 
@@ -20,8 +20,14 @@ clean after the release. Queue is `TASKS.md`; durable know-how is
   unread across 1.44.0–1.46.0. Read "Synced commit" on the account marketplace
   *before* clicking Check for updates: already at `91e819e` means the September
   toggle fix worked.
-- **`skills-drafts/night-shift/` is gone from this checkout.** The old question
-  (move it out, or gitignore it) resolved as moved; `.gitignore` has no entry.
+- **`concepts.md` steps 5-6 have never run.** Translating the picked concept
+  into a buildable spec, and the fidelity read of the build beside it, are
+  proposed guards. The first build through them rewrites its Evidence section.
+- **`skills-drafts/night-shift/` is out of every known checkout.** It turned
+  up untracked on a second machine; that copy moves to the private
+  project it came from, not committed. It is the coordinator's pre-scrub
+  draft (names people, machines, a project) and the shipped coordinator
+  supersedes it. If it appears again, move it out; never commit it.
 - **A stale Codex worktree:** `codex/start-self-ref-check`, under the Codex
   app's worktrees folder. The branch has nothing main lacks and the worktree is
   clean, so both can go. Brad's call; not removed.

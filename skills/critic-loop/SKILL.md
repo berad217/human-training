@@ -181,6 +181,11 @@ and informed gate, and a search that starts with divergent directions then
 climbs one variant at a time. Its best-so-far stop and structural branch
 decisions specialise §4; the harness still needs the human's approval.
 
+When directions are expensive to build, in a UI or any visual medium, paint
+the breadth as pictures first and build only the short list:
+[concepts.md](concepts.md). Climbing one built direction finds its local
+maximum, not the best direction.
+
 ### 3c. Write §0 and propose it
 
 The proposal is a dated document, unedited after round 1 except for factual

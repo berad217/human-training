@@ -1,6 +1,6 @@
 ---
 name: image-gen
-description: "Use when the user wants to CREATE or EDIT a raster/photographic image — 'generate an image', 'make a photo/logo/hero/mockup/sprite/icon-art', 'edit this picture', 'change/add/remove/replace X in this image', img2img, style or background swaps, identity-preserving edits, upscale-style redo. Claude CAN do this (like ChatGPT/DALL·E) by driving the Codex CLI's built-in image tool — no API key, runs on a ChatGPT subscription. Do NOT use for code-native or vector visuals (SVG icons, charts/dataviz, CSS/HTML/canvas UI, algorithmic/generative art) — those have their own skills; and do NOT use for the OpenAI image API directly (this is the subscription/CLI path)."
+description: "Use when the user wants to CREATE or EDIT a raster/photographic image — 'generate an image', 'make a photo/logo/hero/mockup/sprite/icon-art', 'edit this picture', 'change/add/remove/replace X in this image', img2img, style or background swaps, identity-preserving edits, upscale-style redo. ALSO for design exploration before code: painting UI, HUD, menu, screen or icon concepts over a real screenshot to find directions cheaply, then building the short list in code. Claude CAN do this (like ChatGPT/DALL·E) by driving the Codex CLI's built-in image tool — no API key, runs on a ChatGPT subscription. Do NOT use when the deliverable itself is code-native or vector (the SVG icon, the chart, the finished CSS/HTML UI, algorithmic/generative art) — those have their own skills; and do NOT use for the OpenAI image API directly (this is the subscription/CLI path)."
 allowed-tools: [Bash, Read, Write, Glob]
 ---
 
@@ -114,6 +114,19 @@ Codex's runtime skill injects the full prompt taxonomy for you, so compose a
 clear request and let it refine: scene and backdrop, subject, details,
 constraints. Quote any exact text verbatim and say where it goes; image models
 mangle text. For edits, the invariant list is the prompt.
+
+## Concepts before code
+
+A UI, HUD or menu that will ship as code still starts well as pictures.
+Building each direction in code is slow, so you only ever compare a few, all
+from the author's habits; painting one takes a minute. Attach a capture of
+the real screen as Image 1 and ask for one named direction per image, with
+the spec as hard constraints, especially what must NOT appear (the model
+restores clutter the human rejected). The picture is concept art: its text,
+glows and fonts are not a promise the toolkit can keep. The method (blind
+critic on the pictures, short list, translating the pick into a buildable
+spec, a fidelity read of the build) is `concepts.md` in the
+`human-training:critic-loop` skill.
 
 ## Troubleshooting
 
