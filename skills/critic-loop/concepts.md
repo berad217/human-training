@@ -35,12 +35,30 @@ approval, independence and logging.
 5. **Translate before building.** Write the chosen concept down as something
    code can meet: placement as fractions of the viewport, sizes at the
    shipping resolution, palette tokens, every state (idle, active, warning,
-   empty), motion intent. List what the picture promised that the toolkit
-   can't cheaply do (glows, blurs, invented fonts, garbled numerals) and pick
-   the substitute now, not mid-build.
-6. **Build, then read fidelity.** Capture the built screen beside the chosen
-   concept and run a fidelity read (both side by side, informed) before the
-   ordinary climb resumes on the build.
+   empty), motion intent. **Measure placement and size off the concept
+   itself**; a critic's "move it further out" is not a number, and size and
+   placement are what drift most and cost the most presence. List what the
+   picture promised that the toolkit can't cheaply do (glows, blurs, invented
+   fonts, garbled numerals) and pick the substitute now, not mid-build. Then:
+   - **Render the spec, not the code.** Draw the spec's numbers as a flat
+     reference image over real captures, including the worst-case
+     backgrounds. It is minutes of scripting and finds background problems
+     before any engine code exists.
+   - **Check the spec against the pick.** A spec written from a picture
+     over-reads it: it gives an ambiguous element a meaning, or adds a label.
+     Before building, check each element against what the human actually
+     chose, and cut what they didn't.
+   - **Write down the deliberate differences.** The data model forces some
+     (the picture shows five segments, the system has three states). List
+     them now; step 6's critic gets the list.
+6. **Build, then read fidelity, twice.** Two fresh critics, two questions.
+   A **blind read** of the built screen alone asks whether it works cold. A
+   **side-by-side** of the build and the concept, with the
+   deliberate-differences list, asks whether it is still the design. These
+   are two of SKILL.md's read types (function, then fidelity) asked of one
+   build, not a blind stage bolted onto a fidelity read. They find different
+   things; neither is enough alone. Then the ordinary climb
+   resumes on the build.
 
 ## What a still can't tell you
 
@@ -48,7 +66,9 @@ A concept is never the artifact, and no score a concept earns transfers to the
 build. The build's walls still run on the build: the worst-case backgrounds
 behind an overlay (bright sky, snow), motion, scale at the shipping
 resolution, safe areas and the toolkit's actual rendering. Text in a concept
-is decoration; never take wording or numbers from it.
+is decoration; never take wording or numbers from it. Test any label on the
+real glyph metrics with the real strings: a concept's one tidy word hides
+that the longest real label is two.
 
 ## Coming back for more breadth
 
@@ -64,6 +84,26 @@ box with some text". Four painted directions over a real cockpit capture; a
 blind critic in the role of a top-tier UI lead advanced two; both were revised,
 with throttle-only ground-vehicle versions added; a second blind critic picked
 one with three named fixes. The author's eye preferred the runner-up and said
-so on the page. Steps 1–4 are observed. Steps 5–6 (translation and the
-fidelity read) are proposed guards that have not yet run; the first build
-through them rewrites this paragraph.
+so on the page. Later concept rounds on the same subject added three
+observations: taking one named element from the runner-up into the winner
+made the next round's winner twice; the critic's pick beat the author's eye
+twice; and a semantic question put to the critic (does red read as danger?)
+confirmed a worry the author had, after which the human dropped the colour
+meaning altogether.
+
+Steps 5–6 then ran once, on the build. The reference render over real
+stills found a dark-background need before engine code. The scope check
+caught two over-reads (an element given a meaning the human never picked,
+and an added label). The deliberate-differences list kept the side-by-side
+critic from scoring a forced change as a defect. Size and placement drifted
+furthest, because the spec took them from a critic's note instead of
+measuring the concept: the build came out narrower, shorter and closer to
+the edge. The two reads did not overlap. The blind one found no single
+reading edge; the side-by-side found the scale and a badge whose icon
+overprinted its two-word label. A second fidelity pass fixed those and
+moved the side-by-side score up a point; the blind score stayed flat,
+because the missing reading edge was missing from the concept too.
+Fidelity fixes buy fidelity, not readability: a readability gap in the
+pick needs a concept round, not a build round. That is one build, observed; the
+two-read rule and the measure-off-the-concept rule are guards it proposes,
+not yet re-tested.

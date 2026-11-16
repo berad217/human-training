@@ -1,9 +1,10 @@
 # Handover — human-training
 
-**Session date:** 2026-11-15. Shipping 1.48.0 "Paint the hills before you
-climb one": critic-loop gains `concepts.md` (breadth as pictures, then code),
-linked from SKILL.md and ui.md §3; image-gen now takes UI/HUD concept work and
-points there. Workflow: editing two Track 2 skills, then the version bump.
+**Session date:** 2026-11-15. Shipped 1.48.1 "Fidelity buys fidelity": the first
+build through `concepts.md` steps 5-6 rewrote them (measure size and placement off
+the concept, render the spec over real stills, check the spec against the pick,
+list deliberate differences, then two reads of the build: blind and side by side).
+Before it, 1.48.0 "Paint the hills before you climb one" added `concepts.md`.
 Queue is `TASKS.md`; durable know-how is `docs/maintainer-notes.md`.
 
 ## The delta
@@ -20,9 +21,9 @@ Queue is `TASKS.md`; durable know-how is `docs/maintainer-notes.md`.
   unread across 1.44.0–1.46.0. Read "Synced commit" on the account marketplace
   *before* clicking Check for updates: already at `91e819e` means the September
   toggle fix worked.
-- **`concepts.md` steps 5-6 have never run.** Translating the picked concept
-  into a buildable spec, and the fidelity read of the build beside it, are
-  proposed guards. The first build through them rewrites its Evidence section.
+- **`concepts.md`'s two-read rule and measure-off-the-concept rule have run
+  once.** One HUD build, observed; a second subject is the test. Its Evidence
+  section says which parts are observed and which are proposed.
 - **`skills-drafts/night-shift/` is out of every known checkout.** It turned
   up untracked on a second machine; that copy moves to the private
   project it came from, not committed. It is the coordinator's pre-scrub
