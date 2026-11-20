@@ -131,7 +131,12 @@ right. Model critics are proxies; they do not establish behaviour in real users.
    with want, both gate halves and each line beside it. A tie or regression
    ends this climb; keep the incumbent. A failed wall cannot be a winner; a
    new critical or lost blind route blocks promotion even if the total rises.
-   Set any minimum improvement/noise margin in §0. Do not keep going because
+   Set any minimum improvement/noise margin in §0. When the gap is about the
+   size of the critics' spread, re-read the unchanged incumbent in the same
+   round, same model, rubric and inputs, before calling a win or a loss: fresh
+   reads of one unchanged screen scored 89, then 86 and 88, so a 2.5-point
+   "loss" against an old score was noise, mostly one rubric line. If the
+   same-round readings still overlap, report it as a tie. Do not keep going because
    the latest loser beats the previous loser. A human may approve a new
    structural trial or a bounded repair exception; log it as such, not a win.
 6. **A line stuck for three rounds is a structural question.** Name the

@@ -172,6 +172,15 @@ agent can hold a conversation with one, not just fire one-shots.
   `thread-store conflict: … already has an active writer`. Drive threads you
   started from the CLI, or quit the app fully (tray, not the window close).
   Never resume a thread the human has open.
+- **Resume only after the last run has exited, and from the right checkout.**
+  A worker can write its question or handoff file before its process has
+  finished writing the final reply, exit code and thread state; resume on the
+  file and the two runs collide on the thread and on shared result paths. Wait
+  for the exit receipt (the rc you captured, or the process gone), not the
+  question file. A resume resolves its workspace from the current directory,
+  not from the original launch's `-C`: `cd` into the worker's checkout and
+  confirm it in the same command that resumes. Two resumes started elsewhere
+  wrote into the wrong checkout.
 - **It can't hear you mid-turn,** but it can talk: tell it to drop short notes
   as files in a folder inside its writable root (an outbox), and watch that
   folder. Its final message is the turn's end. A blocked worker writes the
